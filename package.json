@@ -1,0 +1,14 @@
+{
+  "name": "copy-style-rewrite-workbench",
+  "version": "0.1.0",
+  "private": true,
+  "description": "飞书文档读取与钱十七闲鱼风格仿写工作台",
+  "scripts": {
+    "ui:dev": "node scripts/serve-workbench.mjs",
+    "lint": "node --check scripts/serve-workbench.mjs && node --check workbench-ui/app.js",
+    "test:spoken-dna": "node --test style-engine/tests/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

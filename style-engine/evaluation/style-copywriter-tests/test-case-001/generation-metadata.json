@@ -1,0 +1,25 @@
+{
+  "style_profile": "qian17-xianyu-spoken",
+  "style_profile_status": "draft",
+  "delivery_status": "evaluation_only",
+  "framework_used": "fw-low-barrier-project",
+  "framework_selection": "explicit_for_evaluation_only",
+  "rules_applied": [
+    "case-led concrete opening",
+    "section value bridge",
+    "numbered method path",
+    "data subject and condition preservation",
+    "target-owned CTA"
+  ],
+  "knowledge_sources_used": [
+    {
+      "source_id": "k01",
+      "section": "咨询分类",
+      "output_excerpt": "把最近的咨询按到店、改期、未回复分出来",
+      "use_as": "method"
+    }
+  ],
+  "generation_timestamp": "2026-07-25T00:00:00+08:00",
+  "validation_status": "passed",
+  "validation_report": "validation-report.md"
+}

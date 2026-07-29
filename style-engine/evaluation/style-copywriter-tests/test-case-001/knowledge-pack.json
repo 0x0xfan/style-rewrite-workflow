@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "query": {
+    "scenario": "video",
+    "product_type": "本地门店表格服务",
+    "tags": ["咨询分类", "预约确认", "回访"]
+  },
+  "minimum_used_sources": 1,
+  "sources": [
+    {
+      "id": "k01",
+      "title": "服务交付标准化方法",
+      "locator": "fixture://knowledge/service-delivery-standardization",
+      "excerpt": "先把重复咨询分类，再固定确认时间和回访节点，可以减少每次从头整理的重复动作。",
+      "allowed_uses": ["explanation", "method", "mechanism"]
+    },
+    {
+      "id": "k02",
+      "title": "小范围试运行方法",
+      "locator": "fixture://knowledge/small-pilot",
+      "excerpt": "服务流程先用少量对象试运行，再根据实际维护动作决定后续安排。",
+      "allowed_uses": ["method", "risk"]
+    }
+  ]
+}

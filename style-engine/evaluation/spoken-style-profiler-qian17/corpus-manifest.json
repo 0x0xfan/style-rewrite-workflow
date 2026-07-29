@@ -1,0 +1,92 @@
+{
+  "corpus_id": "qian17-spoken-v1",
+  "source_root": "F:\\dai ma\\钱十七剪辑拆解\\钱十七文案素材\\钱十七-闲鱼文案拆解.md",
+  "segmentation": {
+    "strategy": "markdown_h2_units",
+    "chars_per_minute": 240,
+    "title_counts_as_unit": false
+  },
+  "unit_count": 8,
+  "units": [
+    {
+      "id": "qian17-spoken-v1:u01",
+      "ordinal": 1,
+      "title": "五分钟讲透闲鱼电商无货源怎么养号，保姆级养号选品攻略！",
+      "source_locator": "F:\\dai ma\\钱十七剪辑拆解\\钱十七文案素材\\钱十七-闲鱼文案拆解.md",
+      "source_line_start": 3,
+      "source_line_end": 46,
+      "character_count": 1810,
+      "estimated_seconds": 453
+    },
+    {
+      "id": "qian17-spoken-v1:u02",
+      "ordinal": 2,
+      "title": "2.闲鱼无货源电商怎么选品？学生党赚钱必备教程",
+      "source_locator": "F:\\dai ma\\钱十七剪辑拆解\\钱十七文案素材\\钱十七-闲鱼文案拆解.md",
+      "source_line_start": 47,
+      "source_line_end": 92,
+      "character_count": 1758,
+      "estimated_seconds": 440
+    },
+    {
+      "id": "qian17-spoken-v1:u03",
+      "ordinal": 3,
+      "title": "钱十七-闲鱼卖虚拟",
+      "source_locator": "F:\\dai ma\\钱十七剪辑拆解\\钱十七文案素材\\钱十七-闲鱼文案拆解.md",
+      "source_line_start": 93,
+      "source_line_end": 128,
+      "character_count": 1601,
+      "estimated_seconds": 400
+    },
+    {
+      "id": "qian17-spoken-v1:u04",
+      "ordinal": 4,
+      "title": "3.",
+      "source_locator": "F:\\dai ma\\钱十七剪辑拆解\\钱十七文案素材\\钱十七-闲鱼文案拆解.md",
+      "source_line_start": 129,
+      "source_line_end": 134,
+      "character_count": 3031,
+      "estimated_seconds": 758
+    },
+    {
+      "id": "qian17-spoken-v1:u05",
+      "ordinal": 5,
+      "title": "4.",
+      "source_locator": "F:\\dai ma\\钱十七剪辑拆解\\钱十七文案素材\\钱十七-闲鱼文案拆解.md",
+      "source_line_start": 135,
+      "source_line_end": 140,
+      "character_count": 2372,
+      "estimated_seconds": 593
+    },
+    {
+      "id": "qian17-spoken-v1:u06",
+      "ordinal": 6,
+      "title": "5.",
+      "source_locator": "F:\\dai ma\\钱十七剪辑拆解\\钱十七文案素材\\钱十七-闲鱼文案拆解.md",
+      "source_line_start": 141,
+      "source_line_end": 146,
+      "character_count": 2521,
+      "estimated_seconds": 630
+    },
+    {
+      "id": "qian17-spoken-v1:u07",
+      "ordinal": 7,
+      "title": "6.",
+      "source_locator": "F:\\dai ma\\钱十七剪辑拆解\\钱十七文案素材\\钱十七-闲鱼文案拆解.md",
+      "source_line_start": 147,
+      "source_line_end": 152,
+      "character_count": 1603,
+      "estimated_seconds": 401
+    },
+    {
+      "id": "qian17-spoken-v1:u08",
+      "ordinal": 8,
+      "title": "7.",
+      "source_locator": "F:\\dai ma\\钱十七剪辑拆解\\钱十七文案素材\\钱十七-闲鱼文案拆解.md",
+      "source_line_start": 153,
+      "source_line_end": 155,
+      "character_count": 1958,
+      "estimated_seconds": 490
+    }
+  ]
+}

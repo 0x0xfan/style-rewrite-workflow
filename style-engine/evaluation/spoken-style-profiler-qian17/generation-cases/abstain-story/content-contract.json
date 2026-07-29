@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "contract_id": "qian17-abstain-story-contract-v1",
+  "case_id": "qian17-observation-only-abstain",
+  "input_sha256": "sha256:70935c9bb593c017d199045accd6cf8833c5f11da299562135907300d0919d50",
+  "content": {
+    "primary_value": "personal_story",
+    "narrative": {
+      "scene": "个人经历",
+      "attention_or_action_turn": "感受变化"
+    }
+  },
+  "immutable_values": []
+}

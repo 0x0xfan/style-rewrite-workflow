@@ -1,0 +1,28 @@
+# B站视频脚本 - {{ meta.product_name }}
+
+## 元信息
+- **生成时间**: {{ meta.generated_at }}
+- **风格卡**: {{ meta.style_card }}
+- **总时长**: {{ video_script.total_duration }}
+
+{% for section in video_script.sections %}
+## {{ section.section }} ({{ section.timestamp }})
+
+**画面**:
+- 截图: `{{ section.visual.screenshot }}`
+- 动作: {{ section.visual.action }}
+- 来源: {{ section.visual.source }}
+
+**口播**:
+> {{ section.narration }}
+
+**数据来源**:
+- 事实来源: `{{ section.fact_source or 'N/A' }}`
+- 知识来源: `{{ section.knowledge_source or 'N/A' }}`
+- 风格特征: {{ section.style_feature }}
+
+{% endfor %}
+
+---
+
+**生成说明**: 本脚本由 content-fusion Skill 自动生成，融合了项目事实、项目知识和风格特征。

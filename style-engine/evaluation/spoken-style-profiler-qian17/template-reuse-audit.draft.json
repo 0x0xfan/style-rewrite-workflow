@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0-draft",
+  "corpus_id": "qian17-spoken-v1",
+  "state": "draft",
+  "basis": "manual_semantic_comparison",
+  "candidates": [
+    {
+      "candidate_id": "partial-template-family-01",
+      "unit_ids": [
+        "qian17-spoken-v1:u03",
+        "qian17-spoken-v1:u05",
+        "qian17-spoken-v1:u07"
+      ],
+      "shared_module_functions": [
+        "full_path_promise",
+        "resource_acquisition_explanation",
+        "automated_delivery_close"
+      ],
+      "source_line_refs": [105, 109, 123, 137, 149],
+      "handling": "quarantine_shared_fragments",
+      "independence_effect": "共享模块不得重复贡献独立支持；u05 只有独有宏观区域可作为 observation。",
+      "approval_status": "pending_profile_review"
+    }
+  ],
+  "limitations": [
+    "本审计不保存来源原句，只记录功能模块与位置。",
+    "现有 sample-health 只报告整篇近重复，未自动检出此类局部模板复用。"
+  ]
+}

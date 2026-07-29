@@ -1,0 +1,31 @@
+# 输入示例 - 统计年鉴数据
+
+# 产品信息
+product_name: "统计年鉴数据"
+scenario: "all"  # 生成所有内容：video + title + description
+
+# 项目事实来源（goofish-research 证据包）
+evidence_package: "D:\\圣矾IP运营\\skills\\goofish-research\\examples\\统计年鉴数据"
+
+# 知识检索参数
+knowledge_params:
+  product_type: "虚拟产品"
+  tags:
+    - "选品策略"
+    - "标题优化"
+    - "避坑指南"
+  include_scripts: true
+
+# 风格参数
+style_params:
+  style_card: "钱十七"  # 使用钱十七的风格
+  tone: "亲切"
+  length: "中"  # 中等长度
+
+# 输出参数
+output_params:
+  format:
+    - "markdown"
+    - "json"
+  include_compliance_report: true
+  include_material_list: true

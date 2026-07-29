@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0-draft",
+  "case_id": "narrative-fallback-no-reflection",
+  "output_sha256": "sha256:986abcb083dd728149b588fd2a9b39330010cb555060c74b652aee6f40e63769",
+  "relation_observations": [
+    {
+      "relation": "narrative.subject+event_sequence+conditions",
+      "value": {
+        "subject": "第一人称叙述者与前方顾客",
+        "event_sequence": ["顾客在柜台遗落找零", "叙述者叫住对方并归还"],
+        "conditions": ["午后", "文具店排队"]
+      }
+    },
+    {
+      "relation": "narrative.attention_or_action_turn",
+      "value": {
+        "initial_impulse": "继续排队",
+        "interrupting_detail": "柜台边遗落的找零",
+        "action_turn": "叫住顾客并归还零钱"
+      }
+    },
+    {
+      "relation": "narrative.reflection_scope+uncertainty",
+      "value": {
+        "scope": "目标内容未提供反思",
+        "uncertainty": "不得补造个人结论或普遍意义"
+      }
+    },
+    {
+      "relation": "evidence.ownership",
+      "value": {
+        "owner": "第一人称叙述者",
+        "basis": "当场看到并完成的行动"
+      }
+    }
+  ],
+  "pattern_applications": [
+    {
+      "pattern_id": "concrete-first-person-scene-entry",
+      "start": 0,
+      "end": 9
+    },
+    {
+      "pattern_id": "interrupted-impulse-to-relational-recognition",
+      "start": 24,
+      "end": 48
+    }
+  ],
+  "avoidance_findings": [],
+  "new_fact_findings": [],
+  "style_source_fact_findings": [],
+  "reviewer_type": null,
+  "reviewer": null,
+  "reviewed_at": null,
+  "notes": [
+    "Draft fallback audit. The input intentionally has no reflection, so b02 must stop at the event result.",
+    "No human semantic or style judgment has been recorded."
+  ]
+}

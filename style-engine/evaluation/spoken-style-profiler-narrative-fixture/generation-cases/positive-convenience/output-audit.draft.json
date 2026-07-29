@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0-draft",
+  "case_id": "narrative-positive-convenience",
+  "output_sha256": "sha256:ca84c1a6541ba0956bfa219aa0f0fc2bbf7cbd961733893930d45d1a239e2b3a",
+  "relation_observations": [
+    {
+      "relation": "narrative.subject+event_sequence+conditions",
+      "value": {
+        "subject": "第一人称叙述者与前方学生",
+        "event_sequence": ["学生结账缺少一枚硬币", "叙述者补上差额"],
+        "conditions": ["傍晚", "便利店结账队伍"]
+      }
+    },
+    {
+      "relation": "narrative.attention_or_action_turn",
+      "value": {
+        "initial_impulse": "赶时间结账",
+        "interrupting_detail": "学生硬币不够",
+        "action_turn": "补上差额"
+      }
+    },
+    {
+      "relation": "narrative.reflection_scope+uncertainty",
+      "value": {
+        "scope": "只限这一次顺手相助的经历",
+        "uncertainty": "不推及他人的动机、人生结论或普遍效果"
+      }
+    },
+    {
+      "relation": "evidence.ownership",
+      "value": {
+        "owner": "第一人称叙述者",
+        "basis": "当场看到并完成的行动"
+      }
+    }
+  ],
+  "pattern_applications": [
+    {
+      "pattern_id": "concrete-first-person-scene-entry",
+      "start": 0,
+      "end": 9
+    },
+    {
+      "pattern_id": "interrupted-impulse-to-relational-recognition",
+      "start": 29,
+      "end": 55
+    },
+    {
+      "pattern_id": "low-drama-closing",
+      "start": 98,
+      "end": 114
+    }
+  ],
+  "avoidance_findings": [
+    {
+      "avoid_pattern_id": "avoid-grandiose-self-congratulation",
+      "violations": []
+    }
+  ],
+  "new_fact_findings": [],
+  "style_source_fact_findings": [],
+  "reviewer_type": null,
+  "reviewer": null,
+  "reviewed_at": null,
+  "notes": [
+    "Draft artifact binding only. Empty findings arrays are not a human approval or a semantic guarantee.",
+    "All pattern spans are measured against the bound 115-character output artifact."
+  ]
+}

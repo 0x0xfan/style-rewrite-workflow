@@ -1,0 +1,20 @@
+{
+  "unit_count": 3,
+  "character_distribution": {
+    "min": 173,
+    "p50": 183,
+    "max": 188,
+    "total": 544
+  },
+  "near_duplicate_pairs": [],
+  "suggested_duplicate_clusters": [],
+  "repeated_opening_groups": [],
+  "too_short_unit_ids": [
+    "narrative-fixture-v1:u03"
+  ],
+  "grade": "warning",
+  "warnings": [
+    "存在过短样本；不能单独支撑候选规则。 "
+  ],
+  "human_decision_required": false
+}

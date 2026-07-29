@@ -1,0 +1,217 @@
+{
+  "schema_version": "1.1-draft",
+  "corpus_id": "narrative-fixture-v1",
+  "state": "draft",
+  "units": [
+    {
+      "unit_id": "narrative-fixture-v1:u01",
+      "independence_cluster_id": "independent:narrative-fixture-v1:u01",
+      "include_in_fusion": true,
+      "content_type_id": "everyday-reflective-narrative",
+      "transcript_quality": "scripted_text_punctuation_not_audio_verified",
+      "anchors": [
+        {
+          "anchor_id": "narrative-fixture-v1:u01:p01",
+          "unit_id": "narrative-fixture-v1:u01",
+          "relative_position": 0.08,
+          "function": "hook",
+          "relations": [
+            "first_person_in_scene",
+            "ordinary_situation_with_immediate_goal"
+          ],
+          "claim_ids": [],
+          "material_ids": [],
+          "annotation_confidence": "high",
+          "audience_effect": "establish_relevance",
+          "information_role": "core_claim"
+        },
+        {
+          "anchor_id": "narrative-fixture-v1:u01:p02",
+          "unit_id": "narrative-fixture-v1:u01",
+          "relative_position": 0.39,
+          "function": "turn",
+          "relations": [
+            "other_person_visible",
+            "self_priority_interrupted"
+          ],
+          "claim_ids": [],
+          "material_ids": [],
+          "annotation_confidence": "high",
+          "audience_effect": "create_curiosity",
+          "information_role": "transition"
+        },
+        {
+          "anchor_id": "narrative-fixture-v1:u01:p03",
+          "unit_id": "narrative-fixture-v1:u01",
+          "relative_position": 0.67,
+          "function": "stance",
+          "relations": [
+            "small_response",
+            "anti_self_congratulation"
+          ],
+          "claim_ids": [],
+          "material_ids": [],
+          "annotation_confidence": "medium",
+          "audience_effect": "support_trust",
+          "information_role": "reflection"
+        },
+        {
+          "anchor_id": "narrative-fixture-v1:u01:p04",
+          "unit_id": "narrative-fixture-v1:u01",
+          "relative_position": 0.93,
+          "function": "summary",
+          "relations": [
+            "specific_event_to_general_reflection",
+            "future_choice_opened"
+          ],
+          "claim_ids": [],
+          "material_ids": [],
+          "annotation_confidence": "high",
+          "audience_effect": "leave_reflection",
+          "information_role": "reflection"
+        }
+      ]
+    },
+    {
+      "unit_id": "narrative-fixture-v1:u02",
+      "independence_cluster_id": "independent:narrative-fixture-v1:u02",
+      "include_in_fusion": true,
+      "content_type_id": "everyday-reflective-narrative",
+      "transcript_quality": "scripted_text_punctuation_not_audio_verified",
+      "anchors": [
+        {
+          "anchor_id": "narrative-fixture-v1:u02:p01",
+          "unit_id": "narrative-fixture-v1:u02",
+          "relative_position": 0.08,
+          "function": "hook",
+          "relations": [
+            "first_person_in_scene",
+            "ordinary_situation_with_visible_need"
+          ],
+          "claim_ids": [],
+          "material_ids": [],
+          "annotation_confidence": "high",
+          "audience_effect": "establish_relevance",
+          "information_role": "core_claim"
+        },
+        {
+          "anchor_id": "narrative-fixture-v1:u02:p02",
+          "unit_id": "narrative-fixture-v1:u02",
+          "relative_position": 0.38,
+          "function": "turn",
+          "relations": [
+            "scene_lingers",
+            "return_to_small_action"
+          ],
+          "claim_ids": [],
+          "material_ids": [],
+          "annotation_confidence": "high",
+          "audience_effect": "create_curiosity",
+          "information_role": "transition"
+        },
+        {
+          "anchor_id": "narrative-fixture-v1:u02:p03",
+          "unit_id": "narrative-fixture-v1:u02",
+          "relative_position": 0.65,
+          "function": "stance",
+          "relations": [
+            "low_drama_resolution",
+            "anti_spectacle"
+          ],
+          "claim_ids": [],
+          "material_ids": [],
+          "annotation_confidence": "high",
+          "audience_effect": "support_trust",
+          "information_role": "reflection"
+        },
+        {
+          "anchor_id": "narrative-fixture-v1:u02:p04",
+          "unit_id": "narrative-fixture-v1:u02",
+          "relative_position": 0.92,
+          "function": "summary",
+          "relations": [
+            "specific_event_to_general_reflection",
+            "small_choice_reframed"
+          ],
+          "claim_ids": [],
+          "material_ids": [],
+          "annotation_confidence": "high",
+          "audience_effect": "leave_reflection",
+          "information_role": "reflection"
+        }
+      ]
+    },
+    {
+      "unit_id": "narrative-fixture-v1:u03",
+      "independence_cluster_id": "independent:narrative-fixture-v1:u03",
+      "include_in_fusion": true,
+      "content_type_id": "everyday-reflective-narrative",
+      "transcript_quality": "scripted_text_punctuation_not_audio_verified",
+      "anchors": [
+        {
+          "anchor_id": "narrative-fixture-v1:u03:p01",
+          "unit_id": "narrative-fixture-v1:u03",
+          "relative_position": 0.08,
+          "function": "hook",
+          "relations": [
+            "first_person_in_scene",
+            "ordinary_object_as_entry"
+          ],
+          "claim_ids": [],
+          "material_ids": [],
+          "annotation_confidence": "high",
+          "audience_effect": "establish_relevance",
+          "information_role": "core_claim"
+        },
+        {
+          "anchor_id": "narrative-fixture-v1:u03:p02",
+          "unit_id": "narrative-fixture-v1:u03",
+          "relative_position": 0.36,
+          "function": "turn",
+          "relations": [
+            "question_or_pause",
+            "object_connects_to_life_phase"
+          ],
+          "claim_ids": [],
+          "material_ids": [],
+          "annotation_confidence": "medium",
+          "audience_effect": "create_curiosity",
+          "information_role": "transition"
+        },
+        {
+          "anchor_id": "narrative-fixture-v1:u03:p03",
+          "unit_id": "narrative-fixture-v1:u03",
+          "relative_position": 0.69,
+          "function": "continuation",
+          "relations": [
+            "relinquishing_action",
+            "meaning_reassigned"
+          ],
+          "claim_ids": [],
+          "material_ids": [],
+          "annotation_confidence": "medium",
+          "audience_effect": "set_expectation",
+          "information_role": "transition"
+        },
+        {
+          "anchor_id": "narrative-fixture-v1:u03:p04",
+          "unit_id": "narrative-fixture-v1:u03",
+          "relative_position": 0.93,
+          "function": "summary",
+          "relations": [
+            "specific_event_to_general_reflection",
+            "meaning_through_relation"
+          ],
+          "claim_ids": [],
+          "material_ids": [],
+          "annotation_confidence": "high",
+          "audience_effect": "leave_reflection",
+          "information_role": "reflection"
+        }
+      ]
+    }
+  ],
+  "claims": [],
+  "materials": [],
+  "unresolved_questions": []
+}

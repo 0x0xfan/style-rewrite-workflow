@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.1-draft",
+  "test_id": "qian17-spoken-v1-observation-abstain-suite",
+  "profile_id": "qian17-spoken-draft-v1",
+  "profile_schema_version": "1.1-draft",
+  "candidate_profile_sha256": "sha256:26b5a2358dbe40868b8d454b4be2f1b7c5ef84d480a38725c784e027ba02120b",
+  "mode": "evaluation_only",
+  "state": "draft",
+  "cases": [
+    {
+      "case_id": "qian17-observation-only-abstain",
+      "case_type": "abstain",
+      "target_framework_id": null,
+      "fallback_beat_ids": [],
+      "expected_selection": {
+        "abstained": true,
+        "content_type_id": null,
+        "framework_id": null
+      },
+      "applied_controls": {
+        "persona_rule_ids": [],
+        "strategy_rule_ids": [],
+        "attention_stage_ids": []
+      },
+      "artifacts": {
+        "input_path": "generation-cases/abstain-story/input.md",
+        "input_sha256": "sha256:70935c9bb593c017d199045accd6cf8833c5f11da299562135907300d0919d50",
+        "content_contract_path": "generation-cases/abstain-story/content-contract.json",
+        "content_contract_sha256": "sha256:5493d25a7f0854b3e61932865be727a28e5ff3cda66d8951a806e1c8e5153e84",
+        "output_path": null,
+        "output_sha256": null,
+        "output_audit_path": null,
+        "output_audit_sha256": null
+      }
+    }
+  ],
+  "human_review": {
+    "state": "pending",
+    "reviewer_type": null,
+    "reviewer": null,
+    "reviewed_at": null,
+    "case_reviews": [],
+    "notes": [
+      "所有控制仍为 observation/review_only；本 suite 仅验证 selector 必须 abstain。",
+      "本 suite 是 draft，未进行人工风格相似度、过拟合或事实审阅。"
+    ]
+  },
+  "limitations": [
+    "钱十七档案的内容类型、框架、persona、strategy、attention 和 patterns 均不可应用；本 suite 不生成 output。",
+    "u03/u07 已按用户决定合并为一个转写变体簇；profile 规则人工审阅与批准仍未完成。"
+  ]
+}

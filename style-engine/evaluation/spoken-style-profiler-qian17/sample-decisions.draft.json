@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.1-draft",
+  "corpus_id": "qian17-spoken-v1",
+  "state": "reviewed",
+  "duplicate_decisions": [
+    {
+      "cluster_id": "duplicate-candidate-01",
+      "unit_ids": [
+        "qian17-spoken-v1:u03",
+        "qian17-spoken-v1:u07"
+      ],
+      "decision": "merge_as_variant",
+      "retained_unit_ids": [
+        "qian17-spoken-v1:u03",
+        "qian17-spoken-v1:u07"
+      ],
+      "note": "用户在当前会话选择选项 2，确认 u03 与 u07 是同一篇文案的不同转写版本；二者合并为一个独立证据簇，不重复计数。"
+    }
+  ],
+  "repeated_opening_decisions": [],
+  "excluded_unit_ids": [],
+  "reviewer_type": "human",
+  "record_id": "sample-review-20260722-001",
+  "approved_by": "项目用户",
+  "approved_at": "2026-07-22T07:20:47Z"
+}

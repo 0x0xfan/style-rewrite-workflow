@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0",
+  "query": {
+    "scenario": "video",
+    "product_type": "本地门店表格服务",
+    "tags": ["咨询分类"]
+  },
+  "minimum_used_sources": 1,
+  "sources": []
+}

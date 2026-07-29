@@ -1,0 +1,32 @@
+{
+  "unit_count": 8,
+  "character_distribution": {
+    "min": 1601,
+    "p50": 1810,
+    "max": 3031,
+    "total": 16654
+  },
+  "near_duplicate_pairs": [
+    {
+      "left_unit_id": "qian17-spoken-v1:u03",
+      "right_unit_id": "qian17-spoken-v1:u07",
+      "similarity": 0.871
+    }
+  ],
+  "suggested_duplicate_clusters": [
+    {
+      "cluster_id": "duplicate-candidate-01",
+      "unit_ids": [
+        "qian17-spoken-v1:u03",
+        "qian17-spoken-v1:u07"
+      ]
+    }
+  ],
+  "repeated_opening_groups": [],
+  "too_short_unit_ids": [],
+  "grade": "warning",
+  "warnings": [
+    "发现近重复候选；必须人工决定是否为同一内容的转写或版本。 "
+  ],
+  "human_decision_required": true
+}

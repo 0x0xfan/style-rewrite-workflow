@@ -1,0 +1,42 @@
+{
+  "corpus_id": "narrative-fixture-v1",
+  "source_root": "D:\\项目仓库\\风格仿写\\style-engine\\evaluation\\spoken-style-profiler-narrative-fixture\\source.md",
+  "segmentation": {
+    "strategy": "markdown_h2_units",
+    "chars_per_minute": 240,
+    "title_counts_as_unit": false
+  },
+  "unit_count": 3,
+  "units": [
+    {
+      "id": "narrative-fixture-v1:u01",
+      "ordinal": 1,
+      "title": "地铁里的空座",
+      "source_locator": "D:\\项目仓库\\风格仿写\\style-engine\\evaluation\\spoken-style-profiler-narrative-fixture\\source.md",
+      "source_line_start": 3,
+      "source_line_end": 6,
+      "character_count": 188,
+      "estimated_seconds": 47
+    },
+    {
+      "id": "narrative-fixture-v1:u02",
+      "ordinal": 2,
+      "title": "雨天的纸箱",
+      "source_locator": "D:\\项目仓库\\风格仿写\\style-engine\\evaluation\\spoken-style-profiler-narrative-fixture\\source.md",
+      "source_line_start": 7,
+      "source_line_end": 10,
+      "character_count": 183,
+      "estimated_seconds": 46
+    },
+    {
+      "id": "narrative-fixture-v1:u03",
+      "ordinal": 3,
+      "title": "搬家留下的杯子",
+      "source_locator": "D:\\项目仓库\\风格仿写\\style-engine\\evaluation\\spoken-style-profiler-narrative-fixture\\source.md",
+      "source_line_start": 11,
+      "source_line_end": 13,
+      "character_count": 173,
+      "estimated_seconds": 43
+    }
+  ]
+}

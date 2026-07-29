@@ -1,0 +1,29 @@
+# {{ product_name }}
+
+## 产品介绍
+{{ introduction }}
+
+## 适用人群
+{% for audience in target_audiences %}
+- {{ audience }}
+{% endfor %}
+
+## 产品特点
+{% for feature in features %}
+- {{ feature }}
+{% endfor %}
+
+## 交付说明
+- **格式**: {{ delivery.format }}
+- **交付方式**: {{ delivery.method }}
+- **交付时间**: {{ delivery.time }}
+- **售后服务**: {{ delivery.support }}
+
+## 注意事项
+{% for note in notes %}
+- {{ note }}
+{% endfor %}
+
+---
+
+**生成说明**: 本描述由 content-fusion Skill 自动生成。

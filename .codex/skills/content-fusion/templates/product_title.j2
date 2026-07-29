@@ -1,0 +1,24 @@
+# 闲鱼标题优化方案
+
+{% for title in titles %}
+## 方案 {{ loop.index }}: {{ title.title }}
+
+**评分**: {{ title.score }}/10
+
+**优化理由**:
+- **事实依据**: {{ title.reasoning.fact_basis }}
+- **知识依据**: {{ title.reasoning.knowledge_basis }}
+- **风格依据**: {{ title.reasoning.style_basis }}
+
+**优化点**:
+{% for opt in title.optimization %}
+- {{ opt }}
+{% endfor %}
+
+**合规性**: {% if title.compliance.safe %}✅ 安全{% else %}❌ 存在问题{% endif %}
+
+{% endfor %}
+
+---
+
+**生成说明**: 本方案由 content-fusion Skill 自动生成，基于市场数据和优化技巧。

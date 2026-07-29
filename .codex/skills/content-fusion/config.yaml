@@ -1,0 +1,53 @@
+# content-fusion Skill 配置文件
+
+# 知识库 API 路径
+knowledge_api_path: "D:\\项目仓库\\闲鱼知识库\\scripts\\knowledge_api.py"
+
+# 风格卡目录
+style_cards_dir: "D:\\项目仓库\\风格仿写\\风格卡"
+
+# 默认输出目录
+default_output_dir: "./output"
+
+# 违规词列表
+violation_words:
+  - "躺赚"
+  - "零成本"
+  - "日入"
+  - "月入"
+  - "暴利"
+  - "必赚"
+  - "保证"
+  - "绝对"
+  - "100%"
+  - "轻松"
+  - "简单赚钱"
+  - "快速致富"
+  - "内幕"
+  - "独家"
+  - "秘籍"
+  - "黑科技"
+
+# 场景配置
+scenarios:
+  video:
+    description: "B站视频文案生成"
+    output_format: ["markdown", "json"]
+    include_compliance: true
+    include_materials: true
+
+  title:
+    description: "闲鱼标题优化"
+    output_format: ["markdown", "json"]
+    title_count: 5
+
+  description:
+    description: "商品描述生成"
+    output_format: ["markdown"]
+
+# 默认风格
+default_style:
+  name: "通用风格"
+  persona: "专业、客观的运营分析师"
+  framework: "现象观察 → 数据分析 → 策略建议 → 行动指南"
+  tone: "专业、清晰、实用"

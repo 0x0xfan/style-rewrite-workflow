@@ -1,0 +1,15 @@
+{
+  "generation_config": {
+    "framework": "auto",
+    "intensity": 0.6,
+    "target_length": "auto"
+  },
+  "output": {
+    "copy_filename": "generated-copy.md",
+    "metadata_filename": "generation-metadata.json"
+  },
+  "validation": {
+    "reference_overlap_window": 20,
+    "fail_on_forbidden_terms": true
+  }
+}

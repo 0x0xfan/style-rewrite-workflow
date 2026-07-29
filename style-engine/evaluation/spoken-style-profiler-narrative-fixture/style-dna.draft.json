@@ -1,0 +1,407 @@
+{
+  "schema_version": "1.1-draft",
+  "profile_id": "narrative-fixture-spoken-ip-v1",
+  "display_name": "虚构叙事型口播 IP（待人工确认）",
+  "domain": "zh-short-video-spoken",
+  "status": "draft",
+  "approval": {
+    "state": "draft",
+    "requires_human_approval": true,
+    "approved_by": null,
+    "approved_at": null,
+    "change_reason": null,
+    "record_id": null,
+    "generation_test_id": null,
+    "candidate_profile_sha256": null,
+    "approved_control_state_sha256": null,
+    "evidence_bundle_sha256": null,
+    "generation_test_sha256": null,
+    "generation_output_set_sha256": null
+  },
+  "corpus": {
+    "corpus_id": "narrative-fixture-v1",
+    "raw_unit_count": 3,
+    "independent_cluster_count": 3,
+    "independence_clusters": [
+      {"id": "independent:narrative-fixture-v1:u01", "unit_ids": ["narrative-fixture-v1:u01"]},
+      {"id": "independent:narrative-fixture-v1:u02", "unit_ids": ["narrative-fixture-v1:u02"]},
+      {"id": "independent:narrative-fixture-v1:u03", "unit_ids": ["narrative-fixture-v1:u03"]}
+    ],
+    "included_unit_ids": [
+      "narrative-fixture-v1:u01",
+      "narrative-fixture-v1:u02",
+      "narrative-fixture-v1:u03"
+    ],
+    "excluded_unit_ids": [],
+    "unresolved_decisions": []
+  },
+  "selector_signals": [
+    { "id": "content.has_scene", "source_path": "narrative.scene", "operator": "exists", "description": "目标内容含可讲述场景" },
+    { "id": "content.has_action_turn", "source_path": "narrative.attention_or_action_turn", "operator": "exists", "description": "目标内容含注意力或行动转向" },
+    { "id": "content.has_reflection", "source_path": "narrative.reflection", "operator": "exists", "description": "目标内容含有边界的反思" },
+    { "id": "content.missing_reflection", "source_path": "narrative.reflection", "operator": "missing", "description": "目标内容没有反思" },
+    { "id": "content.primary_value_is_personal_story", "source_path": "primary_value", "operator": "equals", "value": "personal_story", "description": "主要价值是个人故事" },
+    { "id": "content.has_steps", "source_path": "steps", "operator": "nonempty_array", "description": "目标内容是分步教程" },
+    { "id": "content.has_strong_cta", "source_path": "cta", "operator": "exists", "description": "目标内容含明确强行动入口" }
+  ],
+  "communication_persona": [
+    {
+      "id": "persona-participant-observer",
+      "dimension": "speaker_position",
+      "name": "置身事件的参与式观察者",
+      "status": "candidate",
+      "availability": "profile_approval_required",
+      "definition": "说话者从自己身处的日常片段出发，以观察和轻微行动变化承担叙事，而不是站在外部讲大道理。",
+      "generation_instruction": "只使用目标内容中真实存在的第一人称位置、感知对象和行动变化，不新增旁观权威身份。",
+      "applicability": "目标内容确有第一人称场景和可描述的行动或注意力变化。",
+      "non_applicability": "纯观点、教程、资讯或没有叙事主体时。",
+      "evidence": [
+        { "unit_id": "narrative-fixture-v1:u01", "independence_cluster_id": "independent:narrative-fixture-v1:u01", "anchor_id": "narrative-fixture-v1:u01:p01", "position": 0.08, "function": "hook" },
+        { "unit_id": "narrative-fixture-v1:u02", "independence_cluster_id": "independent:narrative-fixture-v1:u02", "anchor_id": "narrative-fixture-v1:u02:p01", "position": 0.08, "function": "hook" },
+        { "unit_id": "narrative-fixture-v1:u03", "independence_cluster_id": "independent:narrative-fixture-v1:u03", "anchor_id": "narrative-fixture-v1:u03:p01", "position": 0.08, "function": "hook" }
+      ],
+      "risk": "这是沟通位置，不证明作者现实身份或品格。"
+    },
+    {
+      "id": "persona-bounded-reflector",
+      "dimension": "certainty_policy",
+      "name": "有边界的个人反思",
+      "status": "candidate",
+      "availability": "profile_approval_required",
+      "definition": "结论停留在这次经历可支持的个人理解，不升级为普遍事实或道德裁判。",
+      "generation_instruction": "把目标内容已有反思写成有范围的个人判断，保留不确定性和说话者立场。",
+      "applicability": "目标内容明确给出反思范围和不确定性。",
+      "non_applicability": "需要给出可验证普遍结论、教程指令或商业承诺时。",
+      "evidence": [
+        { "unit_id": "narrative-fixture-v1:u01", "independence_cluster_id": "independent:narrative-fixture-v1:u01", "anchor_id": "narrative-fixture-v1:u01:p04", "position": 0.93, "function": "summary" },
+        { "unit_id": "narrative-fixture-v1:u02", "independence_cluster_id": "independent:narrative-fixture-v1:u02", "anchor_id": "narrative-fixture-v1:u02:p04", "position": 0.92, "function": "summary" },
+        { "unit_id": "narrative-fixture-v1:u03", "independence_cluster_id": "independent:narrative-fixture-v1:u03", "anchor_id": "narrative-fixture-v1:u03:p04", "position": 0.93, "function": "summary" }
+      ],
+      "risk": "不得据此推断受众认同或作者价值观。"
+    }
+  ],
+  "content_strategy": [
+    {
+      "id": "strategy-scene-turn-bounded-reflection",
+      "category": "reasoning_move",
+      "name": "场景—转向—有界反思",
+      "status": "candidate",
+      "availability": "profile_approval_required",
+      "definition": "从普通场景进入，让一个可见细节改变注意力或行动，再将结果收束为不过度外推的反思。",
+      "generation_instruction": "先按目标事件顺序铺场景，再写真实转向，最后只使用目标内容已有反思。",
+      "applicability": "场景、转向和反思三者均有目标内容事实支持。",
+      "non_applicability": "任一环节只能靠补造人物、事件或结论时。",
+      "evidence": [
+        { "unit_id": "narrative-fixture-v1:u01", "independence_cluster_id": "independent:narrative-fixture-v1:u01", "anchor_id": "narrative-fixture-v1:u01:p02", "position": 0.39, "function": "turn" },
+        { "unit_id": "narrative-fixture-v1:u02", "independence_cluster_id": "independent:narrative-fixture-v1:u02", "anchor_id": "narrative-fixture-v1:u02:p02", "position": 0.38, "function": "turn" },
+        { "unit_id": "narrative-fixture-v1:u03", "independence_cluster_id": "independent:narrative-fixture-v1:u03", "anchor_id": "narrative-fixture-v1:u03:p02", "position": 0.36, "function": "turn" }
+      ],
+      "risk": "三个合成样本题材相近，不能外推为跨题材稳定策略。"
+    }
+  ],
+  "content_types": [
+    {
+      "id": "everyday-reflective-narrative",
+      "name": "日常片段反思叙事",
+      "status": "candidate",
+      "availability": "profile_approval_required",
+      "definition": "从第一人称日常片段进入，经由注意力或行动的轻微转向，在结尾把具体经历收束为克制的关系性反思。",
+      "generation_goal": "用目标内容自己的场景、转向和反思形成低戏剧性的短叙事。",
+      "selector": {
+        "requires_all": ["content.has_scene", "content.has_action_turn"],
+        "prefers_any": ["content.has_reflection", "content.primary_value_is_personal_story"],
+        "excludes_any": ["content.has_steps"],
+        "abstain_when": ["没有真实场景或转向", "主要价值是教程步骤"],
+        "priority": 70
+      },
+      "evidence": [
+        {"unit_id": "narrative-fixture-v1:u01", "independence_cluster_id": "independent:narrative-fixture-v1:u01", "anchor_id": "narrative-fixture-v1:u01:p04", "position": 0.93, "function": "summary"},
+        {"unit_id": "narrative-fixture-v1:u02", "independence_cluster_id": "independent:narrative-fixture-v1:u02", "anchor_id": "narrative-fixture-v1:u02:p04", "position": 0.92, "function": "summary"},
+        {"unit_id": "narrative-fixture-v1:u03", "independence_cluster_id": "independent:narrative-fixture-v1:u03", "anchor_id": "narrative-fixture-v1:u03:p04", "position": 0.93, "function": "summary"}
+      ]
+    }
+  ],
+  "frameworks": [
+    {
+      "id": "scene-to-reflection-two-beat",
+      "name": "场景进入—反思落点（两节拍）",
+      "content_type_id": "everyday-reflective-narrative",
+      "status": "candidate",
+      "availability": "profile_approval_required",
+      "when_to_use": "目标内容确有一个可讲述的日常瞬间、主体的注意力或行动发生轻微改变，并可从该改变推出不夸张的个人反思时使用。",
+      "do_not_use": "只有观点没有可感知场景、需要讲清教程步骤、需要展示复杂证据链，或结尾只能靠强行动号召成立时不使用。",
+      "selector": {
+        "requires_all": ["content.has_scene", "content.has_action_turn"],
+        "prefers_any": ["content.has_reflection", "content.primary_value_is_personal_story"],
+        "excludes_any": ["content.has_steps", "content.has_strong_cta"],
+        "abstain_when": ["场景、转向或结论范围无法锁定"],
+        "priority": 70
+      },
+      "beats": [
+        {
+          "id": "b01",
+          "role": "hook",
+          "required": true,
+          "purpose": "以第一人称置身于一个具体、低戏剧性的日常场景，建立立即可理解的在场感。",
+          "input_slots": ["narrative.scene", "narrative.narrator_position", "narrative.immediate_goal_or_tension"],
+          "transformation_rule": "保留场景中的事实关系，只把信息按感知顺序铺开；不添加原内容没有的人物、物件、行为或冲突。",
+          "generation_instruction": "用目标内容已有第一人称位置、场景和轻微张力开场，按感知顺序呈现，不补人物或冲突。",
+          "audience_effect": "create_curiosity",
+          "preserve": ["subject", "time_window", "location_context", "event_sequence", "conditions"],
+          "fallback": "缺少可感知的日常场景时，不套用该框架，改用与内容类型匹配的非叙事结构。"
+        },
+        {
+          "id": "b02",
+          "role": "summary",
+          "required": true,
+          "purpose": "在转向后的结尾，将具体片段收束为有条件、不过度自我表彰的个人反思。",
+          "input_slots": ["narrative.attention_or_action_turn", "narrative.reflection"],
+          "transformation_rule": "把已有的转向与反思连接起来，保留结论的范围和语气；不把小事件升级成普遍承诺、道德评判或事实主张。",
+          "generation_instruction": "把目标内容已有转向连接到有边界的个人反思；没有反思时停在事件结果。",
+          "audience_effect": "leave_reflection",
+          "preserve": ["event_consequence", "reflection_scope", "uncertainty", "speaker_stance"],
+          "fallback": "没有来源已给出的反思时，停在事件结果，不补造人生结论。"
+        }
+      ],
+      "evidence_paths": [
+        {
+          "unit_id": "narrative-fixture-v1:u01",
+          "independence_cluster_id": "independent:narrative-fixture-v1:u01",
+          "beats": [
+            {"beat_id": "b01", "anchor_id": "narrative-fixture-v1:u01:p01", "ordinal": 1},
+            {"beat_id": "b02", "anchor_id": "narrative-fixture-v1:u01:p04", "ordinal": 2}
+          ]
+        },
+        {
+          "unit_id": "narrative-fixture-v1:u02",
+          "independence_cluster_id": "independent:narrative-fixture-v1:u02",
+          "beats": [
+            {"beat_id": "b01", "anchor_id": "narrative-fixture-v1:u02:p01", "ordinal": 1},
+            {"beat_id": "b02", "anchor_id": "narrative-fixture-v1:u02:p04", "ordinal": 2}
+          ]
+        },
+        {
+          "unit_id": "narrative-fixture-v1:u03",
+          "independence_cluster_id": "independent:narrative-fixture-v1:u03",
+          "beats": [
+            {"beat_id": "b01", "anchor_id": "narrative-fixture-v1:u03:p01", "ordinal": 1},
+            {"beat_id": "b02", "anchor_id": "narrative-fixture-v1:u03:p04", "ordinal": 2}
+          ]
+        }
+      ]
+    }
+  ],
+  "attention_rhythm": {
+    "basis": "textual_function_inference",
+    "stages": [
+      {
+        "id": "attention-concrete-entry",
+        "name": "具象场景进入",
+        "status": "candidate",
+        "availability": "profile_approval_required",
+        "relative_range": [0, 0.25],
+        "audience_state": "尚未进入事件",
+        "objective": "用可感知细节建立在场感和轻微疑问",
+        "mechanism": "第一人称位置、普通对象或动作、未解释张力",
+        "generation_instruction": "前四分之一只铺目标内容已有场景和轻微张力，不抢先给宏大结论。",
+        "intensity": "low",
+        "evidence": [
+          { "unit_id": "narrative-fixture-v1:u01", "independence_cluster_id": "independent:narrative-fixture-v1:u01", "anchor_id": "narrative-fixture-v1:u01:p01", "position": 0.08, "function": "hook" },
+          { "unit_id": "narrative-fixture-v1:u02", "independence_cluster_id": "independent:narrative-fixture-v1:u02", "anchor_id": "narrative-fixture-v1:u02:p01", "position": 0.08, "function": "hook" },
+          { "unit_id": "narrative-fixture-v1:u03", "independence_cluster_id": "independent:narrative-fixture-v1:u03", "anchor_id": "narrative-fixture-v1:u03:p01", "position": 0.08, "function": "hook" }
+        ],
+        "risk": "这是文本意图，不证明真实好奇或停留。"
+      },
+      {
+        "id": "attention-small-turn",
+        "name": "轻微转向",
+        "status": "candidate",
+        "availability": "profile_approval_required",
+        "relative_range": [0.25, 0.75],
+        "audience_state": "已理解场景，等待事件意义变化",
+        "objective": "让一个真实细节改变注意力、判断或行动",
+        "mechanism": "对象、问题、记忆或他人需要触发小幅转向",
+        "generation_instruction": "只写目标事实中的真实转向，不为制造感动补角色或动机。",
+        "intensity": "medium",
+        "evidence": [
+          { "unit_id": "narrative-fixture-v1:u01", "independence_cluster_id": "independent:narrative-fixture-v1:u01", "anchor_id": "narrative-fixture-v1:u01:p02", "position": 0.39, "function": "turn" },
+          { "unit_id": "narrative-fixture-v1:u02", "independence_cluster_id": "independent:narrative-fixture-v1:u02", "anchor_id": "narrative-fixture-v1:u02:p02", "position": 0.38, "function": "turn" },
+          { "unit_id": "narrative-fixture-v1:u03", "independence_cluster_id": "independent:narrative-fixture-v1:u03", "anchor_id": "narrative-fixture-v1:u03:p02", "position": 0.36, "function": "turn" }
+        ],
+        "risk": "不得把相关性改写成因果证明。"
+      },
+      {
+        "id": "attention-bounded-close",
+        "name": "有界反思收束",
+        "status": "candidate",
+        "availability": "profile_approval_required",
+        "relative_range": [0.75, 1],
+        "audience_state": "事件已完成，需要理解说话者如何看待它",
+        "objective": "留下不过度外推的个人反思",
+        "mechanism": "行动结果、克制立场和有限结论",
+        "generation_instruction": "结尾只保留目标内容可支持的个人理解，不升级为普遍道德或行动号召。",
+        "intensity": "low",
+        "evidence": [
+          { "unit_id": "narrative-fixture-v1:u01", "independence_cluster_id": "independent:narrative-fixture-v1:u01", "anchor_id": "narrative-fixture-v1:u01:p04", "position": 0.93, "function": "summary" },
+          { "unit_id": "narrative-fixture-v1:u02", "independence_cluster_id": "independent:narrative-fixture-v1:u02", "anchor_id": "narrative-fixture-v1:u02:p04", "position": 0.92, "function": "summary" },
+          { "unit_id": "narrative-fixture-v1:u03", "independence_cluster_id": "independent:narrative-fixture-v1:u03", "anchor_id": "narrative-fixture-v1:u03:p04", "position": 0.93, "function": "summary" }
+        ],
+        "risk": "不证明观众会产生共鸣。"
+      }
+    ]
+  },
+  "patterns": [
+    {
+      "id": "concrete-first-person-scene-entry",
+      "category": "hook",
+      "name": "具体第一人称场景开场",
+      "status": "candidate",
+      "availability": "profile_approval_required",
+      "formula": "第一人称处境 + 具象日常对象或动作 + 尚未解释的轻微张力",
+      "applicability": "适用于故事的第一段能由一处可观察场景启动、且后文会解释其意义的反思型短叙事。",
+      "non_applicability": "不适用于没有叙事主体和场景的纯观点、资讯播报、教程或需要先交代结论的内容。",
+      "generation_instruction": "用目标内容自己的第一人称位置、具象对象和轻微张力开场，第一段不提前解释全部意义。",
+      "application_control": { "positions": ["entry"], "min_per_script": 0, "max_per_script": 1, "avoid_adjacent_repeat": true },
+      "avoid_when": ["content.has_steps"],
+      "input_slots": ["narrative.narrator_position", "narrative.scene", "narrative.visible_detail", "narrative.initial_tension"],
+      "preserve": ["subject", "event_sequence", "location_context", "time_window"],
+      "evidence": [
+        {"unit_id": "narrative-fixture-v1:u01", "independence_cluster_id": "independent:narrative-fixture-v1:u01", "anchor_id": "narrative-fixture-v1:u01:p01", "position": 0.08, "function": "hook"},
+        {"unit_id": "narrative-fixture-v1:u02", "independence_cluster_id": "independent:narrative-fixture-v1:u02", "anchor_id": "narrative-fixture-v1:u02:p01", "position": 0.08, "function": "hook"},
+        {"unit_id": "narrative-fixture-v1:u03", "independence_cluster_id": "independent:narrative-fixture-v1:u03", "anchor_id": "narrative-fixture-v1:u03:p01", "position": 0.08, "function": "hook"}
+      ],
+      "risk": "不要把具象细节误当成可迁移素材；下游必须改用目标内容自己的场景和对象。"
+    },
+    {
+      "id": "interrupted-impulse-to-relational-recognition",
+      "category": "sentence",
+      "name": "即时倾向被打断后的关系性领悟",
+      "status": "candidate",
+      "availability": "profile_approval_required",
+      "formula": "原本的即时倾向或路径 + 注意力被具体人、物或记忆打断 + 行动或理解微调 + 不绝对化的关系性领悟",
+      "applicability": "适用于来源事实中确有注意力、判断或行动被改变的时刻，并且结尾反思没有超出该事件可支持的范围。",
+      "non_applicability": "不适用于没有真实转向、只能靠捏造他人需求推动剧情，或需要证明因果结果的内容。",
+      "generation_instruction": "按目标事实写原始倾向、触发细节和真实转向，再连接到已有反思；不补他人动机。",
+      "application_control": { "positions": ["body"], "min_per_script": 0, "max_per_script": 1, "avoid_adjacent_repeat": true },
+      "avoid_when": ["content.has_steps"],
+      "input_slots": ["narrative.initial_impulse", "narrative.interrupting_detail", "narrative.attention_or_action_turn", "narrative.reflection"],
+      "preserve": ["event_sequence", "agency", "evidence_ownership", "reflection_scope", "uncertainty"],
+      "evidence": [
+        {"unit_id": "narrative-fixture-v1:u01", "independence_cluster_id": "independent:narrative-fixture-v1:u01", "anchor_id": "narrative-fixture-v1:u01:p02", "position": 0.39, "function": "turn"},
+        {"unit_id": "narrative-fixture-v1:u02", "independence_cluster_id": "independent:narrative-fixture-v1:u02", "anchor_id": "narrative-fixture-v1:u02:p02", "position": 0.38, "function": "turn"},
+        {"unit_id": "narrative-fixture-v1:u03", "independence_cluster_id": "independent:narrative-fixture-v1:u03", "anchor_id": "narrative-fixture-v1:u03:p02", "position": 0.36, "function": "turn"}
+      ],
+      "risk": "不得为了制造感动而添加受助者、回忆或道德动机；也不得把克制反思改写为普遍事实。"
+    },
+    {
+      "id": "low-drama-closing",
+      "category": "persuasion",
+      "name": "低戏剧性收束",
+      "status": "candidate",
+      "availability": "profile_approval_required",
+      "formula": "完成或未完成的小动作 + 回避功劳化或宏大化 + 留下可由观众自行延展的温和结论",
+      "applicability": "适用于以普通经历承载情绪或关系判断、且结尾可以容纳余韵的短叙事。",
+      "non_applicability": "不适用于需要明确指令、交易转化、风险警示或强证据结论的内容。",
+      "generation_instruction": "用目标事件结果和说话者已有立场完成收束，不加功劳化、宏大化或强行动号召。",
+      "application_control": { "positions": ["close"], "min_per_script": 0, "max_per_script": 1, "avoid_adjacent_repeat": true },
+      "avoid_when": ["content.has_steps", "content.has_strong_cta"],
+      "input_slots": ["narrative.action_outcome", "narrative.speaker_stance", "narrative.reflection"],
+      "preserve": ["event_consequence", "speaker_stance", "reflection_scope", "uncertainty"],
+      "evidence": [
+        {"unit_id": "narrative-fixture-v1:u01", "independence_cluster_id": "independent:narrative-fixture-v1:u01", "anchor_id": "narrative-fixture-v1:u01:p03", "position": 0.67, "function": "stance"},
+        {"unit_id": "narrative-fixture-v1:u02", "independence_cluster_id": "independent:narrative-fixture-v1:u02", "anchor_id": "narrative-fixture-v1:u02:p03", "position": 0.65, "function": "stance"},
+        {"unit_id": "narrative-fixture-v1:u03", "independence_cluster_id": "independent:narrative-fixture-v1:u03", "anchor_id": "narrative-fixture-v1:u03:p03", "position": 0.69, "function": "continuation"}
+      ],
+      "risk": "只是一种表达收束，不能据此推断人物品格、受众反应或社会效果。"
+    },
+    {
+      "id": "spoken-rhythm-punctuation-unknown",
+      "category": "rhythm",
+      "name": "口播停顿与语速",
+      "status": "observation",
+      "availability": "review_only",
+      "formula": "书面转写呈现出短中句交替，但实际口播停顿、重音和语速尚未验证。",
+      "applicability": "仅在获得原始音视频或可靠逐字转录后，才可复核为节奏规则。",
+      "non_applicability": "不得仅依据书面标点用于生成或评价口播节奏。",
+      "generation_instruction": "保持未知，不依据书面标点生成语速、停顿或重音。",
+      "application_control": { "positions": ["any"], "min_per_script": 0, "max_per_script": 0, "avoid_adjacent_repeat": true },
+      "avoid_when": [],
+      "input_slots": [],
+      "preserve": [],
+      "evidence": [
+        {"unit_id": "narrative-fixture-v1:u01", "independence_cluster_id": "independent:narrative-fixture-v1:u01", "anchor_id": "narrative-fixture-v1:u01:p04", "position": 0.93, "function": "summary"},
+        {"unit_id": "narrative-fixture-v1:u02", "independence_cluster_id": "independent:narrative-fixture-v1:u02", "anchor_id": "narrative-fixture-v1:u02:p04", "position": 0.92, "function": "summary"}
+      ],
+      "risk": "将书面标点直接当作口播节奏会造成伪精确。"
+    }
+  ],
+  "avoid_patterns": [
+    {
+      "id": "avoid-grandiose-self-congratulation",
+      "name": "避免宏大化与自我表彰",
+      "status": "candidate",
+      "availability": "profile_approval_required",
+      "basis": "observed_contrast",
+      "trigger": "目标内容进入个人反思或解释自身行动时",
+      "trigger_signals": ["content.has_reflection"],
+      "avoid_instruction": "不要把小动作写成英雄叙事、普遍道德结论或必然社会效果。",
+      "rationale": "三个样本都用低戏剧性立场压低功劳化，并把结论限制在个人理解。",
+      "evidence": [
+        { "unit_id": "narrative-fixture-v1:u01", "independence_cluster_id": "independent:narrative-fixture-v1:u01", "anchor_id": "narrative-fixture-v1:u01:p03", "position": 0.67, "function": "stance" },
+        { "unit_id": "narrative-fixture-v1:u02", "independence_cluster_id": "independent:narrative-fixture-v1:u02", "anchor_id": "narrative-fixture-v1:u02:p03", "position": 0.65, "function": "stance" },
+        { "unit_id": "narrative-fixture-v1:u03", "independence_cluster_id": "independent:narrative-fixture-v1:u03", "anchor_id": "narrative-fixture-v1:u03:p03", "position": 0.69, "function": "continuation" }
+      ]
+    }
+  ],
+  "boundaries": [
+    "只沉淀叙事结构、关系型句式、克制收束与证据位置；不沉淀来源人物、地点、物件、事件、具体措辞或情节。",
+    "下游新稿只能使用目标内容另行提供的场景、主体、事件顺序、结论范围与证据；不得用本档案补造转折或反思。",
+    "本档案不包含教程、项目、数据、收益、平台操作或 CTA 槽位；没有真实来源支撑时不得由下游添加。"
+  ],
+  "rewrite_interface": {
+    "required_content_fields": [],
+    "immutable_relations": [
+      "narrative.subject+event_sequence+conditions",
+      "narrative.attention_or_action_turn",
+      "narrative.reflection_scope+uncertainty",
+      "evidence.ownership"
+    ],
+    "observations_selectable": false,
+    "prohibited_audience_meta_phrases": ["原稿里", "原文里", "文案里", "飞书里", "资料里", "材料中", "根据你提供的", "下面这版"]
+  },
+  "generation_interface": {
+    "forward_test_required_before_approval": true,
+    "selector_abstention_required": true,
+    "fact_lock_source": "external_content_contract_and_output_audit",
+    "conflict_policy": "fail_closed",
+    "control_precedence": [
+      "boundaries_and_content_locks",
+      "selector_abstention",
+      "avoid_patterns",
+      "framework",
+      "communication_persona_and_content_strategy",
+      "attention_rhythm",
+      "patterns"
+    ],
+    "required_checks": [
+      "selector_resolution_bound",
+      "content_lock_audit_matches",
+      "output_artifact_bound",
+      "pattern_span_audit_passed",
+      "avoidance_span_audit_passed",
+      "audience_meta_absent",
+      "reference_leakage_scan_passed",
+      "no_new_facts_human_confirmed",
+      "no_style_source_facts_human_confirmed",
+      "human_style_similarity_accepted",
+      "overfit_absent_human_confirmed"
+    ]
+  },
+  "limitations": [
+    "样本只有 3 个独立单元，且题材均为日常关系性叙事；候选规则不能外推为稳定、跨题材的 IP DNA。",
+    "没有留出独立样本：3 个单元均用于候选规则融合，不能宣称已完成留出验证。",
+    "第三单元被样本健康检查标为偏短；不得单独支撑候选规则。",
+    "源文件是书面文本，未提供音视频或可靠逐字转录；真实语速、停顿、重音与口播表演均保持未知。",
+    "尚未取得人工对候选内容类型、两节拍框架、样本取舍与来源边界的确认；档案不可选用，严禁批准。"
+  ]
+}

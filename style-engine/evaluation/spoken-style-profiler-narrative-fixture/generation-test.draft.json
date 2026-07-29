@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.1-draft",
+  "test_id": "narrative-fixture-v1-draft-generation-suite",
+  "profile_id": "narrative-fixture-spoken-ip-v1",
+  "profile_schema_version": "1.1-draft",
+  "candidate_profile_sha256": "sha256:2c85f8d10aef5db5cce04ae0c8c8e0cbf63ffac7a196fce271ac4741f078d6be",
+  "mode": "evaluation_only",
+  "state": "draft",
+  "cases": [
+    {
+      "case_id": "narrative-positive-convenience",
+      "case_type": "positive",
+      "target_framework_id": "scene-to-reflection-two-beat",
+      "fallback_beat_ids": [],
+      "expected_selection": {
+        "abstained": false,
+        "content_type_id": "everyday-reflective-narrative",
+        "framework_id": "scene-to-reflection-two-beat"
+      },
+      "applied_controls": {
+        "persona_rule_ids": ["persona-participant-observer", "persona-bounded-reflector"],
+        "strategy_rule_ids": ["strategy-scene-turn-bounded-reflection"],
+        "attention_stage_ids": ["attention-concrete-entry", "attention-small-turn", "attention-bounded-close"]
+      },
+      "artifacts": {
+        "input_path": "generation-cases/positive-convenience/input.md",
+        "input_sha256": "sha256:e5ff84b58ce907aa71e2e5e9f08ef234d80b0389f1216362bbb65993252afe91",
+        "content_contract_path": "generation-cases/positive-convenience/content-contract.json",
+        "content_contract_sha256": "sha256:54ea76a1a2245b77aae6d562f67b857212bd4dec75310becd41b9be266c5e104",
+        "output_path": "generation-cases/positive-convenience/output.md",
+        "output_sha256": "sha256:ca84c1a6541ba0956bfa219aa0f0fc2bbf7cbd961733893930d45d1a239e2b3a",
+        "output_audit_path": "generation-cases/positive-convenience/output-audit.draft.json",
+        "output_audit_sha256": "sha256:38a96b46e4c27ea86d67fca0c85d3f671c8ade884ed552dd6b477295cfc37520"
+      }
+    },
+    {
+      "case_id": "narrative-fallback-no-reflection",
+      "case_type": "fallback",
+      "target_framework_id": "scene-to-reflection-two-beat",
+      "fallback_beat_ids": ["b02"],
+      "expected_selection": {
+        "abstained": false,
+        "content_type_id": "everyday-reflective-narrative",
+        "framework_id": "scene-to-reflection-two-beat"
+      },
+      "applied_controls": {
+        "persona_rule_ids": ["persona-participant-observer"],
+        "strategy_rule_ids": ["strategy-scene-turn-bounded-reflection"],
+        "attention_stage_ids": ["attention-concrete-entry", "attention-small-turn"]
+      },
+      "artifacts": {
+        "input_path": "generation-cases/fallback-no-reflection/input.md",
+        "input_sha256": "sha256:8282d13e34a6fd76e2f030c4abbaeec260cc46cc3431b10c99d19886e481a1ba",
+        "content_contract_path": "generation-cases/fallback-no-reflection/content-contract.json",
+        "content_contract_sha256": "sha256:68ecec90d3bab90fcf7b9b78d8e6674660f23af337753a2575dc3a29efc4aeb6",
+        "output_path": "generation-cases/fallback-no-reflection/output.md",
+        "output_sha256": "sha256:986abcb083dd728149b588fd2a9b39330010cb555060c74b652aee6f40e63769",
+        "output_audit_path": "generation-cases/fallback-no-reflection/output-audit.draft.json",
+        "output_audit_sha256": "sha256:3c33d2ef1af77b8d27285ccc4b2cf09c87ed3a6f367c6ed3259bf9e51cabef77"
+      }
+    },
+    {
+      "case_id": "narrative-excluded-tutorial",
+      "case_type": "excluded",
+      "target_framework_id": "scene-to-reflection-two-beat",
+      "fallback_beat_ids": [],
+      "expected_selection": {
+        "abstained": true,
+        "content_type_id": null,
+        "framework_id": null
+      },
+      "applied_controls": {
+        "persona_rule_ids": [],
+        "strategy_rule_ids": [],
+        "attention_stage_ids": []
+      },
+      "artifacts": {
+        "input_path": "generation-cases/excluded-tutorial/input.md",
+        "input_sha256": "sha256:10e84d78ccc9b0a59fe7301e0f0062e5ccc78b0a7408f39dbb6aa5f9e8400256",
+        "content_contract_path": "generation-cases/excluded-tutorial/content-contract.json",
+        "content_contract_sha256": "sha256:b2055e1633144f4f801a3aac5158bc338b33f15693fdc811b6decd6af3a73156",
+        "output_path": null,
+        "output_sha256": null,
+        "output_audit_path": null,
+        "output_audit_sha256": null
+      }
+    }
+  ],
+  "human_review": {
+    "state": "pending",
+    "reviewer_type": null,
+    "reviewer": null,
+    "reviewed_at": null,
+    "case_reviews": [],
+    "notes": ["Draft suite only; no human reviewer or approval exists."]
+  },
+  "limitations": [
+    "这是 evaluation_only/draft suite；候选控制仍需人工批准，不能用于正式仿写。",
+    "output audit 中的空 findings 只记录未发现的草稿检查项，不构成真人风格、事实或过拟合确认。",
+    "excluded tutorial 与钱十七 abstain case 均不产生观众稿。"
+  ]
+}

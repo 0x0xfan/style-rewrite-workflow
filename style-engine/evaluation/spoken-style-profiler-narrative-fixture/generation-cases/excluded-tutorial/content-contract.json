@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "contract_id": "narrative-excluded-tutorial-contract-v1",
+  "case_id": "narrative-excluded-tutorial",
+  "input_sha256": "sha256:10e84d78ccc9b0a59fe7301e0f0062e5ccc78b0a7408f39dbb6aa5f9e8400256",
+  "content": {
+    "primary_value": "instructional_steps",
+    "steps": ["登记信息", "核对状态", "提交结果"]
+  },
+  "immutable_values": []
+}

@@ -1,0 +1,602 @@
+{
+  "schema_version": "1.1-draft",
+  "profile_id": "qian17-spoken-draft-v1",
+  "display_name": "钱十七口播 Style DNA（待审）",
+  "domain": "zh-short-video-spoken",
+  "status": "draft",
+  "approval": {
+    "state": "draft",
+    "requires_human_approval": true,
+    "approved_by": null,
+    "approved_at": null,
+    "change_reason": null,
+    "record_id": null,
+    "generation_test_id": null,
+    "candidate_profile_sha256": null,
+    "approved_control_state_sha256": null,
+    "evidence_bundle_sha256": null,
+    "generation_test_sha256": null,
+    "generation_output_set_sha256": null
+  },
+  "corpus": {
+    "corpus_id": "qian17-spoken-v1",
+    "raw_unit_count": 8,
+    "independent_cluster_count": 7,
+    "included_unit_ids": [
+      "qian17-spoken-v1:u01", "qian17-spoken-v1:u02", "qian17-spoken-v1:u03", "qian17-spoken-v1:u04",
+      "qian17-spoken-v1:u05", "qian17-spoken-v1:u06", "qian17-spoken-v1:u07", "qian17-spoken-v1:u08"
+    ],
+    "excluded_unit_ids": [],
+    "independence_clusters": [
+      { "id": "independent:qian17-spoken-v1:u01", "unit_ids": ["qian17-spoken-v1:u01"] },
+      { "id": "independent:qian17-spoken-v1:u02", "unit_ids": ["qian17-spoken-v1:u02"] },
+      { "id": "variant:duplicate-candidate-01", "unit_ids": ["qian17-spoken-v1:u03", "qian17-spoken-v1:u07"] },
+      { "id": "independent:qian17-spoken-v1:u04", "unit_ids": ["qian17-spoken-v1:u04"] },
+      { "id": "independent:qian17-spoken-v1:u05", "unit_ids": ["qian17-spoken-v1:u05"] },
+      { "id": "independent:qian17-spoken-v1:u06", "unit_ids": ["qian17-spoken-v1:u06"] },
+      { "id": "independent:qian17-spoken-v1:u08", "unit_ids": ["qian17-spoken-v1:u08"] }
+    ],
+    "unresolved_decisions": [
+      "所有控制项都等待用户在通俗审阅清单中选择保留、修改或删除；在此之前不得进入仿写选择器。",
+      "u05 与 u03/u07 的共享模板片段已隔离；是否把其独有区域纳入最终档案仍随整份 profile 一并人工确认。",
+      "u01/u02 的教学骨架与互动 CTA 外壳存在同系列混淆，不能按两个独立样本直接升级。"
+    ]
+  },
+  "selector_signals": [
+    { "id": "content.primary_foundational_tutorial", "source_path": "primary_value", "operator": "equals", "value": "foundational_tutorial", "description": "主要价值是建立基础概念和第一步动作" },
+    { "id": "content.primary_selection_formula", "source_path": "primary_value", "operator": "equals", "value": "selection_formula", "description": "主要价值是筛选、判断、避坑或公式" },
+    { "id": "content.structure_exclude_then_recommend", "source_path": "structure_preference", "operator": "equals", "value": "exclude_then_recommend", "description": "先给不建议清单，再进入推荐方法" },
+    { "id": "content.structure_formula_then_test", "source_path": "structure_preference", "operator": "equals", "value": "formula_then_test", "description": "先给判断公式，再用工具、风险和例子检验" },
+    { "id": "content.primary_project_breakdown", "source_path": "primary_value", "operator": "equals", "value": "project_breakdown", "description": "主要价值是拆解一个项目的完整路径" },
+    { "id": "content.primary_case_service", "source_path": "primary_value", "operator": "equals", "value": "case_led_service", "description": "主要价值是由案例进入服务设计和交付" },
+    { "id": "content.primary_resource_directory", "source_path": "primary_value", "operator": "equals", "value": "resource_directory", "description": "主要价值是组织一批资源、工具或渠道" },
+    { "id": "content.is_personal_story", "source_path": "primary_value", "operator": "equals", "value": "personal_story", "description": "主要价值是个人故事而非实操教学" },
+    { "id": "content.has_claims", "source_path": "claims", "operator": "nonempty_array", "description": "目标内容含至少一个主张" },
+    { "id": "content.has_steps", "source_path": "steps", "operator": "nonempty_array", "description": "目标内容含至少一个步骤" },
+    { "id": "content.has_data", "source_path": "data", "operator": "nonempty_array", "description": "目标内容含带主体和条件的数据" },
+    { "id": "content.missing_data", "source_path": "data", "operator": "empty_array", "description": "目标内容没有可用数据" },
+    { "id": "content.has_evidence", "source_path": "evidence", "operator": "nonempty_array", "description": "目标内容含可绑定主张的证据" },
+    { "id": "content.has_risks", "source_path": "risks", "operator": "nonempty_array", "description": "目标内容含真实风险或限制" },
+    { "id": "content.has_comparison_criteria", "source_path": "comparison_criteria", "operator": "nonempty_array", "description": "目标内容含可核验的比较标准" },
+    { "id": "content.has_case_evidence", "source_path": "case_evidence", "operator": "nonempty_array", "description": "目标内容含可公开的案例证据" },
+    { "id": "content.has_resource_list", "source_path": "resource_list", "operator": "nonempty_array", "description": "目标内容含已核验的资源清单" },
+    { "id": "content.has_engagement_cta", "source_path": "cta.engagement", "operator": "exists", "description": "目标内容含互动动作" },
+    { "id": "content.has_final_cta", "source_path": "cta", "operator": "exists", "description": "目标内容含已锁定的最终 CTA" },
+    { "id": "content.missing_final_cta", "source_path": "cta", "operator": "missing", "description": "目标内容没有最终 CTA" },
+    { "id": "content.has_series_continuation", "source_path": "continuation", "operator": "exists", "description": "目标内容含已确定的后续内容承接" },
+    { "id": "content.missing_series_continuation", "source_path": "continuation", "operator": "missing", "description": "目标内容没有后续内容承接" }
+  ],
+  "communication_persona": [
+    {
+      "id": "cp-direct-practical-decomposer", "dimension": "speaker_position", "name": "直接把项目讲清楚的实操型讲解者（减法校准观察）", "status": "observation", "availability": "review_only",
+      "definition": "说话者优先把具体项目、结果和执行路径讲清楚，不持续叙述自己如何研究、发现或分析这个项目。",
+      "generation_instruction": "直接从目标项目、结果、问题或判断进入，再说明为什么值得看和接下来拆哪几部分；除非目标内容确有必要，不生成‘我拆了一遍、我发现、我继续看’等研究过程。",
+      "applicability": "目标内容确有可执行步骤、判断维度或清单时。", "non_applicability": "纯故事、单点观点或没有行动路径时。",
+      "evidence": [
+        { "unit_id": "qian17-spoken-v1:u01", "independence_cluster_id": "independent:qian17-spoken-v1:u01", "anchor_id": "qian17-spoken-v1:u01:p08", "position": 0.32, "function": "preview" },
+        { "unit_id": "qian17-spoken-v1:u03", "independence_cluster_id": "variant:duplicate-candidate-01", "anchor_id": "qian17-spoken-v1:u03:p06", "position": 0.2, "function": "preview" },
+        { "unit_id": "qian17-spoken-v1:u04", "independence_cluster_id": "independent:qian17-spoken-v1:u04", "anchor_id": "qian17-spoken-v1:u04:m04", "position": 0.11, "function": "preview" },
+        { "unit_id": "qian17-spoken-v1:u06", "independence_cluster_id": "independent:qian17-spoken-v1:u06", "anchor_id": "qian17-spoken-v1:u06:m03", "position": 0.15, "function": "method" }
+      ],
+      "risk": "这是文本中的讲解姿态，不证明作者现实专业能力；也不能把直接讲解误写成没有判断和收益逻辑的说明书。"
+    },
+    {
+      "id": "cp-novice-side-guide", "dimension": "audience_relationship", "name": "站在新手一边预判卡点（观察）", "status": "observation", "availability": "review_only",
+      "definition": "持续把受众设定为想行动但害怕复杂、不会判断或容易踩坑的人，并提前替受众提出疑问。",
+      "generation_instruction": "只针对目标受众真实存在的卡点提出一个具体疑问，随后用目标内容已有机制和动作回答。",
+      "applicability": "受众是初学者且输入明确提供其障碍时。", "non_applicability": "专业受众、没有已知障碍或不适合指导口吻时。",
+      "evidence": [
+        { "unit_id": "qian17-spoken-v1:u01", "independence_cluster_id": "independent:qian17-spoken-v1:u01", "anchor_id": "qian17-spoken-v1:u01:p01", "position": 0.04, "function": "hook" },
+        { "unit_id": "qian17-spoken-v1:u03", "independence_cluster_id": "variant:duplicate-candidate-01", "anchor_id": "qian17-spoken-v1:u03:p09", "position": 0.62, "function": "method" }
+      ],
+      "risk": "不得凭空替受众制造焦虑，也不能把假设的疑问写成真实用户调研。"
+    },
+    {
+      "id": "cp-operational-authority", "dimension": "authority_source", "name": "用案例、测试和整理结果建立权威（观察）", "status": "observation", "availability": "review_only",
+      "definition": "文本常把经验、案例、可见数据或整理过程放在方法附近，作为值得继续听的理由。",
+      "generation_instruction": "只使用目标内容中已明确归属的案例、测试或证据；把它放在对应主张附近，并保留主体和条件。",
+      "applicability": "输入存在可核验且允许公开的证据时。", "non_applicability": "只有观点、传闻或无法确认归属的数字时。",
+      "evidence": [
+        { "unit_id": "qian17-spoken-v1:u01", "independence_cluster_id": "independent:qian17-spoken-v1:u01", "anchor_id": "qian17-spoken-v1:u01:p17", "position": 0.82, "function": "credibility" },
+        { "unit_id": "qian17-spoken-v1:u02", "independence_cluster_id": "independent:qian17-spoken-v1:u02", "anchor_id": "qian17-spoken-v1:u02:p02", "position": 0.06, "function": "proof" },
+        { "unit_id": "qian17-spoken-v1:u03", "independence_cluster_id": "variant:duplicate-candidate-01", "anchor_id": "qian17-spoken-v1:u03:p05", "position": 0.16, "function": "proof" },
+        { "unit_id": "qian17-spoken-v1:u04", "independence_cluster_id": "independent:qian17-spoken-v1:u04", "anchor_id": "qian17-spoken-v1:u04:m03", "position": 0.07, "function": "proof" }
+      ],
+      "risk": "样本中的案例与数字没有在本 Skill 中核验；只能学习证据位置，不能迁移来源事实。"
+    },
+    {
+      "id": "cp-high-certainty-judgment", "dimension": "certainty_policy", "name": "强判断、强指令，但需要证据收口（观察）", "status": "observation", "availability": "review_only",
+      "definition": "文本经常快速下判断、使用直接命令或强调词，再用理由、步骤或风险解释。",
+      "generation_instruction": "只有目标内容提供明确证据和适用条件时才使用强判断；否则降级为条件化建议。",
+      "applicability": "判断标准和风险条件均已锁定时。", "non_applicability": "医疗、法律、金融、平台规则或收益结论缺少可靠证据时。",
+      "evidence": [
+        { "unit_id": "qian17-spoken-v1:u02", "independence_cluster_id": "independent:qian17-spoken-v1:u02", "anchor_id": "qian17-spoken-v1:u02:p04", "position": 0.14, "function": "warning" },
+        { "unit_id": "qian17-spoken-v1:u03", "independence_cluster_id": "variant:duplicate-candidate-01", "anchor_id": "qian17-spoken-v1:u03:p06", "position": 0.2, "function": "preview" }
+      ],
+      "risk": "最容易把风格强度误写成事实确定性；下游必须让事实锁和风险边界优先。"
+    }
+  ],
+  "content_strategy": [
+    {
+      "id": "cs-risk-before-recommendation", "category": "evidence_policy", "name": "必要风险只在关键动作旁短提（用户修正观察）", "status": "observation", "availability": "review_only",
+      "definition": "正文以收益、机制和步骤为主；只有会改变能否执行的必要风险，才在对应动作旁用一句短提醒带过。",
+      "generation_instruction": "风险信息主要留在后台审计。口播只保留版权、隐私、违法、资金损失或会直接导致步骤失效的必要红线，整篇最多形成一个显式风险块；其余条件自然并入动作句，不反复免责声明。",
+      "applicability": "目标内容含会改变能否执行的必要红线。", "non_applicability": "一般不确定性、证据介质说明、收益数据归属提示或与当前动作无关的风险。",
+      "evidence": [
+        { "unit_id": "qian17-spoken-v1:u01", "independence_cluster_id": "independent:qian17-spoken-v1:u01", "anchor_id": "qian17-spoken-v1:u01:p10", "position": 0.49, "function": "warning" },
+        { "unit_id": "qian17-spoken-v1:u02", "independence_cluster_id": "independent:qian17-spoken-v1:u02", "anchor_id": "qian17-spoken-v1:u02:p04", "position": 0.14, "function": "warning" },
+        { "unit_id": "qian17-spoken-v1:u04", "independence_cluster_id": "independent:qian17-spoken-v1:u04", "anchor_id": "qian17-spoken-v1:u04:m08", "position": 0.45, "function": "warning" },
+        { "unit_id": "qian17-spoken-v1:u06", "independence_cluster_id": "independent:qian17-spoken-v1:u06", "anchor_id": "qian17-spoken-v1:u06:m06", "position": 0.48, "function": "warning" }
+      ],
+      "risk": "来源中的风险结论未被本项目核验，只能迁移位置和条件化表达方式。"
+    }
+  ],
+  "content_types": [
+    {
+      "id": "ct-foundational-tutorial", "name": "新手基础与第一步教学（观察）", "status": "observation", "availability": "review_only",
+      "definition": "先解释底层概念，再拆成少量基础维度和第一步动作的系列教程。",
+      "generation_goal": "把目标内容已有的基础概念、机制和第一步动作组织成新手可理解的教学。",
+      "selector": { "requires_all": ["content.primary_foundational_tutorial", "content.has_steps"], "prefers_any": ["content.has_risks", "content.has_series_continuation"], "excludes_any": ["content.is_personal_story"], "abstain_when": ["基础概念或第一步动作无法锁定"], "priority": 80 },
+      "evidence": [{ "unit_id": "qian17-spoken-v1:u01", "independence_cluster_id": "independent:qian17-spoken-v1:u01", "anchor_id": "qian17-spoken-v1:u01:p03", "position": 0.18, "function": "explanation" }]
+    },
+    {
+      "id": "ct-screening-formula-tutorial", "name": "筛选、避坑与判断公式（观察）", "status": "observation", "availability": "review_only",
+      "definition": "先指出常见错误或风险，再给判断标准、工具、例子和执行计划。",
+      "generation_goal": "把目标内容已有的排除项、判断标准和执行动作组织成可核验的筛选教程。",
+      "selector": { "requires_all": ["content.primary_selection_formula", "content.has_comparison_criteria"], "prefers_any": ["content.has_risks", "content.has_steps", "content.has_data"], "excludes_any": ["content.is_personal_story"], "abstain_when": ["比较标准或风险依据无法锁定"], "priority": 80 },
+      "evidence": [
+        { "unit_id": "qian17-spoken-v1:u02", "independence_cluster_id": "independent:qian17-spoken-v1:u02", "anchor_id": "qian17-spoken-v1:u02:p04", "position": 0.14, "function": "warning" },
+        { "unit_id": "qian17-spoken-v1:u06", "independence_cluster_id": "independent:qian17-spoken-v1:u06", "anchor_id": "qian17-spoken-v1:u06:m03", "position": 0.15, "function": "method" }
+      ]
+    },
+    {
+      "id": "ct-low-barrier-project-breakdown", "name": "低门槛项目完整路径拆解（模板族观察）", "status": "observation", "availability": "review_only",
+      "definition": "用低门槛价值切入，再按资源、准备、发布或触达、交付和放大拆解完整路径；u03/u05 共享模板段不计双重支持。",
+      "generation_goal": "只使用目标项目自己的需求、资源、操作、交付和数据，先用具体项目或结果进入，再把学会后的生活变化、能力变化、当天可执行动作或效率收益说成观众能感到的场景；长稿在三到五个主要章节前分别预演一种真实价值，再进入准备、上架、交付和收益等环节。场景只能来自目标内容已锁定的事实，不能复用来源比喻或补造数字。必要风险最多短提一次。",
+      "selector": { "requires_all": ["content.primary_project_breakdown", "content.has_steps"], "prefers_any": ["content.has_evidence", "content.has_risks", "content.has_data"], "excludes_any": ["content.is_personal_story"], "abstain_when": ["项目事实、资源授权、交付能力或风险边界不完整"], "priority": 80 },
+      "evidence": [
+        { "unit_id": "qian17-spoken-v1:u03", "independence_cluster_id": "variant:duplicate-candidate-01", "anchor_id": "qian17-spoken-v1:u03:p06", "position": 0.2, "function": "preview" },
+        { "unit_id": "qian17-spoken-v1:u05", "independence_cluster_id": "independent:qian17-spoken-v1:u05", "anchor_id": "qian17-spoken-v1:u05:m06", "position": 0.34, "function": "method" }
+      ]
+    },
+    {
+      "id": "ct-case-led-service-breakdown", "name": "案例驱动的服务模型拆解（观察）", "status": "observation", "availability": "review_only",
+      "definition": "由一个案例进入能力门槛、服务内容、套餐、交付、获客和扩展边界。",
+      "generation_goal": "把目标内容自己的案例与服务设计关系拆清，并显式保留专业和合规边界。",
+      "selector": { "requires_all": ["content.primary_case_service", "content.has_case_evidence", "content.has_steps"], "prefers_any": ["content.has_risks", "content.has_data"], "excludes_any": ["content.is_personal_story"], "abstain_when": ["案例真实性、服务边界或专业风险不清楚"], "priority": 80 },
+      "evidence": [{ "unit_id": "qian17-spoken-v1:u04", "independence_cluster_id": "independent:qian17-spoken-v1:u04", "anchor_id": "qian17-spoken-v1:u04:m04", "position": 0.11, "function": "preview" }]
+    },
+    {
+      "id": "ct-resource-directory", "name": "高密度资源目录（观察）", "status": "observation", "availability": "review_only",
+      "definition": "先说明清单价值和筛选标准，再连续列出资源的类别、用途与限制，最后承接延伸问题。",
+      "generation_goal": "把目标内容已核验且获准分享的资源整理成可扫描、可执行、带限制的目录。",
+      "selector": { "requires_all": ["content.primary_resource_directory", "content.has_resource_list"], "prefers_any": ["content.has_risks", "content.has_final_cta"], "excludes_any": ["content.is_personal_story"], "abstain_when": ["资源真实性、授权或适用限制无法锁定"], "priority": 80 },
+      "evidence": [{ "unit_id": "qian17-spoken-v1:u08", "independence_cluster_id": "independent:qian17-spoken-v1:u08", "anchor_id": "qian17-spoken-v1:u08:m04", "position": 0.45, "function": "method" }]
+    }
+  ],
+  "frameworks": [
+    {
+      "id": "fw-foundational-tutorial", "name": "新手卡点—机制翻译—基础维度—逐项动作—系列承接（观察）", "content_type_id": "ct-foundational-tutorial", "status": "observation", "availability": "review_only",
+      "when_to_use": "目标内容需要先建立基础概念，再教第一步。", "do_not_use": "受众已掌握基础、只要快速答案，或没有可验证机制时。",
+      "selector": { "requires_all": ["content.primary_foundational_tutorial", "content.has_steps"], "prefers_any": ["content.has_risks", "content.has_series_continuation"], "excludes_any": ["content.is_personal_story"], "abstain_when": ["机制或步骤无法锁定"], "priority": 80 },
+      "beats": [
+        { "id": "b01", "role": "hook", "required": true, "purpose": "指出新手已知机会但不知道第一步的卡点。", "input_slots": ["audience.pain", "content.core_claim"], "transformation_rule": "只使用目标受众已知卡点。", "generation_instruction": "用一个具体卡点建立第一句，不新增结果。", "audience_effect": "establish_relevance", "preserve": ["audience.pain", "claim.conditions"], "fallback": "没有明确卡点时直接说明本次基础主题。" },
+        { "id": "b02", "role": "preview", "required": true, "purpose": "说明系列地图和本次范围。", "input_slots": ["content.scope", "content.continuation"], "transformation_rule": "范围和后续安排均来自目标内容。", "generation_instruction": "先报真实覆盖范围；没有系列安排时只说本次范围。", "audience_effect": "set_expectation", "preserve": ["scope.items", "continuation.subject"], "fallback": "省略系列地图。" },
+        { "id": "b03", "role": "explanation", "required": true, "purpose": "用熟悉机制解释抽象概念。", "input_slots": ["claims", "reasons", "examples"], "transformation_rule": "类比只能解释目标机制，不能引入新事实。", "generation_instruction": "先说机制，再选择一个不改变关系的熟悉类比。", "audience_effect": "increase_clarity", "preserve": ["claim.meaning", "reason.causality"], "fallback": "没有安全类比时直接解释机制。" },
+        { "id": "b04", "role": "method", "required": true, "purpose": "压缩成少量基础维度并逐项给动作。", "input_slots": ["steps", "risks", "evidence"], "transformation_rule": "保持步骤意义、顺序和风险条件。", "generation_instruction": "按目标步骤编号，每点紧跟理由或限制。", "audience_effect": "increase_clarity", "preserve": ["step.meaning", "step.order", "risk.conditions"], "fallback": "只有一项时不用凑编号。" },
+        { "id": "b05", "role": "cta", "required": false, "purpose": "用目标内容已有 CTA 或后续主题收束。", "input_slots": ["cta", "content.continuation"], "transformation_rule": "不迁移来源账号和资源。", "generation_instruction": "只保留输入已有动作；没有时中性总结。", "audience_effect": "prompt_action", "preserve": ["cta.channel+keyword", "continuation.subject"], "fallback": "用一句基础结论结束。" }
+      ],
+      "evidence_paths": [{ "unit_id": "qian17-spoken-v1:u01", "independence_cluster_id": "independent:qian17-spoken-v1:u01", "beats": [
+        { "beat_id": "b01", "anchor_id": "qian17-spoken-v1:u01:p01", "ordinal": 1 }, { "beat_id": "b02", "anchor_id": "qian17-spoken-v1:u01:p02", "ordinal": 2 }, { "beat_id": "b03", "anchor_id": "qian17-spoken-v1:u01:p03", "ordinal": 3 }, { "beat_id": "b04", "anchor_id": "qian17-spoken-v1:u01:p09", "ordinal": 4 }, { "beat_id": "b05", "anchor_id": "qian17-spoken-v1:u01:p19", "ordinal": 5 }
+      ] }]
+    },
+    {
+      "id": "fw-exclude-then-recommend", "name": "结果价值—先排除—转入推荐清单—互动与收束（观察）", "content_type_id": "ct-screening-formula-tutorial", "status": "observation", "availability": "review_only",
+      "when_to_use": "目标内容天然分成不建议项与推荐方法两组。", "do_not_use": "排除项没有风险依据，或内容更适合先给判断公式时。",
+      "selector": { "requires_all": ["content.primary_selection_formula", "content.structure_exclude_then_recommend", "content.has_comparison_criteria"], "prefers_any": ["content.has_risks", "content.has_steps", "content.has_final_cta"], "excludes_any": ["content.is_personal_story"], "abstain_when": ["排除和推荐边界不清"], "priority": 82 },
+      "beats": [
+        { "id": "b01", "role": "hook", "required": true, "purpose": "用结果变化或选错的代价建立主题。", "input_slots": ["content.core_claim", "audience.pain", "data"], "transformation_rule": "结果必须来自目标证据。", "generation_instruction": "优先选择一个可证实的变化或判断难点开场。", "audience_effect": "establish_relevance", "preserve": ["data.value+unit+subject+time_window+conditions", "claim.conditions"], "fallback": "无数据时只说选择难点。" },
+        { "id": "b02", "role": "proof", "required": false, "purpose": "用目标案例说明选项变化的价值。", "input_slots": ["case_evidence", "data"], "transformation_rule": "案例只支持其绑定主张。", "generation_instruction": "把目标案例放在开头价值附近；没有就省略。", "audience_effect": "support_trust", "preserve": ["evidence.ownership", "data.value+unit+subject+time_window+conditions"], "fallback": "省略证据段并降低主张强度。" },
+        { "id": "b03", "role": "warning", "required": true, "purpose": "先列不建议项并给原因。", "input_slots": ["risks", "comparison_criteria"], "transformation_rule": "不改变风险条件和后果。", "generation_instruction": "按目标内容逐项列出排除项和理由。", "audience_effect": "reduce_uncertainty", "preserve": ["risk.conditions", "risk.consequences", "criteria.meaning"], "fallback": "没有排除项时不使用本框架。" },
+        { "id": "b04", "role": "continuation", "required": true, "purpose": "明确从排除段切换到推荐段。", "input_slots": ["content.scope"], "transformation_rule": "只说明目标内容接下来真实覆盖的范围。", "generation_instruction": "用一句转场说明接下来给几种方法或选择。", "audience_effect": "set_expectation", "preserve": ["scope.items"], "fallback": "没有第二部分时不使用本框架。" },
+        { "id": "b05", "role": "method", "required": true, "purpose": "按编号给推荐方法、工具或例子。", "input_slots": ["steps", "comparison_criteria", "evidence"], "transformation_rule": "每个推荐项必须对应目标标准。", "generation_instruction": "逐项说明选什么、为什么和怎么验证。", "audience_effect": "increase_clarity", "preserve": ["step.meaning", "criteria.meaning", "evidence.ownership"], "fallback": "缺少可验证方法时 abstain。" },
+        { "id": "b06", "role": "cta", "required": false, "purpose": "使用目标互动、资源或后续主题结束。", "input_slots": ["cta", "content.continuation"], "transformation_rule": "不迁移来源 CTA。", "generation_instruction": "只保留目标输入已有动作。", "audience_effect": "prompt_action", "preserve": ["cta.channel+keyword", "continuation.subject"], "fallback": "用筛选原则中性总结。" }
+      ],
+      "evidence_paths": [{ "unit_id": "qian17-spoken-v1:u02", "independence_cluster_id": "independent:qian17-spoken-v1:u02", "beats": [
+        { "beat_id": "b01", "anchor_id": "qian17-spoken-v1:u02:p01", "ordinal": 1 }, { "beat_id": "b02", "anchor_id": "qian17-spoken-v1:u02:p02", "ordinal": 2 }, { "beat_id": "b03", "anchor_id": "qian17-spoken-v1:u02:p04", "ordinal": 3 }, { "beat_id": "b04", "anchor_id": "qian17-spoken-v1:u02:p11", "ordinal": 4 }, { "beat_id": "b05", "anchor_id": "qian17-spoken-v1:u02:p17", "ordinal": 5 }, { "beat_id": "b06", "anchor_id": "qian17-spoken-v1:u02:p20", "ordinal": 6 }
+      ] }]
+    },
+    {
+      "id": "fw-formula-then-test", "name": "失败痛点—反常识公式—工具验证—避坑—例子—执行闭环（观察）", "content_type_id": "ct-screening-formula-tutorial", "status": "observation", "availability": "review_only",
+      "when_to_use": "目标内容有一组明确判断公式，并能用工具、风险和例子验证。", "do_not_use": "公式只是口号，或没有工具、例子和风险依据时。",
+      "selector": { "requires_all": ["content.primary_selection_formula", "content.structure_formula_then_test", "content.has_comparison_criteria"], "prefers_any": ["content.has_risks", "content.has_steps", "content.has_data"], "excludes_any": ["content.is_personal_story"], "abstain_when": ["公式条件或验证方法不清"], "priority": 82 },
+      "beats": [
+        { "id": "b01", "role": "hook", "required": true, "purpose": "指出常见做法为何没有结果。", "input_slots": ["audience.failed_actions", "content.core_claim"], "transformation_rule": "失败原因必须来自目标内容。", "generation_instruction": "用目标受众真实失败路径开场。", "audience_effect": "establish_relevance", "preserve": ["claim.conditions"], "fallback": "直接提出判断难点。" },
+        { "id": "b02", "role": "stance", "required": true, "purpose": "用反转判断提出真正关键。", "input_slots": ["claims", "reasons"], "transformation_rule": "不新增因果。", "generation_instruction": "先纠正一个已知误解，再给目标内容的真实原因。", "audience_effect": "create_curiosity", "preserve": ["claim.meaning", "reason.causality"], "fallback": "没有可靠反转时直接进入公式。" },
+        { "id": "b03", "role": "method", "required": true, "purpose": "把判断压成二到四项公式。", "input_slots": ["comparison_criteria"], "transformation_rule": "保留全部必要条件。", "generation_instruction": "把目标标准压缩成短公式并逐项解释。", "audience_effect": "increase_clarity", "preserve": ["criteria.meaning", "criteria.conditions"], "fallback": "公式会丢条件时逐条说明。" },
+        { "id": "b04", "role": "method", "required": true, "purpose": "用工具和数据示范如何检验。", "input_slots": ["steps", "data", "evidence"], "transformation_rule": "工具只验证对应标准。", "generation_instruction": "每个工具明确检查哪一项标准。", "audience_effect": "increase_clarity", "preserve": ["step.meaning", "data.value+unit+subject+time_window+conditions", "evidence.ownership"], "fallback": "没有工具时给检查问题。" },
+        { "id": "b05", "role": "warning", "required": true, "purpose": "在示范后指出看似符合但实际危险的陷阱。", "input_slots": ["risks", "comparison_criteria"], "transformation_rule": "保持风险条件和退出规则。", "generation_instruction": "列出目标内容已有陷阱和停止条件。", "audience_effect": "reduce_uncertainty", "preserve": ["risk.conditions", "risk.consequences", "criteria.meaning"], "fallback": "没有风险依据时省略。" },
+        { "id": "b06", "role": "method", "required": true, "purpose": "给若干例子映射公式。", "input_slots": ["examples", "comparison_criteria"], "transformation_rule": "例子只示范公式。", "generation_instruction": "每个例子说明它满足哪些条件。", "audience_effect": "increase_clarity", "preserve": ["criteria.meaning", "example.conditions"], "fallback": "没有例子时省略。" },
+        { "id": "b07", "role": "summary", "required": true, "purpose": "把方法收束成行动—检查—调整闭环。", "input_slots": ["steps", "risks"], "transformation_rule": "保持执行顺序和退出条件。", "generation_instruction": "按目标步骤给短周期执行闭环。", "audience_effect": "prompt_action", "preserve": ["step.order", "step.meaning", "risk.conditions"], "fallback": "用一条可执行建议结束。" }
+      ],
+      "evidence_paths": [{ "unit_id": "qian17-spoken-v1:u06", "independence_cluster_id": "independent:qian17-spoken-v1:u06", "beats": [
+        { "beat_id": "b01", "anchor_id": "qian17-spoken-v1:u06:m01", "ordinal": 1 }, { "beat_id": "b02", "anchor_id": "qian17-spoken-v1:u06:m02", "ordinal": 2 }, { "beat_id": "b03", "anchor_id": "qian17-spoken-v1:u06:m03", "ordinal": 3 }, { "beat_id": "b04", "anchor_id": "qian17-spoken-v1:u06:m04", "ordinal": 4 }, { "beat_id": "b05", "anchor_id": "qian17-spoken-v1:u06:m06", "ordinal": 5 }, { "beat_id": "b06", "anchor_id": "qian17-spoken-v1:u06:m07", "ordinal": 6 }, { "beat_id": "b07", "anchor_id": "qian17-spoken-v1:u06:m09", "ordinal": 7 }
+      ] }]
+    },
+    {
+      "id": "fw-low-barrier-project", "name": "案例对象—价值理由—路径拆解—收益机制—资源收束（案例拆解观察）", "content_type_id": "ct-low-barrier-project-breakdown", "status": "observation", "availability": "review_only",
+      "when_to_use": "目标项目的资源、操作、交付、证据和风险均完整。", "do_not_use": "项目事实、授权、交付能力或合规边界不清楚时。",
+      "selector": { "requires_all": ["content.primary_project_breakdown", "content.has_steps"], "prefers_any": ["content.has_evidence", "content.has_risks", "content.has_data"], "excludes_any": ["content.is_personal_story"], "abstain_when": ["项目路径或风险无法锁定"], "priority": 80 },
+      "beats": [
+        { "id": "b01", "role": "hook", "required": true, "purpose": "把一个具体案例或结果摆到台面上，让受众立刻知道在看什么。", "input_slots": ["content.core_claim", "data", "evidence"], "transformation_rule": "只使用目标内容已有项目、结果和证据，不叙述作者研究过程。", "generation_instruction": "第一句直接说目标项目或产品，第二句补一组最强且可证实的数据、结果或疑问；不使用‘我拆了一遍、我先发现、我继续看’来制造讲述过程。", "audience_effect": "establish_relevance", "preserve": ["claim.conditions", "evidence.ownership", "data.value+unit+subject+time_window+conditions"], "fallback": "无可靠数据时直接说项目和一个真实痛点。" },
+        { "id": "b02", "role": "explanation", "required": true, "purpose": "说明这个案例为什么值得往下拆，并自然带出下一环节。", "input_slots": ["claims", "reasons", "data", "evidence"], "transformation_rule": "价值理由必须来自目标内容，不能制造隐藏机会或编排式悬念。", "generation_instruction": "从真实需求、市场信号、效率或收益中选一个理由，说明它与当前案例下一步的关系后直接进入方法；不要说‘后面再讲’或解释留存安排。", "audience_effect": "increase_clarity", "preserve": ["claim.subject+scope+certainty", "reason.causality", "evidence.ownership", "data.value+unit+subject+time_window+conditions"], "fallback": "没有充分理由时只说明本次要拆的真实范围。" },
+        { "id": "b03", "role": "preview", "required": true, "purpose": "报出案例要经过的真实路径，而不是课程目录。", "input_slots": ["content.scope", "steps"], "transformation_rule": "范围和步骤顺序来自目标内容。", "generation_instruction": "用一句口语说清案例会经过的三到五个环节；可以用‘先看…再看…最后…’，不要让每个环节都套同样的编号开场。", "audience_effect": "set_expectation", "preserve": ["scope.items", "step.order"], "fallback": "只有一到两项时不用凑编号。" },
+        { "id": "b04", "role": "method", "required": true, "purpose": "边拆案例边给出关键判断、理由和具体动作。", "input_slots": ["comparison_criteria", "steps", "evidence", "risks"], "transformation_rule": "保持步骤意义、顺序、条件和必要边界。", "generation_instruction": "从当前案例已完成的动作自然引出下一环节的真实问题，再点明判断或理由并给动作；不要求每段都出现‘很多人以为/真正关键’，也不强制每段使用同一承接壳。", "audience_effect": "increase_clarity", "preserve": ["criteria.meaning", "criteria.conditions", "step.meaning", "step.order", "evidence.ownership", "risk.conditions"], "fallback": "没有判断依据时直接解释动作和用途。" },
+        { "id": "b05", "role": "method", "required": true, "purpose": "回到这个案例，把交付、效率或收益关系讲清并算清。", "input_slots": ["steps", "risks", "data", "claims"], "transformation_rule": "不能把工具、案例或规模写成保证，数字关系不得改变。", "generation_instruction": "从案例已经完成的交付动作进入收益计算，再给单笔关系或累计结果；条件只在对应事实旁自然出现，不提前设计悬念，也不强制升维成模型或认知升级。", "audience_effect": "reduce_uncertainty", "preserve": ["step.meaning", "risk.conditions", "claim.subject+scope+certainty", "data.value+unit+subject+time_window+conditions"], "fallback": "没有收益数据时总结真实的交付或执行价值。" },
+        { "id": "b06", "role": "cta", "required": false, "purpose": "用一句案例结论自然连接目标资源或行动。", "input_slots": ["claims", "cta", "content.continuation"], "transformation_rule": "不新增方法论，不迁移来源 CTA。", "generation_instruction": "先收住这个案例的关键路径或收益点，再只使用目标内容已有 CTA；没有 CTA 时直接结束。", "audience_effect": "prompt_action", "preserve": ["claim.subject+scope+certainty", "cta.channel+keyword", "continuation.subject"], "fallback": "用一句目标项目结论结束。" }
+      ],
+      "evidence_paths": [{ "unit_id": "qian17-spoken-v1:u03", "independence_cluster_id": "variant:duplicate-candidate-01", "beats": [
+        { "beat_id": "b01", "anchor_id": "qian17-spoken-v1:u03:p02", "ordinal": 1 }, { "beat_id": "b02", "anchor_id": "qian17-spoken-v1:u03:p05", "ordinal": 2 }, { "beat_id": "b03", "anchor_id": "qian17-spoken-v1:u03:p06", "ordinal": 3 }, { "beat_id": "b04", "anchor_id": "qian17-spoken-v1:u03:p07", "ordinal": 4 }, { "beat_id": "b05", "anchor_id": "qian17-spoken-v1:u03:p11", "ordinal": 5 }, { "beat_id": "b06", "anchor_id": "qian17-spoken-v1:u03:p12", "ordinal": 6 }
+      ] }]
+    },
+    {
+      "id": "fw-case-led-service", "name": "案例结果—门槛重定义—服务标准化—获客执行—扩展与边界（观察）", "content_type_id": "ct-case-led-service-breakdown", "status": "observation", "availability": "review_only",
+      "when_to_use": "目标内容有可公开案例并要讲服务如何设计和交付。", "do_not_use": "案例、资质、健康或其他专业边界不清楚时。",
+      "selector": { "requires_all": ["content.primary_case_service", "content.has_case_evidence", "content.has_steps"], "prefers_any": ["content.has_risks", "content.has_data"], "excludes_any": ["content.is_personal_story"], "abstain_when": ["案例或服务边界无法锁定"], "priority": 80 },
+      "beats": [
+        { "id": "b01", "role": "hook", "required": true, "purpose": "用案例结果和陌生领域制造问题。", "input_slots": ["case_evidence", "data"], "transformation_rule": "只使用目标案例。", "generation_instruction": "先给目标案例的可核验变化，再提出一个核心疑问。", "audience_effect": "create_curiosity", "preserve": ["evidence.ownership", "data.value+unit+subject+time_window+conditions"], "fallback": "无案例证据时不使用该框架。" },
+        { "id": "b02", "role": "explanation", "required": true, "purpose": "重定义真正能力门槛和服务边界。", "input_slots": ["claims", "risks"], "transformation_rule": "不降低专业要求或规避真实风险。", "generation_instruction": "说明目标服务真正需要什么，并同步写明不能承诺什么。", "audience_effect": "reduce_uncertainty", "preserve": ["claim.conditions", "risk.conditions"], "fallback": "边界不清时 abstain。" },
+        { "id": "b03", "role": "method", "required": true, "purpose": "拆服务内容、套餐或交付节点。", "input_slots": ["steps", "data"], "transformation_rule": "保持交付范围和价格主体关系。", "generation_instruction": "按目标服务的真实交付节点分组。", "audience_effect": "increase_clarity", "preserve": ["step.meaning", "data.value+unit+subject+time_window+conditions"], "fallback": "交付不完整时只写已有节点。" },
+        { "id": "b04", "role": "method", "required": true, "purpose": "再讲触达、页面、执行和迭代。", "input_slots": ["steps", "evidence", "risks"], "transformation_rule": "不新增平台操作或安全结论。", "generation_instruction": "只组织目标内容已有获客和执行步骤。", "audience_effect": "increase_clarity", "preserve": ["step.order", "step.meaning", "evidence.ownership", "risk.conditions"], "fallback": "没有获客信息时省略该部分。" },
+        { "id": "b05", "role": "summary", "required": true, "purpose": "总结标准化逻辑、扩展方向和风险。", "input_slots": ["claims", "risks", "examples"], "transformation_rule": "扩展只能来自目标内容。", "generation_instruction": "用一条机制总结，再列已验证的扩展边界。", "audience_effect": "leave_reflection", "preserve": ["claim.meaning", "risk.conditions"], "fallback": "只总结服务边界。" }
+      ],
+      "evidence_paths": [{ "unit_id": "qian17-spoken-v1:u04", "independence_cluster_id": "independent:qian17-spoken-v1:u04", "beats": [
+        { "beat_id": "b01", "anchor_id": "qian17-spoken-v1:u04:m01", "ordinal": 1 }, { "beat_id": "b02", "anchor_id": "qian17-spoken-v1:u04:m03a", "ordinal": 2 }, { "beat_id": "b03", "anchor_id": "qian17-spoken-v1:u04:m05", "ordinal": 3 }, { "beat_id": "b04", "anchor_id": "qian17-spoken-v1:u04:m10", "ordinal": 4 }, { "beat_id": "b05", "anchor_id": "qian17-spoken-v1:u04:m14", "ordinal": 5 }
+      ] }]
+    },
+    {
+      "id": "fw-resource-directory", "name": "清单价值—筛选标准—高密度目录—延伸问题—CTA（观察）", "content_type_id": "ct-resource-directory", "status": "observation", "availability": "review_only",
+      "when_to_use": "目标内容确有一批已核验、获准分享的资源。", "do_not_use": "专名、授权、适用范围或风险无法核验时。",
+      "selector": { "requires_all": ["content.primary_resource_directory", "content.has_resource_list"], "prefers_any": ["content.has_risks", "content.has_final_cta"], "excludes_any": ["content.is_personal_story"], "abstain_when": ["资源合法性或适用限制不清"], "priority": 80 },
+      "beats": [
+        { "id": "b01", "role": "hook", "required": true, "purpose": "用案例或时间成本说明清单价值。", "input_slots": ["content.core_claim", "case_evidence", "data"], "transformation_rule": "结果与范围均来自目标内容。", "generation_instruction": "用一个可验证案例或节省成本切入。", "audience_effect": "establish_relevance", "preserve": ["evidence.ownership", "data.value+unit+subject+time_window+conditions"], "fallback": "没有案例时直接说明目录用途。" },
+        { "id": "b02", "role": "preview", "required": true, "purpose": "说明清单规模和筛选标准。", "input_slots": ["resource_list", "comparison_criteria"], "transformation_rule": "不夸大完整性。", "generation_instruction": "报真实数量和二到三个入选标准。", "audience_effect": "set_expectation", "preserve": ["resource_list.count", "criteria.meaning"], "fallback": "不确定数量时只说类别范围。" },
+        { "id": "b03", "role": "method", "required": true, "purpose": "按编号给类别、用途和限制。", "input_slots": ["resource_list", "risks"], "transformation_rule": "专名和限制必须来自目标清单。", "generation_instruction": "每项最多承担类别、用途和一个限制。", "audience_effect": "increase_clarity", "preserve": ["resource.identity", "resource.use", "risk.conditions"], "fallback": "无法核验的项目从目录删除。" },
+        { "id": "b04", "role": "summary", "required": true, "purpose": "说明清单之外仍需解决的问题。", "input_slots": ["claims", "risks"], "transformation_rule": "不把目录写成万能答案。", "generation_instruction": "用一句话指出清单未解决的关键环节。", "audience_effect": "leave_reflection", "preserve": ["claim.conditions", "risk.conditions"], "fallback": "中性总结目录适用范围。" },
+        { "id": "b05", "role": "cta", "required": false, "purpose": "使用目标已有资源动作收束。", "input_slots": ["cta"], "transformation_rule": "不迁移来源渠道。", "generation_instruction": "只使用目标 CTA；否则直接结束。", "audience_effect": "prompt_action", "preserve": ["cta.channel+keyword"], "fallback": "中性结束。" }
+      ],
+      "evidence_paths": [{ "unit_id": "qian17-spoken-v1:u08", "independence_cluster_id": "independent:qian17-spoken-v1:u08", "beats": [
+        { "beat_id": "b01", "anchor_id": "qian17-spoken-v1:u08:m01", "ordinal": 1 }, { "beat_id": "b02", "anchor_id": "qian17-spoken-v1:u08:m02", "ordinal": 2 }, { "beat_id": "b03", "anchor_id": "qian17-spoken-v1:u08:m04", "ordinal": 3 }, { "beat_id": "b04", "anchor_id": "qian17-spoken-v1:u08:m05", "ordinal": 4 }, { "beat_id": "b05", "anchor_id": "qian17-spoken-v1:u08:m06", "ordinal": 5 }
+      ] }]
+    }
+  ],
+  "attention_rhythm": {
+    "basis": "textual_function_inference",
+    "stages": [
+      {
+        "id": "ar-entry-relevance", "name": "开头快速建立相关性（观察）", "status": "observation", "availability": "review_only", "relative_range": [0, 0.08],
+        "audience_state": "尚不清楚具体项目是什么、为什么值得继续听", "objective": "用具体项目、产品、结果或一组强数据快速建立相关性", "mechanism": "先让受众知道在讲什么，再给一个最强价值信号；不叙述研究过程，不堆多个钩子",
+        "generation_instruction": "第一句直接说目标项目、产品或问题，第二句补一项最强结果、数据或真实疑问；表面值与真实值的顺序由目标内容契约决定，不固化成 IP 通用规则。", "intensity": "high",
+        "evidence": [
+          { "unit_id": "qian17-spoken-v1:u01", "independence_cluster_id": "independent:qian17-spoken-v1:u01", "anchor_id": "qian17-spoken-v1:u01:p01", "position": 0.04, "function": "hook" },
+          { "unit_id": "qian17-spoken-v1:u02", "independence_cluster_id": "independent:qian17-spoken-v1:u02", "anchor_id": "qian17-spoken-v1:u02:p01", "position": 0.03, "function": "hook" },
+          { "unit_id": "qian17-spoken-v1:u06", "independence_cluster_id": "independent:qian17-spoken-v1:u06", "anchor_id": "qian17-spoken-v1:u06:m01", "position": 0.02, "function": "hook" }
+        ],
+        "risk": "这是文本位置和功能观察，不证明真实留存。"
+      },
+      {
+        "id": "ar-proof-and-scope", "name": "紧接证据或范围承诺（观察）", "status": "observation", "availability": "review_only", "relative_range": [0.05, 0.2],
+        "audience_state": "已经知道项目和一项价值信号，等待为什么值得看以及本次讲什么", "objective": "用一个需求、市场、效率或收益理由承接开头，并迅速报范围", "mechanism": "证据或理由紧邻主张；其他过程、单笔账和累计数据延后到对应步骤",
+        "generation_instruction": "用一到两句解释项目为什么值得看，再直接报本次拆解路径；人群代入、认知差和悬念都按目标内容需要选用，不强制出现。", "intensity": "high",
+        "evidence": [
+          { "unit_id": "qian17-spoken-v1:u02", "independence_cluster_id": "independent:qian17-spoken-v1:u02", "anchor_id": "qian17-spoken-v1:u02:p02", "position": 0.06, "function": "proof" },
+          { "unit_id": "qian17-spoken-v1:u03", "independence_cluster_id": "variant:duplicate-candidate-01", "anchor_id": "qian17-spoken-v1:u03:p06", "position": 0.2, "function": "preview" },
+          { "unit_id": "qian17-spoken-v1:u04", "independence_cluster_id": "independent:qian17-spoken-v1:u04", "anchor_id": "qian17-spoken-v1:u04:m04", "position": 0.11, "function": "preview" }
+        ],
+        "risk": "证据位置不等于证据真实性。"
+      },
+      {
+        "id": "ar-numbered-body", "name": "编号主体维持理解（观察）", "status": "observation", "availability": "review_only", "relative_range": [0.18, 0.78],
+        "audience_state": "需要区分多个项目环节、理由和动作", "objective": "把高密度信息分成可追踪模块并讲清执行路径", "mechanism": "编号、关键判断、具体动作和必要证据推进；局部纠偏最多一到两次",
+        "generation_instruction": "每个模块只承担一个主要环节：点名环节，解释一个关键理由，再给动作或数据；不要让每段都套‘很多人错了—真正关键’。", "intensity": "medium",
+        "evidence": [
+          { "unit_id": "qian17-spoken-v1:u01", "independence_cluster_id": "independent:qian17-spoken-v1:u01", "anchor_id": "qian17-spoken-v1:u01:p09", "position": 0.4, "function": "method" },
+          { "unit_id": "qian17-spoken-v1:u02", "independence_cluster_id": "independent:qian17-spoken-v1:u02", "anchor_id": "qian17-spoken-v1:u02:p05", "position": 0.2, "function": "method" },
+          { "unit_id": "qian17-spoken-v1:u08", "independence_cluster_id": "independent:qian17-spoken-v1:u08", "anchor_id": "qian17-spoken-v1:u08:m04", "position": 0.45, "function": "method" }
+        ],
+        "risk": "低质量长转写不能支持真实语速、停连或句长结论。"
+      },
+      {
+        "id": "ar-body-reset", "name": "中后段用互动或保存提示重置（观察）", "status": "observation", "availability": "review_only", "relative_range": [0.5, 0.9],
+        "audience_state": "已接收大量信息，需要一次轻量互动或保存提示", "objective": "把互动绑定到当前清单、步骤或可保存信息", "mechanism": "只记录互动重置的相对位置；主要章节之间的价值承接由局部 pattern 单独控制",
+        "generation_instruction": "长稿在确有可保存信息或目标 CTA 支持时使用一到两次简短互动；短稿省略。", "intensity": "medium",
+        "evidence": [
+          { "unit_id": "qian17-spoken-v1:u01", "independence_cluster_id": "independent:qian17-spoken-v1:u01", "anchor_id": "qian17-spoken-v1:u01:p16", "position": 0.76, "function": "interaction" },
+          { "unit_id": "qian17-spoken-v1:u02", "independence_cluster_id": "independent:qian17-spoken-v1:u02", "anchor_id": "qian17-spoken-v1:u02:p13", "position": 0.6, "function": "interaction" }
+        ],
+        "risk": "不能从样本推断每篇只出现一次；u02 至少有中段和收尾两处互动。"
+      },
+      {
+        "id": "ar-action-close", "name": "总结、资源或下一步收束（系列混淆观察）", "status": "observation", "availability": "review_only", "relative_range": [0.85, 1],
+        "audience_state": "主体已完成，需要记住项目关键点和下一动作", "objective": "用一句项目结论连接真实 CTA", "mechanism": "总结、资源动作与后续承接分离；缺什么就删什么，不强制方法论升维",
+        "generation_instruction": "用一句口语收住项目的关键路径、判断或收益点，再只使用目标内容已锁定的 CTA 和后续安排。", "intensity": "medium",
+        "evidence": [
+          { "unit_id": "qian17-spoken-v1:u01", "independence_cluster_id": "independent:qian17-spoken-v1:u01", "anchor_id": "qian17-spoken-v1:u01:p19", "position": 0.96, "function": "cta" },
+          { "unit_id": "qian17-spoken-v1:u02", "independence_cluster_id": "independent:qian17-spoken-v1:u02", "anchor_id": "qian17-spoken-v1:u02:p20", "position": 0.96, "function": "cta" },
+          { "unit_id": "qian17-spoken-v1:u08", "independence_cluster_id": "independent:qian17-spoken-v1:u08", "anchor_id": "qian17-spoken-v1:u08:m06", "position": 0.95, "function": "cta" }
+        ],
+        "risk": "u01/u02 同属一系列；不能把资源领取和下期见当作所有内容的固定尾巴。"
+      }
+    ]
+  },
+  "patterns": [
+    {
+      "id": "pt-lifestyle-result-ladder", "category": "hook", "name": "把结果翻译成生活化消费阶梯（观察）", "status": "observation", "availability": "review_only",
+      "formula": "较紧的日常生活参照 → 更有余裕的日常生活参照",
+      "applicability": "目标内容有可核验的结果变化，且生活参照不会改变数值含义。", "non_applicability": "没有结果证据、参照会夸大收益或高风险承诺。",
+      "generation_instruction": "保留目标数据不变，另创一组与其量级匹配的日常生活参照；参照不替代数据。",
+      "application_control": { "positions": ["entry", "close"], "min_per_script": 0, "max_per_script": 1, "avoid_adjacent_repeat": true },
+      "avoid_when": ["content.missing_data", "content.is_personal_story"], "input_slots": ["data", "audience.daily_reference"],
+      "preserve": ["data.value+unit+subject+time_window+conditions", "result.direction"],
+      "evidence": [{ "unit_id": "qian17-spoken-v1:u02", "independence_cluster_id": "independent:qian17-spoken-v1:u02", "anchor_id": "qian17-spoken-v1:u02:p01", "position": 0.03, "function": "hook" }],
+      "risk": "只有一个中等质量独立样本明确呈现完整阶梯；必须人工确认，且绝不能复用来源比喻。"
+    },
+    {
+      "id": "pt-scene-value-preview", "category": "persuasion", "name": "场景型价值预演：先让观众看到学会后的变化（用户校准观察）", "status": "observation", "availability": "review_only",
+      "formula": "当前生活、能力或执行状态 → 学会后可感知的生活、能力、当天动作或效率变化 → 进入对应方法",
+      "applicability": "目标内容已经锁定受众状态、可执行动作、效率变化或结果证据，且下一主要章节能兑现该场景。", "non_applicability": "只能靠来源中的餐饮比喻、订单承诺、固定时限、百分比、利润倍数或学员结果制造吸引力。",
+      "generation_instruction": "开头先用一个目标内容自己的场景预演整体价值；长稿再从三到五个主要章节中各选一种不同维度，在章节前用一到两句说清学会后生活会怎样、能力会到哪一步、当天能做什么，或能少花多少已证实的时间与重复劳动，然后马上进入方法。不要把包装写成目录预告、反问悬念或‘不是 X，而是 Y’式纠偏。",
+      "application_control": { "positions": ["entry", "body"], "min_per_script": 0, "max_per_script": 5, "avoid_adjacent_repeat": true },
+      "avoid_when": ["content.is_personal_story"], "input_slots": ["audience", "claims", "steps", "data", "evidence"],
+      "preserve": ["claim.subject+scope+certainty", "step.meaning", "step.order", "data.value+unit+subject+time_window+conditions", "evidence.ownership"],
+      "evidence": [
+        { "unit_id": "qian17-spoken-v1:u02", "independence_cluster_id": "independent:qian17-spoken-v1:u02", "anchor_id": "qian17-spoken-v1:u02:p01", "position": 0.03, "function": "hook" },
+        { "unit_id": "qian17-spoken-v1:u01", "independence_cluster_id": "independent:qian17-spoken-v1:u01", "anchor_id": "qian17-spoken-v1:u01:p01", "position": 0.04, "function": "hook" },
+        { "unit_id": "qian17-spoken-v1:u03", "independence_cluster_id": "variant:duplicate-candidate-01", "anchor_id": "qian17-spoken-v1:u03:p02", "position": 0.05, "function": "promise" }
+      ],
+      "risk": "两个独立样本只支持用生活结果或受众状态预演价值；三到五处的长稿分布来自用户校准，仍须 reviewed generation suite 验证。任何数字、时限、订单、百分比、利润倍数和消费参照都必须来自目标内容或另创且不改变原结果含义。"
+    },
+    {
+      "id": "pt-low-barrier-negation-triad", "category": "hook", "name": "三连否定压缩门槛（模板族观察）", "status": "observation", "availability": "review_only",
+      "formula": "不需要条件 A + 不需要条件 B + 不需要条件 C → 低门槛价值",
+      "applicability": "目标内容确实不存在对应门槛，且边界可证实。", "non_applicability": "任何一项只是营销说法、仍有隐性成本或风险。",
+      "generation_instruction": "最多列三个目标内容已证实不存在的门槛，随后立即补真实前提或限制。",
+      "application_control": { "positions": ["entry"], "min_per_script": 0, "max_per_script": 1, "avoid_adjacent_repeat": true },
+      "avoid_when": ["content.is_personal_story"], "input_slots": ["barriers", "risks", "claims"],
+      "preserve": ["claim.conditions", "risk.conditions", "cost.ownership"],
+      "evidence": [{ "unit_id": "qian17-spoken-v1:u03", "independence_cluster_id": "variant:duplicate-candidate-01", "anchor_id": "qian17-spoken-v1:u03:p02", "position": 0.05, "function": "promise" }],
+      "risk": "u03/u05 相关表述属于模板族复用，不能当作两个独立证据；容易隐瞒真实成本。"
+    },
+    {
+      "id": "pt-contrarian-correction-hook", "category": "hook", "name": "先指出常见做法失效，再给新判断（观察）", "status": "observation", "availability": "review_only",
+      "formula": "常见做法或努力 → 结果不理想 → 真正问题不在表面 → 新判断标准",
+      "applicability": "目标内容能证明常见做法为何失效。", "non_applicability": "仅靠贬低他人制造冲突、没有替代标准。",
+      "generation_instruction": "先写目标受众真实失败路径，再用证据支持的新标准纠偏；删除人身攻击。",
+      "application_control": { "positions": ["entry"], "min_per_script": 0, "max_per_script": 1, "avoid_adjacent_repeat": true },
+      "avoid_when": ["content.is_personal_story"], "input_slots": ["audience.failed_actions", "comparison_criteria", "evidence"],
+      "preserve": ["claim.conditions", "criteria.meaning", "evidence.ownership"],
+      "evidence": [{ "unit_id": "qian17-spoken-v1:u03", "independence_cluster_id": "variant:duplicate-candidate-01", "anchor_id": "qian17-spoken-v1:u03:p04", "position": 0.11, "function": "stance" }],
+      "risk": "单个中等质量独立样本只支持转折关系；不可照搬具体项目立场或攻击性措辞。"
+    },
+    {
+      "id": "pt-objection-answer-mechanism-action", "category": "sentence", "name": "预设质疑—直接回答—解释机制—给动作（观察）", "status": "observation", "availability": "review_only",
+      "formula": "受众可能的质疑 → 简短回应 → 原因或机制 → 下一步动作",
+      "applicability": "目标受众确有明确异议。", "non_applicability": "伪造疑问、自问自答过密或缺少回答依据。",
+      "generation_instruction": "选一个真实异议，用短回答承接，随后给依据和动作；整篇最多两次。",
+      "application_control": { "positions": ["body"], "min_per_script": 0, "max_per_script": 2, "avoid_adjacent_repeat": true },
+      "avoid_when": ["content.is_personal_story"], "input_slots": ["audience.objections", "reasons", "steps", "evidence"],
+      "preserve": ["objection.meaning", "reason.causality", "step.meaning", "evidence.ownership"],
+      "evidence": [{ "unit_id": "qian17-spoken-v1:u03", "independence_cluster_id": "variant:duplicate-candidate-01", "anchor_id": "qian17-spoken-v1:u03:p09", "position": 0.62, "function": "method" }],
+      "risk": "单个中等质量独立样本只支持关系公式，不能学习固定措辞。"
+    },
+    {
+      "id": "pt-formula-compression", "category": "sentence", "name": "把复杂判断压成二到四项短公式（观察）", "status": "observation", "availability": "review_only",
+      "formula": "复杂机制 → 二到四个并列关键词 → 逐项展开",
+      "applicability": "目标内容确有可分离且共同必要的条件。", "non_applicability": "条件并非同层、公式会遗漏关键限制。",
+      "generation_instruction": "把目标条件压成短并列结构，再逐项解释；所有条件和限制必须保留。",
+      "application_control": { "positions": ["entry", "body"], "min_per_script": 0, "max_per_script": 2, "avoid_adjacent_repeat": true },
+      "avoid_when": ["content.is_personal_story"], "input_slots": ["comparison_criteria", "steps", "claims"],
+      "preserve": ["criteria.meaning", "criteria.conditions", "step.meaning"],
+      "evidence": [{ "unit_id": "qian17-spoken-v1:u03", "independence_cluster_id": "variant:duplicate-candidate-01", "anchor_id": "qian17-spoken-v1:u03:p10", "position": 0.77, "function": "preview" }],
+      "risk": "压缩不能删除前提；当前只有一个中等质量独立样本支持。"
+    },
+    {
+      "id": "pt-familiar-analogy-transfer", "category": "explanation", "name": "熟悉场景类比后迁移到当前主题（观察）", "status": "observation", "availability": "review_only",
+      "formula": "抽象机制 → 熟悉场景中的同构关系 → 当前主题对应关系 → 动作",
+      "applicability": "两个场景确实共享同一关系。", "non_applicability": "类比会改变因果、规则或适用条件。",
+      "generation_instruction": "只在关系同构时使用一个新类比，并明确类比在哪一点成立。",
+      "application_control": { "positions": ["body"], "min_per_script": 0, "max_per_script": 1, "avoid_adjacent_repeat": true },
+      "avoid_when": ["content.is_personal_story"], "input_slots": ["claims", "reasons", "examples", "steps"],
+      "preserve": ["claim.meaning", "reason.causality", "step.meaning"],
+      "evidence": [{ "unit_id": "qian17-spoken-v1:u01", "independence_cluster_id": "independent:qian17-spoken-v1:u01", "anchor_id": "qian17-spoken-v1:u01:p03", "position": 0.18, "function": "explanation" }],
+      "risk": "单样本观察；类比不能被当成事实证明。"
+    },
+    {
+      "id": "pt-audience-state-to-path", "category": "persuasion", "name": "人群当前状态—相关性—第一步路径（用户确认观察）", "status": "observation", "availability": "review_only",
+      "formula": "目标受众当前状态或卡点 → 这件事为什么与他相关 → 一个真实低门槛或第一步",
+      "applicability": "目标内容明确受众、起步条件和可执行第一步。", "non_applicability": "专业门槛无法降低、受众不明或只能用‘人人可做’吸引。",
+      "generation_instruction": "在方法展开前最多使用一次；用目标受众真实状态完成代入，随后立即给一个目标内容已有的起步动作。",
+      "application_control": { "positions": ["entry", "body"], "min_per_script": 0, "max_per_script": 1, "avoid_adjacent_repeat": true },
+      "avoid_when": ["content.is_personal_story"], "input_slots": ["audience", "claims", "steps", "risks"],
+      "preserve": ["claim.subject+scope+certainty", "step.meaning", "step.order", "risk.conditions"],
+      "evidence": [
+        { "unit_id": "qian17-spoken-v1:u01", "independence_cluster_id": "independent:qian17-spoken-v1:u01", "anchor_id": "qian17-spoken-v1:u01:p01", "position": 0.04, "function": "hook" },
+        { "unit_id": "qian17-spoken-v1:u03", "independence_cluster_id": "variant:duplicate-candidate-01", "anchor_id": "qian17-spoken-v1:u03:p02", "position": 0.06, "function": "promise" }
+      ],
+      "risk": "代入感不能被写成适合所有人或保证普通人获得结果。"
+    },
+    {
+      "id": "pt-section-value-bridge", "category": "transition", "name": "项目依赖承接：从当前动作引出下一环节（用户确认观察）", "status": "observation", "availability": "review_only",
+      "formula": "上一环节或当前状态 → 下一环节在本案例里解决什么或带来什么已有价值 → 进入具体方法",
+      "applicability": "长篇项目拆解存在两个以上主要章节，且目标内容明确提供章节之间的依赖、收益、后果或未解决问题。", "non_applicability": "极短口播、纯目录、独立并列清单，或只能靠虚构紧迫性和收益包装下一段。",
+      "generation_instruction": "只在一到两个主要章节边界使用：从案例已经完成的动作自然引出下一项真实问题、依赖、收益或后果，再立即进入方法。它只负责连接真实依赖，不能替代场景型价值预演；不能用‘后面再讲’‘具体怎么计算’或编排式留存话术，也不要在每个小步骤前重复同一壳。",
+      "application_control": { "positions": ["body"], "min_per_script": 0, "max_per_script": 2, "avoid_adjacent_repeat": true },
+      "avoid_when": ["content.is_personal_story"], "input_slots": ["steps", "reasons", "claims", "data"],
+      "preserve": ["step.meaning", "step.order", "reason.causality", "claim.subject+scope+certainty", "data.value+unit+subject+time_window+conditions"],
+      "evidence": [
+        { "unit_id": "qian17-spoken-v1:u01", "independence_cluster_id": "independent:qian17-spoken-v1:u01", "anchor_id": "qian17-spoken-v1:u01:p08", "position": 0.32, "function": "preview" },
+        { "unit_id": "qian17-spoken-v1:u02", "independence_cluster_id": "independent:qian17-spoken-v1:u02", "anchor_id": "qian17-spoken-v1:u02:p11", "position": 0.53, "function": "continuation" },
+        { "unit_id": "qian17-spoken-v1:u03", "independence_cluster_id": "variant:duplicate-candidate-01", "anchor_id": "qian17-spoken-v1:u03:p08", "position": 0.46, "function": "method" },
+        { "unit_id": "qian17-spoken-v1:u03", "independence_cluster_id": "variant:duplicate-candidate-01", "anchor_id": "qian17-spoken-v1:u03:p10", "position": 0.77, "function": "preview" }
+      ],
+      "risk": "这是主要章节之间的依赖连接，不是核心包装机制，也不证明真实留存；不得制造原内容不存在的重要性、因果、收益或行动紧迫性。"
+    },
+    {
+      "id": "pt-data-meaning-value", "category": "evidence", "name": "数据—说明什么—为什么值得关注（用户确认观察）", "status": "observation", "availability": "review_only",
+      "formula": "一组目标数据 → 它直接支持的一个判断 → 该判断与项目机会或下一步的关系",
+      "applicability": "目标数据的主体、条件和绑定主张清楚。", "non_applicability": "数据只是界面元信息、无法支持判断或需要越界推断。",
+      "generation_instruction": "最多选择两组关键数据，各补一层直接意义；具体揭晓顺序由目标 content contract 决定。不复述证据载体，不让数据证明超出其主体、周期和条件的结论。",
+      "application_control": { "positions": ["entry", "body", "close"], "min_per_script": 0, "max_per_script": 2, "avoid_adjacent_repeat": true },
+      "avoid_when": ["content.missing_data", "content.is_personal_story"], "input_slots": ["data", "claims", "reasons", "steps"],
+      "preserve": ["data.value+unit+subject+time_window+conditions", "claim.subject+scope+certainty", "reason.causality", "step.meaning"],
+      "evidence": [
+        { "unit_id": "qian17-spoken-v1:u02", "independence_cluster_id": "independent:qian17-spoken-v1:u02", "anchor_id": "qian17-spoken-v1:u02:p01", "position": 0.03, "function": "hook" },
+        { "unit_id": "qian17-spoken-v1:u02", "independence_cluster_id": "independent:qian17-spoken-v1:u02", "anchor_id": "qian17-spoken-v1:u02:p02", "position": 0.06, "function": "proof" },
+        { "unit_id": "qian17-spoken-v1:u03", "independence_cluster_id": "variant:duplicate-candidate-01", "anchor_id": "qian17-spoken-v1:u03:p05", "position": 0.16, "function": "proof" }
+      ],
+      "risk": "价值翻译必须服从事实锁，不能把相关性写成因果或普遍结果。"
+    },
+    {
+      "id": "pt-specificity-stack", "category": "evidence", "name": "用数量、时间、条件和步骤堆出具体感（观察）", "status": "observation", "availability": "review_only",
+      "formula": "抽象主张 → 数量或时间 → 适用条件 → 对应步骤或判断",
+      "applicability": "目标内容确有这些结构化信息。", "non_applicability": "为了显得具体而虚构数字、期限或条件。",
+      "generation_instruction": "把目标内容已有的数量、时间、主体和条件说具体，并让它们紧邻所修饰的主张或动作；主体与条件在后台锁定，更新时间、截图来源等审计元数据若不影响理解就不进入口播。",
+      "application_control": { "positions": ["entry", "body", "close"], "min_per_script": 0, "max_per_script": 4, "avoid_adjacent_repeat": true },
+      "avoid_when": ["content.missing_data"], "input_slots": ["data", "steps", "claims", "risks"],
+      "preserve": ["data.value+unit+subject+time_window+conditions", "step.meaning", "risk.conditions"],
+      "evidence": [{ "unit_id": "qian17-spoken-v1:u02", "independence_cluster_id": "independent:qian17-spoken-v1:u02", "anchor_id": "qian17-spoken-v1:u02:p02", "position": 0.06, "function": "proof" }],
+      "risk": "具体感不能覆盖事实不确定性；当前只有一个中等质量独立样本支持。"
+    },
+    {
+      "id": "pt-saveable-material-reset", "category": "interaction", "name": "在可保存信息旁提示互动（观察）", "status": "observation", "availability": "review_only",
+      "formula": "清单、表格、关键词或步骤出现 → 说明保存价值 → 可选互动提示",
+      "applicability": "目标内容确实包含之后可复用的结构化信息。", "non_applicability": "没有可保存信息、短稿或只为索取互动。",
+      "generation_instruction": "只有当前段落确有可保存价值且目标 CTA 允许时，插入一次简短提示。",
+      "application_control": { "positions": ["body"], "min_per_script": 0, "max_per_script": 2, "avoid_adjacent_repeat": true },
+      "avoid_when": ["content.is_personal_story"], "input_slots": ["steps", "resource_list", "cta.engagement"],
+      "preserve": ["step.meaning", "resource.identity", "cta.channel+keyword"],
+      "evidence": [
+        { "unit_id": "qian17-spoken-v1:u01", "independence_cluster_id": "independent:qian17-spoken-v1:u01", "anchor_id": "qian17-spoken-v1:u01:p16", "position": 0.76, "function": "interaction" },
+        { "unit_id": "qian17-spoken-v1:u02", "independence_cluster_id": "independent:qian17-spoken-v1:u02", "anchor_id": "qian17-spoken-v1:u02:p13", "position": 0.6, "function": "interaction" }
+      ],
+      "risk": "不能宣称互动会提升留存；u01/u02 的位置并不一致。"
+    }
+  ],
+  "avoid_patterns": [
+    {
+      "id": "av-no-style-source-facts", "name": "禁止迁移风格样本事实", "status": "observation", "availability": "review_only", "basis": "human_boundary",
+      "trigger": "生成稿出现风格样本中的项目、数字、案例、资源、账号、关键词或平台操作。", "trigger_signals": ["content.has_claims"],
+      "avoid_instruction": "只消费目标 content contract 中的事实；命中风格来源事实时立即失败。",
+      "rationale": "用户明确要求只重构表达方式，不能改变或补入内容事实。", "evidence": []
+    },
+    {
+      "id": "av-no-unsupported-result-certainty", "name": "禁止无证据收益与效果确定性", "status": "observation", "availability": "review_only", "basis": "human_boundary",
+      "trigger": "目标内容没有数据或证据，却生成保证、稳定、必然、翻倍或确定结果。", "trigger_signals": ["content.missing_data"],
+      "avoid_instruction": "缺少证据时改成问题、条件或方法价值，不新增结果数字和保证。",
+      "rationale": "风格中的强确定性不能覆盖事实锁和风险边界。", "evidence": []
+    },
+    {
+      "id": "av-no-forced-cta", "name": "禁止强塞资源领取和互动 CTA", "status": "observation", "availability": "review_only", "basis": "human_boundary",
+      "trigger": "目标输入没有 CTA，却自动添加点赞、关注、领取、渠道或关键词。", "trigger_signals": ["content.missing_final_cta"],
+      "avoid_instruction": "没有真实 CTA 时使用中性总结结束。",
+      "rationale": "CTA 外壳可能是系列模板，而且渠道与关键词属于目标内容事实。", "evidence": []
+    },
+    {
+      "id": "av-no-fake-series-continuation", "name": "禁止虚构下一期或系列安排", "status": "observation", "availability": "review_only", "basis": "human_boundary",
+      "trigger": "目标输入没有后续主题，却生成下一期预告或系列地图。", "trigger_signals": ["content.missing_series_continuation"],
+      "avoid_instruction": "只在 continuation 已锁定时写后续承接；否则删除。",
+      "rationale": "u01/u02 的连续承接属于同系列证据，不能泛化成固定尾巴。", "evidence": []
+    },
+    {
+      "id": "av-no-hook-stacking", "name": "禁止把所有强钩子堆在同一开头", "status": "observation", "availability": "review_only", "basis": "human_boundary",
+      "trigger": "开头同时堆叠结果、案例、反常识、三连否定、疑问和范围承诺，造成模板拼贴。", "trigger_signals": ["content.has_claims"],
+      "avoid_instruction": "每篇先选一个主钩子，其他信息降到证据或范围段。",
+      "rationale": "DNA 是选择系统，不是把所有来源特征一次性塞入新稿。", "evidence": []
+    },
+    {
+      "id": "av-no-evidence-carrier-narration", "name": "禁止把后台证据载体念给观众", "status": "observation", "availability": "review_only", "basis": "human_boundary",
+      "trigger": "受众口播出现‘另一张截图里’‘截图显示’‘计算器显示’‘参考数据更新至’等图片描述或审计元话语。", "trigger_signals": ["content.has_evidence"],
+      "avoid_instruction": "后台保留证据归属和时间；口播直接说已经锁定的业务事实和数字。只有画面来源本身是论证重点时才描述载体。",
+      "rationale": "用户明确指出这类词会暴露素材描述过程，而且钱十七口播更偏直接讲结果、机制和步骤。", "evidence": []
+    },
+    {
+      "id": "av-no-abstract-project-opening", "name": "项目开头禁止用抽象文案腔代替具体主题", "status": "observation", "availability": "review_only", "basis": "human_boundary",
+      "trigger": "目标内容已有具体项目、产品或结果，开头却以‘交付设计、项目逻辑、内容布局、商业闭环’等抽象名词起句。", "trigger_signals": ["content.primary_project_breakdown"],
+      "avoid_instruction": "第一句直接说目标项目、产品、问题或结果；抽象总结只能放在机制解释或收束，不能遮住主题。",
+      "rationale": "用户对同题影子测试的明确反馈：抽象开口像整理过的说明书，不像钱十七直接甩项目和结果。", "evidence": []
+    },
+    {
+      "id": "av-no-bare-data-drop", "name": "禁止只报数字不解释价值", "status": "observation", "availability": "review_only", "basis": "human_boundary",
+      "trigger": "项目稿连续报出一组数据后直接进入下一条信息，没有说明它支持什么需求、机会、效率或收益判断。", "trigger_signals": ["content.has_data"],
+      "avoid_instruction": "每组数据后最多补一句它直接说明什么，以及为什么与当前项目或下一步有关；解释不得越过数据主体和条件。",
+      "rationale": "用户对同题影子测试的明确反馈：数据完整但没有被翻译成值得关注的项目价值，仍像后台报表。", "evidence": []
+    },
+    {
+      "id": "av-no-formula-to-cta-jump", "name": "禁止项目公式后直接跳资源 CTA", "status": "observation", "availability": "review_only", "basis": "human_boundary",
+      "trigger": "正文用一条项目公式结束后立刻进入资源领取，没有总结观众真正可以复制的流程、判断或能力。", "trigger_signals": ["content.has_final_cta"],
+      "avoid_instruction": "CTA 前用一句自然口语收住当前项目的关键路径或收益点；可以总结具体项目，不强制升维成通用流程。",
+      "rationale": "正文和资源 CTA 需要自然连接，但过度升维会产生培训稿感。", "evidence": []
+    },
+    {
+      "id": "av-no-training-deck-jargon", "name": "禁止用培训稿术语替代具体口语", "status": "observation", "availability": "review_only", "basis": "human_boundary",
+      "trigger": "本可直接说明具体动作与结果，却连续使用‘放大、标准件、商业闭环、模型、需求—商品—交付—收益流程’等抽象课程词。", "trigger_signals": ["content.primary_project_breakdown"],
+      "avoid_instruction": "把抽象词还原成具体关系：谁做什么、为什么、会少什么重复动作或多哪一层已锁定结果；结尾只需收住当前项目，不强制说‘真正要学的是背后的方法’。",
+      "rationale": "用户对同题影子测试的明确反馈：逻辑正确但培训稿措辞会削弱真人口播和项目分析感。", "evidence": []
+    },
+    {
+      "id": "av-no-rhetorical-binary-correction", "name": "默认禁止‘不是 X，而是 Y’式二元纠偏", "status": "observation", "availability": "review_only", "basis": "human_boundary",
+      "trigger": "受众口播用‘不是……而是……’‘很多人以为……其实……’‘真正关键是……’等固定壳反复制造观点转折，尤其用它代替具体场景、动作和结果。", "trigger_signals": ["content.has_steps"],
+      "avoid_instruction": "优先直接说具体的人、动作、场景和结果，再顺着因果进入方法。整篇默认不用‘不是 X，而是 Y’作修辞；确需澄清字面事实边界时可以拆成两句，例如先说‘想要不等于订单’，再说明数据究竟代表什么，不接‘而是’。",
+      "rationale": "用户明确指出该句式具有明显 AI 腔；钱十七式包装应靠场景价值预演和口语化推进，不靠反复二元纠偏。", "evidence": []
+    }
+  ],
+  "boundaries": [
+    "只记录怎么讲：结构、关系、证据位置、文本节奏意图和 CTA 形态；不保存来源正文。",
+    "不迁移来源中的项目、收益、案例、账号、资源、平台操作、公众号、关键词或风险结论。",
+    "用户输入的数字、单位、主体、周期、条件和证据归属必须原样保持；可以重构表达，不能偷换关系。",
+    "来源中的强确定性、合规判断和商业结果不构成可复用事实；下游必须独立核验。",
+    "低质量单行转写只支持宏观段落职责和显式顺序，不支持句式、词汇、修辞或真实音频节奏。",
+    "任何 profile approval 都必须在用户逐项确认、隔离生成测试和输出审计完成后另行建立。"
+  ],
+  "rewrite_interface": {
+    "required_content_fields": ["primary_value", "topic", "audience", "claims", "steps", "data", "evidence", "risks", "cta"],
+    "immutable_relations": [
+      "data.value+unit+subject+time_window+conditions",
+      "claim.subject+scope+certainty",
+      "step.meaning+order+conditions",
+      "evidence.ownership+claim_binding",
+      "risk.conditions+consequences",
+      "cta.channel+keyword"
+    ],
+    "observations_selectable": false,
+    "prohibited_audience_meta_phrases": ["原稿里", "原文里", "文案里", "飞书里", "资料里", "材料中", "根据你提供的", "下面这版", "另一张截图里", "截图显示", "计算器显示", "参考数据更新至", "结算数据更新至"]
+  },
+  "generation_interface": {
+    "forward_test_required_before_approval": true,
+    "selector_abstention_required": true,
+    "fact_lock_source": "external_content_contract_and_output_audit",
+    "conflict_policy": "fail_closed",
+    "control_precedence": [
+      "boundaries_and_content_locks", "selector_abstention", "avoid_patterns", "framework",
+      "communication_persona_and_content_strategy", "attention_rhythm", "patterns"
+    ],
+    "required_checks": [
+      "selector_resolution_bound", "content_lock_audit_matches", "output_artifact_bound", "pattern_span_audit_passed",
+      "avoidance_span_audit_passed", "audience_meta_absent", "reference_leakage_scan_passed",
+      "no_new_facts_human_confirmed", "no_style_source_facts_human_confirmed",
+      "human_style_similarity_accepted", "overfit_absent_human_confirmed"
+    ]
+  },
+  "limitations": [
+    "u03 与 u07 已由用户确认为同一文案的不同转写版本，只计一个 variant cluster；结构锚点使用较清晰的 u03，冲突处保持 unknown。",
+    "u04、u05、u06、u08 缺少可回听音视频且正文为低质量单行转写；它们只贡献宏观 observation，不能支持句式、词汇、修辞、真实节奏或 candidate。",
+    "u05 与 u03/u07 存在局部模板复用；共享预告、资源获取和自动交付模块已隔离，不能重复计证。",
+    "u01/u02 明确属于同一连续教程系列；共同教学骨架与互动 CTA 外壳只能标为系列混淆观察，尚不能证明跨系列 IP 稳定性。",
+    "当前 5 类框架全部为 observation/review_only；没有完成用户逐项确认、留出验证和 reviewed generation suite，因此没有任何可正式调用规则。",
+    "生活化消费阶梯、熟悉类比和强反常识钩子均只有单样本或低质量证据；用户已确认场景型价值预演是目标风格的重要包装机制，但具体比喻、数字、时限、订单、百分比和利润倍数仍必须由目标内容提供。",
+    "收益贯穿步骤与数据职责分段来自中等质量样本锚点和用户同题影子测试反馈，仍为 observation/review_only；不能外推固定比例或真实转化。",
+    "减法校准已删除由同题修稿放大的完整认知旅程、固定揭晓顺序和强制研究者叙事位置；用户随后明确区分了场景型价值预演与项目依赖承接：前者负责把学会后的生活、能力、当天动作或效率收益提前说具体，后者只连接真实步骤依赖。两者仍为 observation/review_only，不能压过具体项目、数据、路径和收益主干。",
+    "纯文本只能推断功能位置，不能证明真实语速、停连、留存、情绪、转化或作者身份。",
+    "本档案不证明来源内容的事实准确性、商业表现、平台合规、专业资质或可迁移效果。"
+  ]
+}

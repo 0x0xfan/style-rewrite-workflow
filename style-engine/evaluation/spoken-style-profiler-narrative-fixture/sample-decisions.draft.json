@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0-draft",
+  "corpus_id": "narrative-fixture-v1",
+  "state": "draft",
+  "duplicate_decisions": [],
+  "repeated_opening_decisions": [],
+  "excluded_unit_ids": [],
+  "reviewer_type": null,
+  "record_id": null,
+  "approved_by": null,
+  "approved_at": null
+}

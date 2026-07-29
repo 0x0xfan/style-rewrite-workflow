@@ -1,0 +1,40 @@
+.env
+.env.*
+!.env.example
+workbench_imports/
+workbench_rewrites/
+workbench_audio/
+node_modules/
+npm-debug.log*
+
+# Local agent/runtime state
+.agents/
+.claude/
+artifacts/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.cache/
+.venv/
+
+# Databases, browser/session state, and generated media
+*.db
+*.sqlite
+*.sqlite3
+*.cookie*
+*.log
+*.mp3
+*.mp4
+*.mov
+*.pdf
+*.docx
+dist/
+build/
+coverage/
+
+# Private research and generated content evidence
+research-runs/
+仿写案例库/
+.codex/skills/content-fusion/examples/**/output/
+codex代安装_重写版.md
+钱十七-框架拆解-新版.md

@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>风格仿写工作台</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>风格仿写工作台</h1>
+        <p>飞书读取、素材抽取、风格库、风格改写、语音合成</p>
+      </div>
+      <div class="status-pill" id="systemStatus">初始化中</div>
+    </header>
+
+    <main class="shell">
+      <section class="panel intake-panel">
+        <div class="section-heading">
+          <div>
+            <h2>飞书文档</h2>
+            <p>读取正文和内联图片，生成可追溯的导入文件。</p>
+          </div>
+          <button type="button" class="secondary-button" id="testAi">测试模型</button>
+        </div>
+
+        <div class="input-row">
+          <input
+            id="feishuUrl"
+            type="url"
+            value="https://yq9pu32e9v.feishu.cn/wiki/RQj2wuwaQiz9p8kDdTPc2aU5nCe"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button type="button" id="importFeishu">读取飞书</button>
+        </div>
+
+        <div class="status-line" id="feishuStatus">等待导入</div>
+        <div class="metrics" id="importMetrics"></div>
+        <div class="asset-strip" id="assetStrip"></div>
+      </section>
+
+      <section class="workspace">
+        <div class="editor-panel">
+          <div class="section-heading compact">
+            <div>
+              <h2>原文</h2>
+              <p>导入后可手动删改，但不要补进未验证事实。</p>
+            </div>
+            <span id="sourceCount">0 字</span>
+          </div>
+          <textarea id="sourceCopy" class="raw-source" spellcheck="false" aria-hidden="true"></textarea>
+          <div
+            id="sourceEditor"
+            class="markdown-editor is-empty"
+            contenteditable="true"
+            spellcheck="false"
+            data-placeholder="读取飞书后，正文会出现在这里。"
+          ></div>
+        </div>
+
+        <div class="action-rail">
+          <label class="style-picker" for="styleSelect">
+            <span>改写风格</span>
+            <select id="styleSelect">
+              <option value="">读取风格中...</option>
+            </select>
+          </label>
+          <button type="button" id="rewriteCopy">风格改写</button>
+          <button type="button" class="secondary-button" id="clearRewrite">清空结果</button>
+          <div class="rail-note" id="rewriteStatus">等待原文</div>
+        </div>
+
+        <div class="editor-panel">
+          <div class="section-heading compact">
+            <div>
+              <h2>改写稿</h2>
+              <p>输出短视频口播正文，并同步生成素材位和风险标注。</p>
+            </div>
+            <span id="rewriteCount">0 字</span>
+          </div>
+          <textarea id="revisedCopy" spellcheck="false" placeholder="点击“风格改写”后，结果会出现在这里。"></textarea>
+        </div>
+      </section>
+
+      <section class="tools-grid">
+        <div class="tool-panel">
+          <div class="section-heading compact no-pad">
+            <div>
+              <h2>风格库</h2>
+              <p>查看、编辑并保存本地风格卡，改写下拉框会同步更新。</p>
+            </div>
+            <button type="button" class="secondary-button" id="refreshStyleLibrary">刷新</button>
+          </div>
+          <div class="style-library-layout">
+            <div class="style-library-list" id="styleLibraryList">正在读取风格库...</div>
+            <div class="form-stack">
+              <label>
+                <span>风格名称</span>
+                <input id="styleName" type="text" placeholder="例如：钱十七-闲鱼风格拆解" />
+              </label>
+              <label>
+                <span>风格内容</span>
+                <textarea id="styleContent" class="compact-textarea" spellcheck="false" placeholder="这里编辑 Markdown 风格卡。"></textarea>
+              </label>
+              <div class="button-row">
+                <button type="button" class="secondary-button" id="inspectStyleSamples">检查样本健康度</button>
+                <button type="button" class="secondary-button" id="analyzeCurrentStyle">提取当前文本 DNA</button>
+                <button type="button" class="secondary-button" id="checkStyleMatch">检测改写稿匹配度</button>
+                <button type="button" id="saveStyleProfile">保存到风格库</button>
+              </div>
+              <p class="hint-text">先检查样本健康度。模板候选默认不会删除；你可逐条选择“作为模板剥离”后重新提取。保存时只记录统计结论和确认状态，不保存样本全文或候选原句。</p>
+              <div class="sample-health-review" id="sampleHealthReview">尚未检查样本健康度。</div>
+              <label class="dna-approval-control">
+                <input id="approveStyleDna" type="checkbox" />
+                <span>我已审阅样本健康度和模板候选，将这版 DNA 标记为已确认</span>
+              </label>
+              <label>
+                <span>本次变更说明（可选）</span>
+                <input id="styleChangeReason" type="text" maxlength="240" placeholder="例如：剥离固定结尾后重新提取" />
+              </label>
+              <div class="status-line" id="styleLibraryStatus">等待读取</div>
+              <pre class="style-dna-summary" id="styleDnaSummary">未提取 Style DNA。</pre>
+              <div class="dna-version-history" id="dnaVersionHistory">尚无已保存的 DNA 版本。</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tool-panel">
+          <div class="section-heading compact no-pad">
+            <div>
+              <h2>语音合成</h2>
+              <p>把改写稿发送到本地账号兼容的 TTS 接口，并保存音频证据文件。</p>
+            </div>
+          </div>
+          <div class="form-stack">
+            <div class="inline-grid">
+              <label>
+                <span>文本来源</span>
+                <select id="voiceSource">
+                  <option value="rewrite">改写稿</option>
+                  <option value="source">原文</option>
+                </select>
+              </label>
+              <label>
+                <span>格式</span>
+                <select id="voiceFormat">
+                  <option value="mp3">mp3</option>
+                  <option value="wav">wav</option>
+                  <option value="aac">aac</option>
+                  <option value="opus">opus</option>
+                </select>
+              </label>
+            </div>
+            <div class="inline-grid">
+              <label>
+                <span>模型</span>
+                <input id="voiceModel" type="text" placeholder="gpt-4o-mini-tts" />
+              </label>
+              <label>
+                <span>音色</span>
+                <input id="voiceName" type="text" placeholder="alloy" />
+              </label>
+            </div>
+            <div class="button-row">
+              <button type="button" id="synthesizeVoice">合成语音</button>
+            </div>
+            <div class="status-line" id="voiceStatus">等待语音配置</div>
+            <audio id="voicePlayer" controls hidden></audio>
+            <div class="path-list compact-paths" id="voicePathList">暂无</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="details-grid">
+        <div class="detail-panel">
+          <h2>事实提取</h2>
+          <pre id="sourceBrief">暂无</pre>
+        </div>
+        <div class="detail-panel">
+          <h2>素材位</h2>
+          <div class="list-view" id="materialList">暂无</div>
+        </div>
+        <div class="detail-panel">
+          <h2>风险标注</h2>
+          <div class="list-view" id="riskList">暂无</div>
+        </div>
+        <div class="detail-panel">
+          <h2>证据文件</h2>
+          <div class="path-list" id="pathList">暂无</div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

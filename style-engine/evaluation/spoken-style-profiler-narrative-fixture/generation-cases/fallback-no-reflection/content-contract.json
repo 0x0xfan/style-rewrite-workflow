@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "contract_id": "narrative-fallback-no-reflection-contract-v1",
+  "case_id": "narrative-fallback-no-reflection",
+  "input_sha256": "sha256:8282d13e34a6fd76e2f030c4abbaeec260cc46cc3431b10c99d19886e481a1ba",
+  "content": {
+    "primary_value": "personal_story",
+    "narrative": {
+      "scene": "文具店排队柜台",
+      "attention_or_action_turn": "发现前方顾客遗落找零后，叙述者叫住对方并归还"
+    },
+    "evidence": {
+      "ownership": "第一人称当场观察"
+    }
+  },
+  "immutable_values": [
+    {
+      "relation": "narrative.subject+event_sequence+conditions",
+      "value": {
+        "subject": "第一人称叙述者与前方顾客",
+        "event_sequence": ["顾客在柜台遗落找零", "叙述者叫住对方并归还"],
+        "conditions": ["午后", "文具店排队"]
+      }
+    },
+    {
+      "relation": "narrative.attention_or_action_turn",
+      "value": {
+        "initial_impulse": "继续排队",
+        "interrupting_detail": "柜台边遗落的找零",
+        "action_turn": "叫住顾客并归还零钱"
+      }
+    },
+    {
+      "relation": "narrative.reflection_scope+uncertainty",
+      "value": {
+        "scope": "目标内容未提供反思",
+        "uncertainty": "不得补造个人结论或普遍意义"
+      }
+    },
+    {
+      "relation": "evidence.ownership",
+      "value": {
+        "owner": "第一人称叙述者",
+        "basis": "当场看到并完成的行动"
+      }
+    }
+  ]
+}

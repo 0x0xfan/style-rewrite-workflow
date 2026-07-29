@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0",
+  "contract_id": "narrative-positive-convenience-contract-v1",
+  "case_id": "narrative-positive-convenience",
+  "input_sha256": "sha256:e5ff84b58ce907aa71e2e5e9f08ef234d80b0389f1216362bbb65993252afe91",
+  "content": {
+    "primary_value": "personal_story",
+    "narrative": {
+      "scene": "便利店结账队伍",
+      "attention_or_action_turn": "看见学生缺少硬币后，叙述者补上差额",
+      "reflection": "这次经历只说明顺手减少一点为难，不需要被夸大"
+    },
+    "evidence": {
+      "ownership": "第一人称当场观察"
+    }
+  },
+  "immutable_values": [
+    {
+      "relation": "narrative.subject+event_sequence+conditions",
+      "value": {
+        "subject": "第一人称叙述者与前方学生",
+        "event_sequence": ["学生结账缺少一枚硬币", "叙述者补上差额"],
+        "conditions": ["傍晚", "便利店结账队伍"]
+      }
+    },
+    {
+      "relation": "narrative.attention_or_action_turn",
+      "value": {
+        "initial_impulse": "赶时间结账",
+        "interrupting_detail": "学生硬币不够",
+        "action_turn": "补上差额"
+      }
+    },
+    {
+      "relation": "narrative.reflection_scope+uncertainty",
+      "value": {
+        "scope": "只限这一次顺手相助的经历",
+        "uncertainty": "不推及他人的动机、人生结论或普遍效果"
+      }
+    },
+    {
+      "relation": "evidence.ownership",
+      "value": {
+        "owner": "第一人称叙述者",
+        "basis": "当场看到并完成的行动"
+      }
+    }
+  ]
+}

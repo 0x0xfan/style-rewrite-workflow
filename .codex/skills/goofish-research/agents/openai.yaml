@@ -1,0 +1,4 @@
+interface:
+  display_name: "闲鱼真实调研"
+  short_description: "采集闲鱼真实商品数据、详情事实和截图证据包"
+  default_prompt: "使用 $goofish-research 从已登录的闲鱼 Chrome 页面采集真实事实与截图，并生成可复核证据包。"
