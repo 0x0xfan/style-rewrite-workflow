@@ -1,0 +1,23 @@
+{
+  "record_id": "human-review-YYYYMMDD-001",
+  "profile_id": "replace-me",
+  "generation_test_id": "replace-me-generation-test",
+  "decision_source": "user_explicit_confirmation",
+  "candidate_profile_sha256": "sha256:replace-with-64-hex",
+  "approved_control_state_sha256": "sha256:replace-with-64-hex",
+  "evidence_bundle_sha256": "sha256:replace-with-64-hex",
+  "generation_test_sha256": "sha256:replace-with-64-hex",
+  "generation_output_set_sha256": "sha256:replace-with-64-hex",
+  "decision": "approved",
+  "reviewer_type": "human",
+  "reviewer": "待填写人工确认者",
+  "decided_at": "YYYY-MM-DDTHH:mm:ssZ",
+  "change_reason": "待填写批准原因",
+  "checklist": {
+    "sample_decisions_confirmed": false,
+    "candidate_evidence_confirmed": false,
+    "source_facts_absent": false,
+    "holdout_or_limitation_confirmed": false,
+    "generation_test_confirmed": false
+  }
+}

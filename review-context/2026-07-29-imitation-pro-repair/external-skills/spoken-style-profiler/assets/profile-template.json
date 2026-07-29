@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.1-draft",
+  "profile_id": "replace-me",
+  "display_name": "待命名口播 IP",
+  "domain": "zh-short-video-spoken",
+  "status": "draft",
+  "approval": {
+    "state": "draft",
+    "requires_human_approval": true,
+    "approved_by": null,
+    "approved_at": null,
+    "change_reason": null,
+    "record_id": null,
+    "generation_test_id": null,
+    "candidate_profile_sha256": null,
+    "approved_control_state_sha256": null,
+    "evidence_bundle_sha256": null,
+    "generation_test_sha256": null,
+    "generation_output_set_sha256": null
+  },
+  "corpus": {
+    "corpus_id": "replace-me-v1",
+    "raw_unit_count": 0,
+    "independent_cluster_count": 0,
+    "independence_clusters": [],
+    "included_unit_ids": [],
+    "excluded_unit_ids": [],
+    "unresolved_decisions": []
+  },
+  "selector_signals": [],
+  "communication_persona": [],
+  "content_strategy": [],
+  "content_types": [],
+  "frameworks": [],
+  "attention_rhythm": {
+    "basis": "unknown",
+    "stages": []
+  },
+  "patterns": [],
+  "avoid_patterns": [],
+  "boundaries": [
+    "只学习表达形态，不导入来源项目、收益、案例、账号、资料、平台操作或 CTA 关键词。",
+    "下游新稿只能使用目标内容另行提供的事实、数据、步骤、证据与 CTA。"
+  ],
+  "rewrite_interface": {
+    "required_content_fields": [],
+    "immutable_relations": ["data.value+unit+subject+time_window+conditions", "step.meaning", "evidence.ownership", "cta.channel+keyword"],
+    "observations_selectable": false,
+    "prohibited_audience_meta_phrases": ["原稿里", "原文里", "文案里", "飞书里", "资料里", "材料中", "根据你提供的", "下面这版"]
+  },
+  "generation_interface": {
+    "forward_test_required_before_approval": true,
+    "selector_abstention_required": true,
+    "fact_lock_source": "external_content_contract_and_output_audit",
+    "conflict_policy": "fail_closed",
+    "control_precedence": [
+      "boundaries_and_content_locks",
+      "selector_abstention",
+      "avoid_patterns",
+      "framework",
+      "communication_persona_and_content_strategy",
+      "attention_rhythm",
+      "patterns"
+    ],
+    "required_checks": [
+      "selector_resolution_bound",
+      "content_lock_audit_matches",
+      "output_artifact_bound",
+      "pattern_span_audit_passed",
+      "avoidance_span_audit_passed",
+      "audience_meta_absent",
+      "reference_leakage_scan_passed",
+      "no_new_facts_human_confirmed",
+      "no_style_source_facts_human_confirmed",
+      "human_style_similarity_accepted",
+      "overfit_absent_human_confirmed"
+    ]
+  },
+  "limitations": []
+}

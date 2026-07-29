@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0",
+  "contract_id": "replace-me-contract",
+  "case_id": "replace-me-case",
+  "input_sha256": "sha256:replace-with-64-hex",
+  "content": {},
+  "immutable_values": []
+}

@@ -1,0 +1,33 @@
+{
+  "query": "codex代安装",
+  "scope": "visible sampled cards from one logged-in Chrome session",
+  "summary": {
+    "sampled_products": 10,
+    "page_indicator": "1/50",
+    "price_min": 7.9,
+    "price_max": 29.0,
+    "price_median": 11.89,
+    "products_with_visible_wants": 8,
+    "visible_wants_sum": 2775,
+    "visible_wants_max": 1541,
+    "visible_wants_scope": "sampled listing cards only; not sales, orders, or total market demand"
+  },
+  "detail_evidence": [
+    {
+      "item_id": "1062952323136",
+      "price": 19.9,
+      "wants": 1543,
+      "views_text": "1万浏览",
+      "source_url": "https://www.goofish.com/item?id=1062952323136&categoryId=201449620",
+      "observed_at": "2026-07-27T06:53:37.662Z",
+      "timestamp_scope": "shared_collection_record; exact per-page capture time unavailable",
+      "note": "详情页截图显示1543人想要；搜索页截图显示1541人想要；精确页面采集时刻与先后顺序未分别记录"
+    }
+  ],
+  "limitations": [
+    "Visible wants are interest signals, not sales or orders.",
+    "Sampled card count is not the platform's total result count.",
+    "Seller delivery times and outcomes are seller-authored claims.",
+    "Dynamic values may differ between search and detail pages. Both screenshots reuse one collection-record timestamp; exact per-page capture times and order are unavailable."
+  ]
+}

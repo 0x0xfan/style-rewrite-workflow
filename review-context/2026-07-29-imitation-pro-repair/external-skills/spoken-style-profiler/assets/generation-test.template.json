@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.1-draft",
+  "test_id": "replace-me-generation-suite",
+  "profile_id": "replace-me",
+  "profile_schema_version": "1.1-draft",
+  "candidate_profile_sha256": "sha256:replace-with-64-hex",
+  "mode": "evaluation_only",
+  "state": "draft",
+  "cases": [
+    {
+      "case_id": "replace-me-abstain-01",
+      "case_type": "abstain",
+      "target_framework_id": null,
+      "fallback_beat_ids": [],
+      "expected_selection": {
+        "abstained": true,
+        "content_type_id": null,
+        "framework_id": null
+      },
+      "applied_controls": {
+        "persona_rule_ids": [],
+        "strategy_rule_ids": [],
+        "attention_stage_ids": []
+      },
+      "artifacts": {
+        "input_path": "cases/replace-me/input.md",
+        "input_sha256": "sha256:replace-with-64-hex",
+        "content_contract_path": "cases/replace-me/content-contract.json",
+        "content_contract_sha256": "sha256:replace-with-64-hex",
+        "output_path": null,
+        "output_sha256": null,
+        "output_audit_path": null,
+        "output_audit_sha256": null
+      }
+    }
+  ],
+  "human_review": {
+    "state": "pending",
+    "reviewer_type": null,
+    "reviewer": null,
+    "reviewed_at": null,
+    "case_reviews": [],
+    "notes": []
+  },
+  "limitations": []
+}

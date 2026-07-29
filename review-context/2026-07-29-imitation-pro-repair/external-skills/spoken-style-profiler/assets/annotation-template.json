@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.1-draft",
+  "corpus_id": "replace-me-v1",
+  "state": "draft",
+  "units": [
+    {
+      "unit_id": "replace-me-v1:u01",
+      "independence_cluster_id": null,
+      "include_in_fusion": false,
+      "content_type_id": null,
+      "transcript_quality": "unknown",
+      "anchors": [
+        {
+          "anchor_id": "replace-me-v1:u01:p01",
+          "unit_id": "replace-me-v1:u01",
+          "relative_position": 0,
+          "function": "replace-me",
+          "relations": ["replace-me"],
+          "audience_effect": "unknown",
+          "information_role": "unknown",
+          "claim_ids": [],
+          "material_ids": [],
+          "annotation_confidence": "unknown"
+        }
+      ]
+    }
+  ],
+  "claims": [],
+  "materials": [],
+  "unresolved_questions": []
+}

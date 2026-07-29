@@ -1,0 +1,142 @@
+[
+  {
+    "Path": "CHATGPT_PRO_TASK.md",
+    "Bytes": 7441,
+    "SHA256": "48d0fd734f8164e01a0a66184d23e109bb42cf0f26661efa769caf90cc09a5c4"
+  },
+  {
+    "Path": "external-skills/qian17-copywriter/agents/openai.yaml",
+    "Bytes": 421,
+    "SHA256": "b3e226f900a29655c28ee4e20e9177e8df18e003c3fa65b736ed2014b5390f9c"
+  },
+  {
+    "Path": "external-skills/qian17-copywriter/references/compliance-check.md",
+    "Bytes": 1618,
+    "SHA256": "c038818bf15a9629fa1d9cfc4820fa99e12a1803029978f38f65ce72569cb11b"
+  },
+  {
+    "Path": "external-skills/qian17-copywriter/references/generation-workflow.md",
+    "Bytes": 8193,
+    "SHA256": "a99ea50bf5bd8b60b1cc2cdf8d512bd35e01ffc3ba5df3513d3a5f5367b915cc"
+  },
+  {
+    "Path": "external-skills/qian17-copywriter/references/material-integration.md",
+    "Bytes": 3663,
+    "SHA256": "1209e9f3e161fbd2738ed59d0a73688b25022d1a00b9fa0cbab0aec58d9b8083"
+  },
+  {
+    "Path": "external-skills/qian17-copywriter/SKILL.md",
+    "Bytes": 12585,
+    "SHA256": "e5de9c6da447af6efe50d3d26b7b868e0d3cbf907f7c12d4b3ba8152bf743555"
+  },
+  {
+    "Path": "external-skills/spoken-style-profiler/agents/openai.yaml",
+    "Bytes": 292,
+    "SHA256": "015e8feec54a21119c39441354d6114295767f58fc8478cf2828088ed1aedfbf"
+  },
+  {
+    "Path": "external-skills/spoken-style-profiler/assets/annotation-template.json",
+    "Bytes": 793,
+    "SHA256": "94b54fbe0c69f39327d8474310af70104924c3990296de02a401b678a271809e"
+  },
+  {
+    "Path": "external-skills/spoken-style-profiler/assets/approval-record.template.json",
+    "Bytes": 892,
+    "SHA256": "fa3bfdb31795c3c91ced7f79608432106caccf276520c6ffc4227e921d66d871"
+  },
+  {
+    "Path": "external-skills/spoken-style-profiler/assets/content-contract.template.json",
+    "Bytes": 193,
+    "SHA256": "300d3c6fa2688b2956e4b5e245c68af0a835141d8572f9b882157cd9a4b28b01"
+  },
+  {
+    "Path": "external-skills/spoken-style-profiler/assets/generation-test.template.json",
+    "Bytes": 1281,
+    "SHA256": "b0e0e2f746b747afdd993f1ec989cfb5555518df0136d181501e4a18549141d9"
+  },
+  {
+    "Path": "external-skills/spoken-style-profiler/assets/output-audit.template.json",
+    "Bytes": 352,
+    "SHA256": "3cbe639a1f7443bf0dc7e4279551ed12f8309353996c10ebd2a3cbdc5e1fde5a"
+  },
+  {
+    "Path": "external-skills/spoken-style-profiler/assets/profile-template.json",
+    "Bytes": 2626,
+    "SHA256": "5f0e6a5d066843efffbced4b17bf199881b5dd280a6dbdf64f681498323a7183"
+  },
+  {
+    "Path": "external-skills/spoken-style-profiler/references/annotation-guide.md",
+    "Bytes": 6341,
+    "SHA256": "650e853ca88e4989bbb1b6d4ab7f94ef8a9c6c29bf6813bff5337b50a78da7e1"
+  },
+  {
+    "Path": "external-skills/spoken-style-profiler/references/generation-readiness.md",
+    "Bytes": 6085,
+    "SHA256": "202e109ae20c70e146d16bbfa8283ae4a33db22821b5b2196e0dddfd5202342b"
+  },
+  {
+    "Path": "external-skills/spoken-style-profiler/references/profile-schema.md",
+    "Bytes": 11373,
+    "SHA256": "2458e3d9740ca66c482bc3d6e5b8aee61e29820fcf3243e2071826cfd4a31805"
+  },
+  {
+    "Path": "external-skills/spoken-style-profiler/references/review-gates.md",
+    "Bytes": 5254,
+    "SHA256": "a7982127a3afe833ef51def90739ae401e2280eddb09564c7eb92aa6a6321d6c"
+  },
+  {
+    "Path": "external-skills/spoken-style-profiler/references/workflow.md",
+    "Bytes": 8898,
+    "SHA256": "a63f437af2f66e5bff2e9294f15bce16b84e0cd44e2f6ee6f71906ce92c8f1ba"
+  },
+  {
+    "Path": "external-skills/spoken-style-profiler/scripts/self-test.mjs",
+    "Bytes": 56115,
+    "SHA256": "1986316659ebc4e8ebafd976a85aa2124cc23f449302f151ee1596f724235c0d"
+  },
+  {
+    "Path": "external-skills/spoken-style-profiler/scripts/spoken-style-tool.mjs",
+    "Bytes": 118499,
+    "SHA256": "a5e9786a22310d635d5d0df44762e8d1f900ead19dd962dcd22dc5ea2a315f83"
+  },
+  {
+    "Path": "external-skills/spoken-style-profiler/SKILL.md",
+    "Bytes": 10523,
+    "SHA256": "25efe10e9e1f03f017537e4c42be0c47da34415153b6df0e07f13e673f1ecf09"
+  },
+  {
+    "Path": "README.md",
+    "Bytes": 899,
+    "SHA256": "58b696e67ec56d4589f9c13bcaf2708499c76deb15671eb93970b89e54e22615"
+  },
+  {
+    "Path": "user-feedback-case/analysis.json",
+    "Bytes": 1411,
+    "SHA256": "2cd54a112ec75957a6aaf783cd3c1f37e095490866a893d8b9b8734f865ffecf"
+  },
+  {
+    "Path": "user-feedback-case/generation-metadata.json",
+    "Bytes": 1356,
+    "SHA256": "2f6b1f095bba3d9064c7d1031135b80ce3df4d9558ddb7e773f360d7737751d0"
+  },
+  {
+    "Path": "user-feedback-case/knowledge-pack.json",
+    "Bytes": 12071,
+    "SHA256": "bf04199b2bf7625e6b79b27da9b71424b99fd0c44d27a11872b9856c2d8035f9"
+  },
+  {
+    "Path": "user-feedback-case/products.json",
+    "Bytes": 8947,
+    "SHA256": "b3ea9fb237626e2db82e4817b386ed94935200cc366cc2d101d992c5a15c1db4"
+  },
+  {
+    "Path": "user-feedback-case/report.md",
+    "Bytes": 1525,
+    "SHA256": "92f03333459c8c18bcd1420490862601a4a08e5a0fb1c0164599f5d1c7d642c0"
+  },
+  {
+    "Path": "user-feedback-case/unsatisfactory-output.md",
+    "Bytes": 5499,
+    "SHA256": "c86e327f9d90be2d05602f688ad9248f116195d8d1302f5e867501b63fd45f65"
+  }
+]
