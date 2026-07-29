@@ -1,5 +1,25 @@
 # Current
 
+## GPT Pro GitHub Direct Dispatch Override — 2026-07-29
+
+- User explicitly replaced the ZIP-only transfer method with direct private-GitHub access for the right-side ChatGPT Pro conversation.
+- Complete review context was committed and pushed to private repository commit `1eba623e4ac76ae8c89df92283a5053c8940d87f` under `review-context/2026-07-29-imitation-pro-repair/`.
+- The context contains the task contract, manifest, real rejected output, generation metadata, knowledge pack, fact/product analysis, internal report and review-only snapshots of both external Skills. Credential scan returned zero findings.
+- Dispatch remains `BLOCKED` at message submission, not repository access: Playwright `fill + Enter` and direct DOM `click/type/Enter` each timed out. Readback after both attempts showed URL `https://chatgpt.com/`, no user message, no conversation ID and recurring `ab.chatgpt.com` initialization timeout.
+- No claim has been made that ChatGPT Pro accessed GitHub or reviewed the source.
+- Safe resume: submit the short GitHub task message once from the visible right-side tab, then Codex can monitor the created conversation, record its URL, challenge findings and integrate verified repairs.
+
+## GPT Pro Imitation Repair Dispatch — 2026-07-29
+
+- User feedback: the current imitation quality is unsatisfactory; this is now the WIP=1 mainline.
+- A new evidence-complete package was built from Git commit `c85a9a19e34a968231d75342d33eb1e2b49bde9a` and includes the real rejected output, generation metadata, knowledge pack, product/fact analysis, canonical style contracts and both external Skills.
+- Package: `artifacts/dual-agent/2026-07-29-imitation-pro-repair/imitation-pro-repair-c85a9a1.zip`, 574,914 bytes, SHA-256 `59049d7f9ec31c5bf62be68693779aa72f054457d7db79f71313a819b2a6d2ab`.
+- Task contract: `artifacts/dual-agent/2026-07-29-imitation-pro-repair/CHATGPT_PRO_TASK.md`.
+- Secret scan passed with zero credential findings and zero forbidden archive entries.
+- Dispatch status: `BLOCKED`. The right-side in-app ChatGPT Pro tab is open and set to Pro, but two upload-path attempts failed: the unique general file input was not visible, then the visible attachment-button interaction timed out. Page readback again showed `ab.chatgpt.com` timeout traffic and no attached filename.
+- No task message was sent and no ChatGPT Pro conversation URL was created. Do not claim external review occurred.
+- Safe resume: manually attach the existing ZIP in the right-side Pro tab once, then Codex can send the prepared task, record the conversation URL, monitor, repair and independently verify.
+
 ## GitHub Repository — 2026-07-29
 
 - Repository: `https://github.com/0x0xfan/style-rewrite-workflow`

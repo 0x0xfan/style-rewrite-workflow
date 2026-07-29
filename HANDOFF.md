@@ -1,5 +1,31 @@
 # Handoff
 
+## Blocked Report — 2026-07-29 GitHub Direct GPT Pro Dispatch
+
+- User-authorized route: right-side ChatGPT Pro reads the private GitHub repository directly; ZIP upload is superseded for this dispatch.
+- Review-context commit: `1eba623e4ac76ae8c89df92283a5053c8940d87f`.
+- Review-context path: `review-context/2026-07-29-imitation-pro-repair/`.
+- Repository preparation succeeded: 29 files committed and pushed, including the task, manifest, rejected output, generation inputs and external Skill snapshots; secret scan was clean.
+- Attempt 1: Playwright located the unique chat textbox, confirmed the Pro selector, filled the GitHub dispatch prompt and pressed Enter, but the browser operation timed out. Recovery readback showed no prompt and no conversation URL.
+- Attempt 2: a fresh DOM snapshot identified the visible chat textbox; direct click/type/Enter also timed out. Recovery readback again showed a blank new chat and repeated `ab.chatgpt.com` timeout.
+- Status: `BLOCKED` before external review. ChatGPT Pro has not proved repository access and has not returned findings.
+- Required recovery: one visible user-side submission of the short GitHub dispatch prompt in the right tab. After a conversation URL exists, Codex resumes all technical communication and verification.
+- Do not retry browser submission again until the page state changes; do not claim silence means progress.
+
+## Blocked Report — 2026-07-29 GPT Pro Imitation Repair
+
+- Status: `BLOCKED` before external dispatch; no product implementation was changed in this attempt.
+- User feedback: current imitation is unsatisfactory despite prior technical gates.
+- New package: `artifacts/dual-agent/2026-07-29-imitation-pro-repair/imitation-pro-repair-c85a9a1.zip`.
+- Package baseline: Git commit `c85a9a19e34a968231d75342d33eb1e2b49bde9a`; 574,914 bytes; SHA-256 `59049d7f9ec31c5bf62be68693779aa72f054457d7db79f71313a819b2a6d2ab`; 213 archive entries; zero forbidden entries.
+- Added context: the actual rejected Markdown output, `generation-metadata.json`, `knowledge-pack.json`, `analysis.json`, `products.json`, internal report, canonical profiler Skill and Qian17 copywriter Skill.
+- Prepared task: `artifacts/dual-agent/2026-07-29-imitation-pro-repair/CHATGPT_PRO_TASK.md`, focused on diagnosing the gap between passing machine gates and failing human style judgment, adding failure-first regressions, implementing a minimal reusable generation-plan fix, and producing an evaluation-only shadow output.
+- Attempt 1: direct general file input was present but hidden; supported click failed as not visible.
+- Attempt 2: visible attachment-button interaction timed out; recovery readback showed no open menu or attachment and repeated `ab.chatgpt.com` initialization timeout.
+- External review evidence: none. No prompt or ZIP reached ChatGPT Pro; no conversation URL exists.
+- Required recovery: in the right-side Pro tab, manually attach the existing ZIP once. After the attachment is visible, Codex can continue all remaining communication and verification without user relaying technical messages.
+- Forbidden fallback: do not publish the private repository, paste incomplete source context, or ask ChatGPT Pro to pretend it accessed local/private files.
+
 ## GitHub Initialization — 2026-07-29
 
 - Private repository: `https://github.com/0x0xfan/style-rewrite-workflow`.
