@@ -1,5 +1,16 @@
 # Handoff
 
+## GitHub Initialization — 2026-07-29
+
+- Private repository: `https://github.com/0x0xfan/style-rewrite-workflow`.
+- Branch: `main`, tracking `origin/main`.
+- Initial import commit: `7b0774b0568800dc15cb58d2654cc5798c022797`.
+- GitHub CLI 2.96.0 was installed and authenticated as `0x0xfan`.
+- The repository was created without a remote README to avoid history conflicts, then 177 explicitly scoped files were committed and pushed.
+- Excluded from GitHub: `.env.local`, `.agents/`, `.claude/`, `.venv/`, `artifacts/`, `research-runs/`, `仿写案例库/`, workbench import/rewrite/audio outputs, caches, databases, browser/session state, generated media and the two local generated draft Markdown files.
+- Pre-push checks: secret scan 0; Node syntax passed; spoken DNA 6/6; canonical profiler 51/51; content-fusion 8/8.
+- Worktree isolation is now available for future implementation/review tasks. Keep generated state and ignored private evidence outside worktrees unless a task contract explicitly requires a safe fixture.
+
 ## Blocked Report — 2026-07-29 External ChatGPT Pro Dispatch
 
 - Status: `BLOCKED` before external implementation; no product source code was changed.

@@ -1,5 +1,15 @@
 # Current
 
+## GitHub Repository — 2026-07-29
+
+- Repository: `https://github.com/0x0xfan/style-rewrite-workflow`
+- Visibility: private.
+- Default/local branch: `main`.
+- Initial import commit: `7b0774b0568800dc15cb58d2654cc5798c022797`.
+- Local repository is now valid and tracks `origin/main`; this supersedes the earlier pre-initialization statement that Git/worktree isolation was unavailable.
+- Initial import contains 177 source, project-document and test files. `.env.local`, local agent state, artifacts, research runs, imported/rewrite/audio outputs, private case libraries, databases, caches and generated media are ignored and were not pushed.
+- Initial validation before push: workbench/validator syntax passed; spoken DNA 6/6; canonical profiler 51/51; content-fusion 8/8 in an ignored local virtual environment; staged secret scan 0 findings.
+
 ## Dual-Agent Engineering Run — 2026-07-29
 
 - Project state: `BLOCKED` before external implementation dispatch.
