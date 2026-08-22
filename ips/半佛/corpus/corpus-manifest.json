@@ -1,0 +1,114 @@
+{
+  "corpus_id": "banfo-wechat-v1",
+  "built": "2026-08-22",
+  "source": "公众号图文 PDF 经 PyMuPDF 提取，原文不入库（仿写案例库/ 已 gitignore）",
+  "unit_count": 10,
+  "note": "本清单由 2026-08-22 回源头重读建立。先前的半佛档案无此层，结论无法回查到具体样本。",
+  "content_type_distribution": {
+    "恰饭稿": 7,
+    "纯评论": 2,
+    "惊叹夸赞": 1
+  },
+  "units": [
+    {
+      "unit_id": "bf01",
+      "title": "三菜一汤的含金量只有余额宝知道",
+      "content_type": "恰饭稿",
+      "opening_type": "网上流行XX文学",
+      "numbered_sections": 6,
+      "chars": 3490,
+      "sha256": "a5d55ea4df7240022058425d0c03f7d5ce10d946c2b9d1e062a9a23fd8c2b2e4",
+      "source_file": "仿写案例库/半佛/extracted_texts/三菜一汤的含金量只有余额宝知道.txt"
+    },
+    {
+      "unit_id": "bf02",
+      "title": "不理解西贝招惹罗永浩干嘛",
+      "content_type": "纯评论",
+      "opening_type": "凌晨困惑式",
+      "numbered_sections": 4,
+      "chars": 2531,
+      "sha256": "b7327d7d3c988959c5e1eebe2edeef1daf6023824371c3d594577eb4156dd43f",
+      "source_file": "仿写案例库/半佛/extracted_texts/不理解西贝招惹罗永浩干嘛.txt"
+    },
+    {
+      "unit_id": "bf03",
+      "title": "为让你知道商家什么时候开门大众点评竟然砸了上百亿了",
+      "content_type": "恰饭稿",
+      "opening_type": "第一人称踩坑经历",
+      "numbered_sections": 2,
+      "chars": 4493,
+      "sha256": "6fdda400443f3bc7352fd130527c25aea1f7c2ddb2f547f15e1b41a74b5efcf4",
+      "source_file": "仿写案例库/半佛/extracted_texts/为让你知道商家什么时候开门大众点评竟然砸了上百亿了.txt"
+    },
+    {
+      "unit_id": "bf04",
+      "title": "五菱是彻底不想过下去了吗",
+      "content_type": "惊叹夸赞",
+      "opening_type": "有人跟我说",
+      "numbered_sections": 4,
+      "chars": 2011,
+      "sha256": "7b320fb077dac2804d60766ee0e59596cda80e1eccde314cb1128670e954b4b7",
+      "source_file": "仿写案例库/半佛/extracted_texts/五菱是彻底不想过下去了吗.txt"
+    },
+    {
+      "unit_id": "bf05",
+      "title": "亚朵隐私风波给我看傻眼了",
+      "content_type": "纯评论",
+      "opening_type": "后台有人分享",
+      "numbered_sections": 1,
+      "chars": 1573,
+      "sha256": "fc8a84b70e5d20ec8ce07f467de8daf117b295890c7c2807fb1abcccac68da46",
+      "source_file": "仿写案例库/半佛/extracted_texts/亚朵隐私风波给我看傻眼了.txt"
+    },
+    {
+      "unit_id": "bf06",
+      "title": "京东把线下商场打通关了",
+      "content_type": "恰饭稿",
+      "opening_type": "第一人称消费经历",
+      "numbered_sections": 4,
+      "chars": 4336,
+      "sha256": "7f001dd20f75905f2847f1ccad6689fac62f93d6f633721bab33fef1696efb55",
+      "source_file": "仿写案例库/半佛/extracted_texts/京东把线下商场打通关了.txt"
+    },
+    {
+      "unit_id": "bf07",
+      "title": "京东把试用这事儿玩透了",
+      "content_type": "恰饭稿",
+      "opening_type": "第一人称消费经历",
+      "numbered_sections": 9,
+      "chars": 5193,
+      "sha256": "e43778c01a4b340d056026b0793aabe26115c6456501fabe96917e050a0784fa",
+      "source_file": "仿写案例库/半佛/extracted_texts/京东把试用这事儿玩透了.txt"
+    },
+    {
+      "unit_id": "bf08",
+      "title": "今天的支付宝这么邪修吗",
+      "content_type": "恰饭稿",
+      "opening_type": "你打开了吗",
+      "numbered_sections": 4,
+      "chars": 2994,
+      "sha256": "51248973fd6a7c8462ff5f85262bdb4e405344d3ccf0b4fb8aba92a600d7542c",
+      "source_file": "仿写案例库/半佛/extracted_texts/今天的支付宝这么邪修吗.txt"
+    },
+    {
+      "unit_id": "bf09",
+      "title": "何小鹏到底在想什么",
+      "content_type": "恰饭稿",
+      "opening_type": "场景白描",
+      "numbered_sections": 12,
+      "chars": 4200,
+      "sha256": "56e6f158ab02ef9d792b1e71c0597c306426705c1c10eccb2e58dfd0ddff1fa6",
+      "source_file": "仿写案例库/半佛/extracted_texts/何小鹏到底在想什么.txt"
+    },
+    {
+      "unit_id": "bf10",
+      "title": "你永远不知道二手房交易藏了多少坑",
+      "content_type": "恰饭稿",
+      "opening_type": "后台一直有人问我",
+      "numbered_sections": 6,
+      "chars": 4832,
+      "sha256": "8cd73069485e07018251f781ede366222c1caa4d8287808c64d3621cdf1c3e6f",
+      "source_file": "仿写案例库/半佛/extracted_texts/你永远不知道二手房交易藏了多少坑.txt"
+    }
+  ]
+}
