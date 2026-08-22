@@ -99,6 +99,17 @@ node engine\skills\style-copywriter\scripts\validate-generated-copy.mjs --help
 
 正式生成必须同时具备三类独立输入：项目事实 contract、非空且可回读的知识包、指定风格档案。缺任何一类都停止，不得降级为“事实 + 风格”。
 
+来源泄漏扫描（查产出稿有没有从原始来源原样搬字；与跨稿重复是两层）：
+
+```powershell
+node engine\leakage\check-source-leakage.mjs `
+  --corpus 'C:\Users\admin\Downloads\钱十七-闲鱼文案拆解.docx' `
+  --drafts 'ips\钱十七\outputs\闲鱼餐饮券-长视频版.md' 'ips\钱十七\outputs\闲鱼餐饮券-短视频版.md' `
+  --n 12
+```
+
+`--corpus` 支持 .txt/.md/.docx 文件或目录（目录读其中的 .txt/.md/.docx）；默认 12 字连续重合即命中，事实枚举短语受保护（见 `engine/leakage/leakage-rules.json`）。有命中退出 1、无命中退出 0；语料在仓库外时路径不存在会打印“语料不在本机，跳过”并退出 0。
+
 ## 当前各 IP 入口
 
 钱十七：
