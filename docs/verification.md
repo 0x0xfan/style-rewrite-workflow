@@ -1,6 +1,45 @@
 
 # Verification
 
+## 2026-07-30 Qian17 style application rerun
+
+- After the user correctly challenged “why was Qian17 style not actually used,” the rejected screening draft was not treated as evidence that the profile itself was wrong.
+- Rebuilt the same Codex project as a money-project explanation using `fw-project-breakdown`, with all 10 required path slots explicitly evidenced or marked `test_only/bounded_verified`.
+- Added style-application trace validation: every required stable control and declared pattern must bind a purpose and an exact output excerpt. A metadata-only style/rule declaration now fails.
+- New styled copy traces A1–A6 plus P1/P7 to eight real spans; input preflight passed 6/6 and output validation passed 8/8. The report explicitly states that span coverage does not prove human similarity.
+- Word QA: 19 nonempty paragraphs exactly match canonical Markdown after removing two internal image markers; 2 inline images, 2 semantic alt texts, a11y 0/0/0, no headers/footers or visible production markers.
+- Real Word-compatible COM export + Poppler render produced two pages; both were visually inspected and passed.
+- Five-minute expansion: 1,126 CJK characters / 1,240 spoken units, estimated 4.8 minutes at 260 units/minute and 5.2 minutes at 240 units/minute. Added only practice, listing-detail and inquiry-scope actions.
+- Canonical Word: 348,979 bytes, SHA-256 `77CD1353AB8AABFC1FBEE625D7927C9B83FCF0CC60A00EA68254D60F7E193083`.
+- Repository gates: lint passed; test suite 19/19 passed; personal Qian17 Skill valid; `git diff --check` no whitespace errors.
+- User style judgment is pending; profile remains `draft/review_only`.
+
+## 2026-07-30 Codex installation clean generation baseline (historical; user rejected for AI tone/no Qian17 voice)
+
+- Saved a SHA-bound task brief that preserves the user's exact novice-viewer requirement while classifying “几分钟学会 / 接单赚钱” as unverified hypotheses rather than facts.
+- Added `validate-generation-inputs.mjs` and five Node regression tests for a valid plan, role drift, unverified required slots, counterevidence misuse and rejected-plan reuse.
+- Replaced the ineligible `fw-project-breakdown` with `fw-screening-tutorial`; Baseline and bounded Enhanced both passed 6/6 preflight checks and 7/7 output checks with zero warnings/failures.
+- Local isolated install evidence: Windows 11 x64, `@openai/codex@0.145.0`, 229.6 seconds, exit 0, `codex-cli 0.145.0`; no authentication or customer delivery was attempted.
+- Canonical Word: 348,294 bytes, SHA-256 `1CE77870CBB76ECAC9464A7ECB73B0BF9C5CD020CF71C14D43F24BCC7C1D34F9`; two inline verified images, two nonempty semantic alt texts, a11y 0/0/0.
+- Real Word-compatible COM export + Poppler render produced two pages; both pages were visually inspected with no clipping, overlap, blank page, unreadable crop or detached evidence paragraph.
+- Repository gates: `npm run lint` passed; `npm run test:spoken-dna` passed 17/17; new validator syntax passed; personal `qian17-copywriter` Skill returned `Skill is valid!`; `git diff --check` reported no whitespace errors.
+- Profile remains `draft/review_only`; machine checks do not constitute user style approval.
+
+## 2026-07-29 Qian17 complete-corpus reprofile
+
+- Authoritative DOCX SHA-256: `036B6795AC894CCE20A81A2ACCFC08284C67337B8F20E27643592D0AC2F1E290`.
+- Text/structure extraction: 86 total paragraphs, 75 nonempty, 11 script units.
+- Scaffold health: 11 raw units, 20,745 effective characters, one known near-duplicate pair (`u03/u07`, similarity 0.871), 10 independent clusters after the user's reviewed merge decision.
+- `spoken-style-tool.mjs validate`: `ok=true`, 0 errors, 0 warnings.
+- `spoken-style-tool.mjs leakage --min 20`: `ok=true`, 0 matches.
+- `npm run lint`: passed.
+- `npm run test:spoken-dna`: passed 12/12, including corpus closure, duplicate handling, two-path framework evidence, baseline/enhanced budget, target-draft fact leakage and canonical-alias equality.
+- NTFS hard-link audit: canonical profile and `profiles` alias have the same File ID.
+- Personal `qian17-copywriter` Skill: `quick_validate.py` returned `Skill is valid!` with UTF-8 system Python.
+- DOCX visual rendering was not run because LibreOffice `soffice` is unavailable. This task used textual/structural evidence only.
+- Right-side ChatGPT Pro external dispatch did not occur: two upload routes timed out with recurring ChatGPT page network errors; no prompt, file or conversation URL was created.
+- Scoped recovery ZIP: `artifacts/dual-agent/2026-07-29-qian17-reprofile/qian17-reprofile-ab10111.zip`, 80,872 bytes, SHA-256 `c69c8d8e544bac113808658c076b07022e9fb2098dd027b360868afda0d9e34b`; 15 entries, secret scan 0 findings, forbidden archive paths 0.
+
 ## Required Evidence Types
 
 - Static checks: project files exist and can be read as UTF-8.

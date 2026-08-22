@@ -1,5 +1,135 @@
 # Handoff
 
+## Codex 远程安装文案视频配图 — 2026-07-31（已撤销）
+
+- 用户认为新增配图不合格，要求删除并恢复原状。
+- 已从本轮备份恢复原文档，正文文本与备份一致，inline 图片恢复为原有 2 张。
+- 恢复后文档 SHA-256：`60A8BBF9A8CBEB1FBBCD61A758AAC2029C23187D1981FC4890EA8F9727047F2A`。
+- 本轮新增素材、渲染目录和生成缓存已移入回收站；本轮辅助脚本已删除，未保留配图交付物。
+
+## 提问式校准对话导出 — 2026-07-31
+
+- 目标：把用户要求“向我提问、我判断对错”的昨天下午对话导出给其他模型参考。
+- 产物：`C:\Users\admin\Desktop\钱十七风格校准_提问式训练对话_20260730_1410-1704.md`。
+- 范围：2026-07-30 14:10:19–17:04:39（Asia/Shanghai）；来源为本地 rollout JSONL；已排除自动注入上下文和 AGENTS 系统说明。
+- 验证：80,716 bytes；SHA-256 `497097F5B2BDA04AE8A0E25863D45A6A98B1C5A92DE70918D279A905AFB2979E`；已检查文件头、文件尾和哈希。
+- 状态：导出完成；仅写入桌面文件，项目代码未改动，未提交、未推送、未部署。
+
+## Codex Installation Middle/Ending Rewrite — 2026-07-31 (current)
+
+- User froze the previously calibrated opening and narrowed this round to the middle and ending.
+- The authoritative 11-script corpus was reread directly. Qian17 project middles advance through real project dependencies; major transitions repackage value, while small steps deliver continuously without a fixed hook quota.
+- The three buyer types are now one compact demand-proof beat. The dominant chain is capability preparation → listing/acquisition → need classification → quotation → delivery. The ending no longer recaps the whole lesson; it moves from the last delivery boundary directly to the free installer/tutorial CTA and identity line.
+- Fresh Baseline SHA-256: `6CED29A44C461599B6C978DC722794817C10B1ABE5504EBFCEBE97D0F12F9EAF`; Enhanced SHA-256: `9D2B05D0BC3C5A4C12CE8D6359FDF525D621A6366CFCB40664849ED0787679FA`.
+- Enhanced display/TTS units: 1,251 / 1,251; estimated 5:13 at 240 characters/minute. Search/title support: 172/1,251 = 13.7%.
+- Preflight: Baseline 8/8, Enhanced 8/8. Output: 13/13, 0 warnings/failures, authoritative-corpus 20-character leakage scan 0 findings. Repo verification: 32/32 tests plus lint, validator syntax, JSON and `git diff --check` passed.
+- Canonical Word: `research-runs/2026-07-27_codex代安装_refresh/codex代安装_纯口播稿_钱十七风格_改进版.docx`; 348,672 bytes; SHA-256 `B682D8FA16AD0C12A3AF2809DE9AB892ABA5068B1C41709E684C71E050AAE809`.
+- Word/Markdown paragraphs: 19/19. Images/alts: 2/2. A11y high/medium/low: 0/0/0. Packaged render lacked `soffice`; Microsoft Word exported a real 2-page PDF and bundled Poppler produced PNGs. Both pages were inspected and passed.
+- Status: local only; no commit, push or deployment. Profile remains `draft/review_only`; candidate remains `pending_user_review`.
+- Next: accept only user feedback on the middle and ending. If rejected again, isolate whether the failing layer is project-stage selection, benefit packaging at major transitions, or sentence voice; do not restart the opening.
+
+## Codex Installation Human-Lock Rewrite — 2026-07-31 (historical; superseded by middle/ending rewrite)
+
+- User rejected the allocation-only rewrite because it again lost Qian17 hooks and regressed into AI-like classification, tidy summaries and service explanation. The failure was preserved in `human-calibration-20260730.md`.
+- New task-local `style-acceptance-locks.json` binds the calibration SHA-256 and keeps product phrases outside the generic DNA. It contains 5 exact approvals, 3 semantic locks, 6 rejected expressions, 3 AI-shell budgets and 6 evidence-bound hook duties.
+- Input preflight now fails when calibration/lock/task/metadata hashes do not close, or when a draft/review-only structural rewrite lacks a fresh Baseline/Enhanced plan and reset status. Output validation now checks exact/semantic locks, rejected shells, hook fulfillment, allocation and comparison hashes.
+- Fresh Baseline SHA-256: `D71F71F9149BF2A30CAEB4DB65B32B28D20223DF3BAD27CB3B18CD5F4C6737EC`; fresh Enhanced SHA-256: `4C862FEA82585A021B711FB39BFB5979878A11526420ED744629811DC9B1A8A9`.
+- Enhanced display copy has 1,170 effective characters. TTS has 1,153 effective characters, no Latin/digits/markers/raw brands, and estimates to 4:48 at 240 characters/minute. Actual TTS pacing is unverified.
+- Listing/search support is 159/1,170 effective display characters, 13.6%, below the task-local 15% cap.
+- Persistent evidence: `style-acceptance-locks.json`, `baseline-enhanced-comparison-20260731.md`, `adversarial-copy-review-20260730.md`, `final-verification-20260730.md`, `style-application-audit.md`, `listener-progression-plan.md`, and both validation reports.
+- Task Brief SHA-256: `F2406C9412E736658992D5444194D5F1BA43D578863700FC017C0404AA03B203`.
+- Canonical Word: `research-runs/2026-07-27_codex代安装_refresh/codex代安装_纯口播稿_钱十七风格_改进版.docx`; 348,711 bytes; SHA-256 `811C94A177EF170E9F3D99E501E357AE5389741CB323FE753E9972AB3938D61F`.
+- Word QA: Markdown/Word 22/22 exact; 2 inline images with semantic alt text; a11y 0/0/0; no non-empty header/footer, unresolved marker or private audit label. Rendering failed because the office converter executable is absent; no current visual-layout pass may be claimed.
+- Verification: preflight 8/8; output 13/13; lint passed; repository tests 32/32; both Skills valid; validator syntax and diff-check passed.
+- ChatGPT Pro conversation: `https://chatgpt.com/c/6a69b4e9-dec8-83ee-80c4-8d9ad4a8e568`. Two prior sends timed out; no new Pro reply exists and no third retry was made.
+- Git state: branch `main`, baseline HEAD `ab101118e63fbf047654cf5e1438282ba2f9e59e`; dirty worktree preserved; local-only, no commit/push/PR/deployment. Qian17 profile remains `draft/review_only`; Enhanced remains `pending_user_review`.
+
+## Business Architecture Diagram — 2026-07-30
+
+- User asked for a business-logic architecture diagram for P011 风格仿写, not code details.
+- Created draw.io artifact: `D:\项目仓库\大脑\diagrams\04-风格仿写业务架构图.drawio`.
+- User then asked Codex to open it. Next AI Draw.io's `embed.diagrams.net` iframe was present but stuck behind the loading state and rendered a blank/broken frame when forced visible, so a local preview artifact was added: `D:\项目仓库\大脑\diagrams\04-风格仿写业务架构图.preview.html`. It is currently served at `http://localhost:4317/04-%E9%A3%8E%E6%A0%BC%E4%BB%BF%E5%86%99%E4%B8%9A%E5%8A%A1%E6%9E%B6%E6%9E%84%E5%9B%BE.preview.html`.
+- Diagram covers five layers: style source, Style DNA, target-content inputs, controlled generation, and delivery/regression.
+- Key gates shown: source facts cannot be reused as target facts; draft/review_only DNA cannot drive formal selection; generation requires task brief, fact contract, nonempty knowledge pack and verified materials.
+- Validation: `.drawio` parsed successfully as XML; preview page loaded and rendered 187 SVG children in the in-app browser. Project state unchanged: Qian17 remains `draft/review_only`; user style acceptance remains pending.
+
+## Qian17 style application rerun — 2026-07-30
+
+- User corrected the diagnosis: ask why Qian17 style was not actually applied before blaming the profile. The rerun follows that order.
+- Same Codex project facts, two private outputs: `style-application-20260730/baseline-content.md` and `qian17-styled.md`; only the styled output was written to the canonical Word.
+- Selected `fw-project-breakdown` with 10 evidenced path slots. Acquisition/inquiry remain test-only; no order or income claim was added.
+- Style trace: A1–A6 + P1/P7 each bind a purpose and an exact output span. The output validator now rejects declared rules with no copy span and explicitly says span coverage is not human similarity proof.
+- Preflight 6/6 passed; output validation 8/8 passed; 20-character source overlap 0.
+- User requested a five-minute version. Expanded from 993 to 1,240 spoken units by adding reproducible practice, four listing-detail fields and inquiry-scope screening; estimated 4.8 minutes fast / 5.2 minutes normal.
+- Canonical Word: 348,979 bytes; SHA-256 `77CD1353AB8AABFC1FBEE625D7927C9B83FCF0CC60A00EA68254D60F7E193083`; 22 paragraphs, 2 inline images, 2 semantic alt texts, a11y 0/0/0, 2 rendered pages visually passed.
+- Repository gates: lint passed, 19/19 tests passed, personal Skill valid, diff-check clean.
+- State: local-only, uncommitted, unpushed, undeployed. Style acceptance remains pending user review; profile remains draft/review_only.
+
+## User rejected the clean Enhanced — 2026-07-30 (historical; prior screening draft)
+
+- User's direct verdict: the delivered script still sounds strongly AI-generated and does not read like Qian17.
+- Root/enhanced metadata now records `rejected_by_user / failed_user_rejected`; all previous technical passes remain technical evidence only.
+- New diagnosis: the rewrite solved task-role consistency but changed the requested money-making-project pitch into a cautious feasibility-screening memo. Symmetric “three tests,” repeated evidentiary caveats, corrective contrasts and a laboratory-style install paragraph dominated the voice.
+- The current profile/generator reproduces generic structure better than Qian17's distinctive money-project voice: benefit-led certainty, oral roughness, concrete business motion, persuasion embedded in explanation, and energetic transitions.
+- Do not revise the full Word again before aligning with the user. Proposed next step: rebuild the money-project subprofile from the relevant units, separately complete the project's business path, then present a short voice sample before producing another full document.
+
+## Clean Codex Installation Baseline / Enhanced — 2026-07-30
+
+- Objective executed: diagnose whether the failure came from style profiling or downstream generation, discuss the evidence/gates with Pro-level collaborators, then produce a clean Qian17 evaluation draft.
+- Root cause: the rejected draft changed the target viewer from “no Codex delivery capability” to “already able to install/connect/troubleshoot,” forced `fw-project-breakdown` without acquisition/order/full-delivery evidence, and let counterevidence define the core method. Post-generation technical checks could not detect that semantic failure.
+- New pre-generation artifacts: `research-runs/2026-07-27_codex代安装_refresh/baseline-20260730/task-brief.json`, `source-contract.md`, `knowledge-pack.json`, both metadata files and both preflight reports. Task brief SHA-256: `eb38f4389f69a78e65ccc2591138572b9b0ee04363029fb9bee3df41a1fd24a6`.
+- Framework correction: selected `fw-screening-tutorial`; Baseline uses framework only, Enhanced adds only `pt-data-meaning-value` and `pt-formula-compression`. Both input gates passed 6/6 and output validators passed 7/7; Enhanced was selected internally, but user approval remains pending.
+- New generic enforcement: `style-engine/skills/style-copywriter/scripts/validate-generation-inputs.mjs`; five regression tests cover clean pass, role drift, missing evidence state, counterevidence misuse and rejected plan reuse. Generic and personal Qian17 Skill instructions now require task SHA alignment, framework slot evidence and knowledge stance restrictions.
+- Technical evidence: isolated npm install of `@openai/codex@0.145.0` on Windows 11 x64 completed in 229.6 seconds and returned `codex-cli 0.145.0`; no sign-in, secrets, third-party model work, customer delivery or order validation occurred.
+- Canonical Word updated in place: `research-runs/2026-07-27_codex代安装_refresh/codex代安装_纯口播稿_钱十七风格_改进版.docx`; 348,294 bytes; SHA-256 `1CE77870CBB76ECAC9464A7ECB73B0BF9C5CD020CF71C14D43F24BCC7C1D34F9`.
+- Word QA: 18 text paragraphs match Markdown after removing two internal image markers; 2 inline verified images with 2 semantic alt texts; a11y 0/0/0; no header/footer/page number; 2 rendered pages visually passed.
+- Repository gates: lint passed; test suite 17/17 passed; validator syntax passed; personal Skill valid; `git diff --check` no whitespace errors.
+- Collaboration: ChatGPT Pro conversation `https://chatgpt.com/c/6a69b4e9-dec8-83ee-80c4-8d9ad4a8e568`; two additional `gpt-5.6-terra / ultra` research/audit tasks completed without fallback. Requested model/settings were accepted; observed hidden runtime identifier was not exposed.
+- Background task IDs `019fb078-d9dd-7d00-98fc-581dc90e916d` and `019fb078-835d-75d0-9704-90ffc5b824dd` were archived after their findings were adopted and independently checked.
+- State: local-only, uncommitted, not pushed, no PR, no deployment. Qian17 profile remains `draft/review_only`. Next action is the user's subjective style judgment of the canonical Word, not automatic approval.
+
+## User Rejection + ChatGPT Pro Root-Cause Review — 2026-07-29 (historical; superseded by clean 2026-07-30 run)
+
+- User rejected the latest Codex-installation script as the same failure mode documented in `对话备份-风格拆解讨论-20260729.md`.
+- Generation metadata now preserves the distinction: technical validator remains passed, while delivery/acceptance is `rejected_by_user` and style review is failed.
+- Confirmed upstream contradictions: user requested a viewer without Codex delivery capability; contract assumed some computer/AI competence; copy then assumed installation/model/error-handling competence.
+- Confirmed gate violation: `fw-project-breakdown` was selected despite its own abstention rule and the lack of verified learning, acquisition, conversion and full-delivery path.
+- Confirmed knowledge-direction defect: a tag-matched high-barrier virtual-product source became the dominant mechanism and reversed the intended novice-opportunity angle.
+- ChatGPT Pro conversation: `https://chatgpt.com/c/6a69b4e9-dec8-83ee-80c4-8d9ad4a8e568`.
+- Pro revised its earlier emphasis: this draft is not a valid DNA Baseline; pre-generation requirement/role/selector/knowledge controls failed before DNA execution could be isolated. It agreed the current validator proves task formatting, not task correctness.
+- Codex challenge to Pro: do not reduce intent consistency to beginner keywords, do not require historical orders for every method-level claim, treat low barrier as a falsifiable hypothesis, and classify knowledge as support/counterevidence/supplement/conflict. The page failed to submit this follow-up twice; stop retrying until page state changes.
+- Next safe work: (1) derive a semantically faithful task contract from the user's exact statement; (2) research and classify evidence for learning, service formation, listing/acquisition, conversion claims and delivery; (3) run selector/claim gates before generating a clean Baseline. Do not revise the style DNA yet.
+
+## Codex 代安装纯框架 Baseline — 2026-07-29 (historical; user rejected)
+
+- User asked for one new Codex remote-installation script after the Qian17 re-profile.
+- Chosen isolation: `fw-project-breakdown` only, with no auxiliary patterns, so the user can judge the rebuilt main framework without extra style controls.
+- Canonical delivery updated in place: `research-runs/2026-07-27_codex代安装_refresh/codex代安装_纯口播稿_钱十七风格_改进版.docx`; no V2/正式版 duplicate was created.
+- Inputs: `source-contract.md`, nonempty `knowledge-pack.json`, draft Qian17 profile. Only `knowledge-01` mechanism was used; its revenue/case claims were excluded.
+- `generation-validation-report.md`: passed, 7 checks, 0 warnings/failures; nine required literals and four subject relations preserved; 20-character source-overlap scan found 0 matches.
+- DOCX QA: Markdown/Word text exact after removing two internal image markers; 2 embedded images, 2 meaningful alt texts, 0 a11y findings, no headers/footers/page-number parts, one title.
+- Rendering: packaged renderer could not use missing LibreOffice `soffice`; real Microsoft Word export plus bundled Poppler produced 3 pages. All pages were visually inspected and passed for crop, overlap, overflow, blank-page and screenshot readability.
+- Final DOCX: 348,854 bytes; SHA-256 `4274BFFD964C374256D0831D4727C11AA308B7C3FFA8BD665E6AC902D6719FFC`.
+- Repository gates: lint passed; spoken DNA tests passed 12/12; `git diff --check` passed with existing line-ending warnings only.
+- State: local-only, uncommitted, not pushed/deployed. Profile remains `draft/review_only`; next action is user style judgment, not automatic approval.
+
+## 钱十七完整语料重拆 — 2026-07-29
+
+- Authority source: `C:\Users\admin\Downloads\钱十七-闲鱼文案拆解.docx`; SHA-256 `036B6795AC894CCE20A81A2ACCFC08284C67337B8F20E27643592D0AC2F1E290`.
+- Root cause confirmed: Word has 11 scripts; old Markdown/profile covered 8. u03/u07 are one transcript-variant cluster, so evidence changed from 7 to 10 independent clusters.
+- Additional defect: old canonical Markdown contained facts and identity from later target test drafts, mislabeled as Qian17 sample evidence. It also promoted single-draft editing preferences to stable style rules.
+- Rebuilt in isolated worktree `D:\项目仓库\风格仿写-qian17-reprofile`, branch `agent/qian17-reprofile`; no commit, push, PR or deployment.
+- Canonical human file updated in place: `style-engine/evaluation/spoken-style-profiler-qian17/钱十七-DNA-重构版.md`. Workbench alias remains an NTFS hard link and must keep the same File ID.
+- Machine evidence rebuilt: `corpus-manifest.json`, `sample-health.json`, `sample-decisions.draft.json`, `annotations.draft.json`, `style-dna.draft.json` now use `qian17-spoken-v2`, 11 raw units, 10 independent clusters, three candidate frameworks and seven bounded review-only patterns.
+- Evidence reports: `source-audit-20260729.md`, `baseline-enhanced-audit-20260729.md`.
+- Independent adversarial review changed the draft: fixed-frequency value preview, blanket bans on contrast/research background/visible screenshots and one-block risk rules were rejected; stable core is concrete relevance, scope/path, numbered progression, evidence proximity and multi-stage target-owned CTA.
+- Validation: `spoken-style-tool validate` ok=true, 0 errors/warnings; `leakage` ok=true, 0 matches; `npm run lint` passed; `npm run test:spoken-dna` passed 12/12.
+- Downstream generation entry updated: `C:\Users\admin\.codex\skills\qian17-copywriter\SKILL.md` and `references\generation-workflow.md` now consume the rebuilt framework library and no longer hard-code fixed 3-5 scene previews, zero semantic contrast or one risk block. `quick_validate.py` passed under UTF-8 with system Python/PyYAML.
+- DOCX visual rendering was not performed because local LibreOffice `soffice` is unavailable. Text/structure extraction succeeded; do not call it page-layout QA.
+- External Pro blocked report: fresh Pro chat loaded, but both the general file-input upload path and visible attachment-button path timed out with recurring `ab.chatgpt.com` network errors. No source, prompt or message was transmitted, and no conversation URL exists. Stop retrying until page state changes.
+- Recovery package: `artifacts/dual-agent/2026-07-29-qian17-reprofile/qian17-reprofile-ab10111.zip`; baseline commit `ab101118e63fbf047654cf5e1438282ba2f9e59e`; 80,872 bytes; SHA-256 `c69c8d8e544bac113808658c076b07022e9fb2098dd027b360868afda0d9e34b`; 15 entries; secret findings 0; forbidden archive entries 0.
+- Next task: choose one real target content contract with a nonempty verified knowledge pack, generate framework-only Baseline and at-most-two-pattern Enhanced outputs, and ask the user to blind-rank them. Keep profile draft until that comparison is accepted.
+
 ## Blocked Report — 2026-07-29 GitHub Direct GPT Pro Dispatch
 
 - User-authorized route: right-side ChatGPT Pro reads the private GitHub repository directly; ZIP upload is superseded for this dispatch.

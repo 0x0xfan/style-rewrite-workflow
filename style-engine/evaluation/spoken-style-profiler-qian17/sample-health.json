@@ -1,15 +1,15 @@
 {
-  "unit_count": 8,
+  "unit_count": 11,
   "character_distribution": {
-    "min": 1601,
+    "min": 1041,
     "p50": 1810,
     "max": 3031,
-    "total": 16654
+    "total": 20745
   },
   "near_duplicate_pairs": [
     {
-      "left_unit_id": "qian17-spoken-v1:u03",
-      "right_unit_id": "qian17-spoken-v1:u07",
+      "left_unit_id": "qian17-spoken-v2:u03",
+      "right_unit_id": "qian17-spoken-v2:u07",
       "similarity": 0.871
     }
   ],
@@ -17,8 +17,8 @@
     {
       "cluster_id": "duplicate-candidate-01",
       "unit_ids": [
-        "qian17-spoken-v1:u03",
-        "qian17-spoken-v1:u07"
+        "qian17-spoken-v2:u03",
+        "qian17-spoken-v2:u07"
       ]
     }
   ],

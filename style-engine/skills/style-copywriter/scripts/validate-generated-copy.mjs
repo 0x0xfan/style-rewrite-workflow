@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, relative, resolve, sep } from 'node:path';
 
@@ -10,6 +11,7 @@ const DEFAULT_FORBIDDEN_TERMS = [
 ];
 
 const ALLOWED_KNOWLEDGE_USES = new Set(['explanation', 'method', 'mechanism', 'risk']);
+const ALLOWED_LITERAL_SURFACES = new Set(['spoken', 'visual', 'audit']);
 
 function parseArgs(argv) {
   const args = {};
@@ -42,6 +44,27 @@ function normalize(value) {
     .replace(/\s+/gu, '')
     .replace(/[\p{P}\p{S}]/gu, '')
     .toLowerCase();
+}
+
+function sha256(text) {
+  return createHash('sha256').update(text, 'utf8').digest('hex');
+}
+
+function spokenParagraphs(text) {
+  return text.split(/\r?\n/gu)
+    .map(line => line.trim())
+    .filter(line => line
+      && !line.startsWith('#')
+      && !/^\[(?:插图|录屏)：/u.test(line));
+}
+
+function paragraphContaining(paragraphs, excerpt, startAt = 0) {
+  const needle = normalize(excerpt || '');
+  if (!needle) return -1;
+  for (let index = Math.max(0, startAt); index < paragraphs.length; index += 1) {
+    if (normalize(paragraphs[index]).includes(needle)) return index;
+  }
+  return -1;
 }
 
 function parseValidationSpec(contractText) {
@@ -95,6 +118,41 @@ function collectLeakage(copyText, referenceText, windowSize, allowed = []) {
     seen.add(fragment);
     findings.push({ fragment, copy_offset: index, reference_offset: referenceIndex });
     if (findings.length >= 10) break;
+  }
+  return findings;
+}
+
+function literalSurface(item) {
+  if (typeof item === 'string') return 'spoken';
+  return typeof item?.surface === 'string' && item.surface.trim() ? item.surface.trim() : 'spoken';
+}
+
+function literalValue(item) {
+  if (typeof item === 'string') return item;
+  return typeof item?.value === 'string' ? item.value : '';
+}
+
+function collectSpeechSurfaceFindings(copyText, speechSurface) {
+  if (speechSurface?.mode !== 'tts' || speechSurface?.forbid_raw_technical_tokens !== true) return [];
+  const findings = [];
+  const patterns = [
+    ['package_handle', /@[a-z0-9_.-]+\/[a-z0-9_.-]+(?:@[a-z0-9_.-]+)?/giu],
+    ['url', /https?:\/\/[^\s)\]}]+/giu],
+    ['windows_path', /\b[a-z]:\\[^\s]+/giu],
+    ['cli_flag', /(^|\s)--[a-z][a-z0-9-]*/gimu],
+    ['inline_code', /`[^`\n]+`/gu],
+    ['semantic_version', /\b(?:[a-z][a-z0-9-]*\s+)?v?\d+\.\d+(?:\.\d+)+\b/giu],
+    ['long_hash', /\b[a-f0-9]{32,}\b/giu]
+  ];
+  for (const [kind, pattern] of patterns) {
+    for (const match of copyText.matchAll(pattern)) {
+      findings.push({ kind, token: match[0].trim() });
+      if (findings.length >= 20) return findings;
+    }
+  }
+  for (const term of speechSurface.forbidden_raw_terms || []) {
+    if (typeof term !== 'string' || !term.trim()) continue;
+    if (normalize(copyText).includes(normalize(term))) findings.push({ kind: 'forbidden_raw_term', token: term.trim() });
   }
   return findings;
 }
@@ -171,6 +229,23 @@ async function main() {
   const suggestions = [];
   const summary = [];
   const normalizedCopy = normalize(copyText);
+  const paragraphs = spokenParagraphs(copyText);
+
+  let styleLocks = null;
+  let styleLocksText = null;
+  let styleLocksPath = null;
+  let styleLockLoadError = null;
+  if (metadata.requires_style_acceptance_audit === true) {
+    try {
+      const lockPath = metadata.style_acceptance_lock?.path;
+      if (typeof lockPath !== 'string' || !lockPath.trim()) throw new Error('metadata 缺少 style_acceptance_lock.path');
+      styleLocksPath = resolve(dirname(metadataPath), lockPath);
+      styleLocksText = await readFile(styleLocksPath, 'utf8');
+      styleLocks = parseJsonDocument(styleLocksText, 'style-acceptance-locks');
+    } catch (error) {
+      styleLockLoadError = error.message;
+    }
+  }
 
   const knowledgeSources = Array.isArray(knowledgePack.sources) ? knowledgePack.sources : [];
   const validQuery = knowledgePack.query && typeof knowledgePack.query === 'object'
@@ -249,6 +324,219 @@ async function main() {
     summary.push({ name: '知识实际使用', result: '通过' });
   }
 
+  if (metadata.requires_style_application_audit === true) {
+    const requiredStyleControls = Array.isArray(metadata.required_style_controls)
+      ? metadata.required_style_controls.filter(item => typeof item === 'string' && item.trim())
+      : [];
+    const declaredRules = Array.isArray(metadata.rules_applied)
+      ? metadata.rules_applied.filter(item => typeof item === 'string' && item.trim())
+      : [];
+    const styleControls = Array.isArray(metadata.style_application?.controls)
+      ? metadata.style_application.controls
+      : [];
+    const invalidStyleControls = styleControls.filter(item => (
+      !item || typeof item.rule_id !== 'string' || !item.rule_id.trim()
+      || typeof item.purpose !== 'string' || !item.purpose.trim()
+      || typeof item.output_excerpt !== 'string' || !normalize(item.output_excerpt).length
+      || !normalizedCopy.includes(normalize(item.output_excerpt))
+    ));
+    const tracedRuleIds = new Set(styleControls
+      .map(item => typeof item?.rule_id === 'string' ? item.rule_id.trim() : null)
+      .filter(Boolean));
+    const missingRequiredControls = requiredStyleControls.filter(id => !tracedRuleIds.has(id));
+    const missingDeclaredRules = declaredRules.filter(id => !tracedRuleIds.has(id));
+
+    if (!requiredStyleControls.length || !styleControls.length || invalidStyleControls.length
+      || missingRequiredControls.length || missingDeclaredRules.length) {
+      if (!requiredStyleControls.length) failures.push('Style application audit 未声明 required_style_controls。');
+      if (!styleControls.length) failures.push('Style application audit 没有任何可回读的正文控制记录。');
+      if (invalidStyleControls.length) failures.push(`有 ${invalidStyleControls.length} 条风格控制缺少 rule_id/purpose，或 output_excerpt 无法在正文定位。`);
+      if (missingRequiredControls.length) failures.push(`缺少必需风格控制的正文锚点：${missingRequiredControls.join('、')}。`);
+      if (missingDeclaredRules.length) failures.push(`rules_applied 中有规则未绑定正文片段：${missingDeclaredRules.join('、')}。`);
+      suggestions.push('为每个实际使用的稳定控制和辅助规则记录正文原句；元数据声明不能替代可回读的应用证据。');
+      summary.push({ name: '风格实际应用', result: '失败' });
+    } else {
+      passed.push(`已在正文中核验 ${styleControls.length} 条风格控制锚点，覆盖 ${requiredStyleControls.length} 个必需控制。`);
+      summary.push({ name: '风格实际应用', result: '通过（仅证明已落位，不证明人工相似度）' });
+    }
+  }
+
+  if (metadata.requires_style_acceptance_audit === true) {
+    const expectedLockHash = metadata.style_acceptance_lock?.sha256;
+    const preserveExact = Array.isArray(styleLocks?.preserve_exact) ? styleLocks.preserve_exact : [];
+    const preserveSemantic = Array.isArray(styleLocks?.preserve_semantic) ? styleLocks.preserve_semantic : [];
+    const rejectedExact = Array.isArray(styleLocks?.rejected_exact) ? styleLocks.rejected_exact : [];
+    const forbiddenPatterns = Array.isArray(styleLocks?.forbidden_patterns) ? styleLocks.forbidden_patterns : [];
+    const hookDuties = Array.isArray(styleLocks?.hook_duties) ? styleLocks.hook_duties : [];
+    const lockShapeOk = !styleLockLoadError
+      && styleLocks?.schema_version === '1.0'
+      && typeof styleLocks?.lock_id === 'string' && styleLocks.lock_id.trim()
+      && styleLocks.lock_id === metadata.style_acceptance_lock?.lock_id
+      && typeof expectedLockHash === 'string'
+      && sha256(styleLocksText || '') === expectedLockHash
+      && preserveExact.length > 0
+      && rejectedExact.length > 0
+      && hookDuties.length > 0;
+    const missingExact = preserveExact.filter(item => (
+      !item || typeof item.id !== 'string' || !item.id.trim()
+      || typeof item.text !== 'string' || !item.text.trim()
+      || !copyText.includes(item.text)
+    ));
+    const missingSemantic = preserveSemantic.filter(item => (
+      !item || typeof item.id !== 'string' || !item.id.trim()
+      || !Array.isArray(item.all_of) || !item.all_of.length
+      || item.all_of.some(term => typeof term !== 'string' || !term.trim()
+        || !normalizedCopy.includes(normalize(term)))
+    ));
+    const rejectedHits = rejectedExact.filter(item => (
+      item && typeof item.text === 'string' && item.text.trim()
+      && normalizedCopy.includes(normalize(item.text))
+    ));
+    const invalidPatterns = [];
+    const patternHits = [];
+    for (const item of forbiddenPatterns) {
+      if (!item || typeof item.id !== 'string' || !item.id.trim()
+        || typeof item.pattern !== 'string' || !item.pattern.trim()) {
+        invalidPatterns.push(item?.id || 'unnamed_pattern');
+        continue;
+      }
+      try {
+        const flags = typeof item.flags === 'string' ? item.flags : 'u';
+        const expression = new RegExp(item.pattern, flags.includes('g') ? flags : `${flags}g`);
+        const count = [...copyText.matchAll(expression)].length;
+        const maximum = Number.isInteger(item.max_occurrences) ? item.max_occurrences : 0;
+        if (count > maximum) patternHits.push(`${item.id}:${count}>${maximum}`);
+      } catch {
+        invalidPatterns.push(item.id);
+      }
+    }
+
+    const invalidHookDuties = [];
+    for (const duty of hookDuties) {
+      const maximumGap = duty?.max_paragraph_gap;
+      if (!duty || typeof duty.id !== 'string' || !duty.id.trim()
+        || typeof duty.hook_excerpt !== 'string' || !duty.hook_excerpt.trim()
+        || typeof duty.delivery_excerpt !== 'string' || !duty.delivery_excerpt.trim()
+        || !Number.isInteger(maximumGap) || maximumGap < 0
+        || !Array.isArray(duty.evidence_ids) || !duty.evidence_ids.length) {
+        invalidHookDuties.push(`${duty?.id || 'unnamed_hook'}:invalid_shape`);
+        continue;
+      }
+      const hookIndex = paragraphContaining(paragraphs, duty.hook_excerpt);
+      const deliveryIndex = hookIndex >= 0
+        ? paragraphContaining(paragraphs, duty.delivery_excerpt, hookIndex)
+        : -1;
+      if (hookIndex < 0 || deliveryIndex < hookIndex || deliveryIndex - hookIndex > maximumGap) {
+        invalidHookDuties.push(`${duty.id}:missing_or_unfulfilled`);
+      }
+    }
+
+    if (!lockShapeOk || missingExact.length || missingSemantic.length || rejectedHits.length
+      || invalidPatterns.length || patternHits.length || invalidHookDuties.length) {
+      if (styleLockLoadError) failures.push(`人工校准锁文件不可读：${styleLockLoadError}。`);
+      if (!lockShapeOk) failures.push('人工校准锁文件结构、lock_id 或 SHA-256 与 metadata 不一致。');
+      if (missingExact.length) failures.push(`已通过表达被删除或改写：${missingExact.map(item => item?.id || 'unknown').join('、')}。`);
+      if (missingSemantic.length) failures.push(`语义保留锁未满足：${missingSemantic.map(item => item?.id || 'unknown').join('、')}。`);
+      if (rejectedHits.length) failures.push(`重新出现用户已拒绝的表达：${rejectedHits.map(item => item.id || item.text).join('、')}。`);
+      if (invalidPatterns.length) failures.push(`AI 句壳规则无效：${invalidPatterns.join('、')}。`);
+      if (patternHits.length) failures.push(`AI 句壳超过预算：${patternHits.join('、')}。`);
+      if (invalidHookDuties.length) failures.push(`钩子没有在限定段落内兑现：${invalidHookDuties.join('、')}。`);
+      suggestions.push('恢复人工通过表达；让每个主要钩子由已锁事实支撑，并在同段或后续限定段落内立即兑现。');
+      summary.push({ name: '人工风格硬锁', result: '失败' });
+    } else {
+      passed.push(`人工校准锁通过：保留 ${preserveExact.length} 条原句、${preserveSemantic.length} 条语义关系，并兑现 ${hookDuties.length} 个主要钩子职责。`);
+      summary.push({ name: '人工风格硬锁', result: '通过（不等于用户已批准整稿）' });
+    }
+
+    const allocationRule = styleLocks?.content_allocation;
+    if (allocationRule) {
+      const supportingExcerpts = metadata.content_allocation_audit?.supporting_excerpts;
+      const maximumShare = allocationRule.max_supporting_share;
+      const missingSupportingExcerpts = !Array.isArray(supportingExcerpts)
+        ? ['missing_supporting_excerpts']
+        : supportingExcerpts.filter(excerpt => typeof excerpt !== 'string' || !excerpt.trim()
+          || !normalizedCopy.includes(normalize(excerpt)));
+      const supportingUnits = Array.isArray(supportingExcerpts)
+        ? supportingExcerpts.reduce((total, excerpt) => total + normalize(excerpt || '').length, 0)
+        : 0;
+      const totalUnits = normalize(paragraphs.join('')).length;
+      const share = totalUnits ? supportingUnits / totalUnits : 1;
+      if (typeof maximumShare !== 'number' || maximumShare <= 0 || maximumShare >= 1
+        || missingSupportingExcerpts.length || share > maximumShare) {
+        failures.push(`辅助内容占比门禁失败：${supportingUnits}/${totalUnits}=${(share * 100).toFixed(1)}%，上限为 ${typeof maximumShare === 'number' ? `${(maximumShare * 100).toFixed(1)}%` : '未配置'}。`);
+        summary.push({ name: '内容占比', result: '失败' });
+      } else {
+        passed.push(`辅助内容占比为 ${supportingUnits}/${totalUnits}（${(share * 100).toFixed(1)}%），未超过 ${(maximumShare * 100).toFixed(1)}%。`);
+        summary.push({ name: '内容占比', result: '通过' });
+      }
+    }
+  }
+
+  if (metadata.requires_listener_progression_audit === true) {
+    const progression = metadata.listener_progression;
+    const beats = Array.isArray(progression?.beats) ? progression.beats : [];
+    const requiredFields = [
+      'id', 'question_before', 'information_revealed', 'meaning_for_viewer',
+      'expected_judgment_after', 'next_question', 'output_excerpt'
+    ];
+    const invalidBeats = beats.filter(beat => (
+      !beat || requiredFields.some(field => typeof beat[field] !== 'string' || !beat[field].trim())
+      || !normalizedCopy.includes(normalize(beat.output_excerpt))
+    ));
+    const duplicateBeatIds = beats
+      .map(beat => beat?.id)
+      .filter((id, index, ids) => typeof id === 'string' && ids.indexOf(id) !== index);
+    if (typeof progression?.core_question !== 'string' || !progression.core_question.trim()
+      || !beats.length || invalidBeats.length || duplicateBeatIds.length) {
+      if (typeof progression?.core_question !== 'string' || !progression.core_question.trim()) {
+        failures.push('听众推进计划缺少 core_question。');
+      }
+      if (!beats.length) failures.push('听众推进计划没有任何 beat。');
+      if (invalidBeats.length) failures.push(`听众推进计划有 ${invalidBeats.length} 个 beat 字段不完整，或 output_excerpt 无法在正文定位。`);
+      if (duplicateBeatIds.length) failures.push(`听众推进计划存在重复 beat ID：${[...new Set(duplicateBeatIds)].join('、')}。`);
+      suggestions.push('先写“当前疑问 → 本段揭晓 → 对观众的意义 → 预期判断变化 → 下一问题”，再绑定真实正文片段。');
+      summary.push({ name: '听众推进计划', result: '失败' });
+    } else {
+      passed.push(`已在正文中核验 ${beats.length} 个听众推进 beat；该结果只证明计划落位，不证明真实注意力或风格相似度。`);
+      summary.push({ name: '听众推进计划', result: '通过（仅证明落位）' });
+    }
+  }
+
+  if (metadata.requires_baseline_enhanced_comparison === true) {
+    const comparison = metadata.comparison_audit;
+    const comparisonFailures = [];
+    let baselineText = null;
+    let enhancedText = null;
+    if (!comparison || comparison.status !== 'completed_pending_user_review'
+      || comparison.selected_output !== 'enhanced'
+      || !Array.isArray(comparison.dimensions) || comparison.dimensions.length < 4
+      || metadata.style_acceptance_status !== 'pending_user_review') {
+      comparisonFailures.push('invalid_comparison_record');
+    }
+    try {
+      const baselinePath = resolve(dirname(metadataPath), comparison?.baseline_path || '');
+      const enhancedPath = resolve(dirname(metadataPath), comparison?.enhanced_path || '');
+      [baselineText, enhancedText] = await Promise.all([
+        readFile(baselinePath, 'utf8'),
+        readFile(enhancedPath, 'utf8')
+      ]);
+      if (sha256(baselineText) !== comparison.baseline_sha256) comparisonFailures.push('baseline_hash_mismatch');
+      if (sha256(enhancedText) !== comparison.enhanced_sha256) comparisonFailures.push('enhanced_hash_mismatch');
+      if (sha256(copyText) !== comparison.enhanced_sha256) comparisonFailures.push('validated_copy_is_not_enhanced');
+      if (normalize(baselineText) === normalize(enhancedText)) comparisonFailures.push('baseline_and_enhanced_identical');
+    } catch (error) {
+      comparisonFailures.push(`comparison_file_error:${error.message}`);
+    }
+    if (comparisonFailures.length) {
+      failures.push(`Baseline/Enhanced 对照未闭合：${[...new Set(comparisonFailures)].join('、')}。`);
+      suggestions.push('结构性改稿后重新生成两份输出、记录新 SHA-256，并把风格验收保持为 pending_user_review。');
+      summary.push({ name: 'Baseline/Enhanced 对照', result: '失败' });
+    } else {
+      passed.push('本轮 Baseline/Enhanced 文件、摘要和当前验证稿已闭合；最终相似度仍等待用户判断。');
+      summary.push({ name: 'Baseline/Enhanced 对照', result: '通过（待用户验收）' });
+    }
+  }
+
   if (copyText.trim().length < 120) {
     failures.push('生成稿少于 120 个字符，无法作为完整口播稿审阅。');
     suggestions.push('补齐完整的开头、主体和收束后重新生成。');
@@ -274,14 +562,23 @@ async function main() {
     suggestions.push('在 contract 中补充 required_literals 与 required_groups，再重跑验证。');
     summary.push({ name: '事实锁', result: '警告：未提供清单' });
   } else {
-    const missingLiterals = (spec.required_literals || []).filter(item => !normalizedCopy.includes(normalize(typeof item === 'string' ? item : item.value)));
+    const literalRecords = Array.isArray(spec.required_literals) ? spec.required_literals : [];
+    const invalidLiteralRecords = literalRecords.filter(item => (
+      !literalValue(item).trim() || !ALLOWED_LITERAL_SURFACES.has(literalSurface(item))
+    ));
+    const spokenLiterals = literalRecords.filter(item => literalSurface(item) === 'spoken');
+    const missingLiterals = spokenLiterals.filter(item => !normalizedCopy.includes(normalize(literalValue(item))));
+    if (invalidLiteralRecords.length) {
+      failures.push(`required_literals 有 ${invalidLiteralRecords.length} 项缺少 value，或 surface 不是 spoken/visual/audit。`);
+      suggestions.push('为每个字面值声明输出面：spoken 才要求进入口播；visual/audit 只保留在画面或私有审计。');
+    }
     if (missingLiterals.length) {
-      failures.push(`缺少锁定字面值：${missingLiterals.map(item => typeof item === 'string' ? item : `${item.id}=${item.value}`).join('、')}。`);
+      failures.push(`缺少锁定口播字面值：${missingLiterals.map(item => typeof item === 'string' ? item : `${item.id}=${item.value}`).join('、')}。`);
       suggestions.push('恢复缺失的数据、单位、条件或 CTA，且不要改变它们的含义。');
       summary.push({ name: '数据保留', result: '失败' });
     } else {
-      passed.push(`已保留 ${(spec.required_literals || []).length} 项锁定字面值。`);
-      summary.push({ name: '数据保留', result: '通过' });
+      passed.push(`已保留 ${spokenLiterals.length} 项锁定口播字面值；${literalRecords.length - spokenLiterals.length} 项 visual/audit 值未被强迫写进口播。`);
+      summary.push({ name: '数据保留', result: invalidLiteralRecords.length ? '失败' : '通过' });
     }
 
     const missingGroups = (spec.required_groups || []).filter(group => (group.all_of || []).some(term => !normalizedCopy.includes(normalize(term))));
@@ -292,6 +589,16 @@ async function main() {
     } else {
       passed.push(`已保留 ${(spec.required_groups || []).length} 组数据主体与关系。`);
       summary.push({ name: '数据主体与关系', result: '通过' });
+    }
+
+    const speechFindings = collectSpeechSurfaceFindings(copyText, spec.speech_surface);
+    if (speechFindings.length) {
+      failures.push(`合成口播仍含原始技术字符串：${speechFindings.map(item => `${item.kind}:${item.token}`).join('、')}。`);
+      suggestions.push('把包名、版本、命令、路径和密钥名移到 visual/audit 面；口播改用自然中文或已批准的发音别名。');
+      summary.push({ name: 'TTS 可朗读性', result: '失败' });
+    } else if (spec.speech_surface?.mode === 'tts') {
+      passed.push('合成口播未命中已配置的原始技术字符串门禁。');
+      summary.push({ name: 'TTS 可朗读性', result: '通过' });
     }
   }
 

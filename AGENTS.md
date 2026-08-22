@@ -26,7 +26,7 @@
 
 ## Project-Specific Rules
 
-- First source sample: `F:\dai ma\钱十七剪辑拆解\钱十七文案素材\钱十七-闲鱼文案拆解.md`.
+- The authoritative Qian17 source is now `C:\Users\admin\Downloads\钱十七-闲鱼文案拆解.docx`, SHA-256 `036B6795AC894CCE20A81A2ACCFC08284C67337B8F20E27643592D0AC2F1E290`. It contains 11 raw units / 10 independent clusters. The old `F:\dai ma\钱十七剪辑拆解\钱十七文案素材\钱十七-闲鱼文案拆解.md` is an incomplete 8-unit legacy extraction and must not be used to rebuild the profile.
 - The canonical `goofish-research` implementation for this project is `.codex/skills/goofish-research/`. It must not use random/mock products, placeholder browser success, or screenshot filenames without image files; a screenshot is verified only after decode, dimension and SHA-256 checks, and dynamic search/detail values must remain separately attributed.
 - The generic Skill core must not contain any IP-specific, platform-specific, industry-specific, or money-making formula. Put those findings only in that IP's external profile and evidence bundle.
 - Learn only expression style: hook rhythm, structure, sentence pacing, evidence placement, CTA shape, risk patterns.
@@ -50,7 +50,10 @@
 - 所有正式文案生成必须使用三类独立输入：项目事实 contract、非空且可回读的相关知识包、指定风格档案。生成前必须真实检索知识库，至少使用一条相关知识丰富解释、方法、机制或必要边界；知识缺失、不可访问或检索为零时停止，不得降级为“事实 + 风格”。知识中的数字、案例、收益、时效和平台结论只有经核实并提升为 contract 锁后才能进入观众稿。
 - 钱十七完整文案默认交付为单一 canonical Word `.docx`：把已核实图片就地插入其证据段落并补齐替代文本；超宽原图保留不改，Word 中用可复现裁切只展示关键内容。成稿只能出现一个正常标题、正文和图片，禁止可见的风格/证据版标签、图号图注、页眉、页脚和页码。逐页渲染并通过图片/无障碍审计后，只在聊天中返回文件链接和简短验收结论；修订时更新既有 canonical 文件，不创建并行版本。
 - 赚钱项目成稿前必须锁定 `narrator / target_viewer / case_buyer / content_goal`：讲述者面向想做项目的人，买家痛点只用于证明服务需求；章节包装和结果画面默认站在卖家/操盘者视角。四者混淆时停止生成，不能把“教人靠项目赚钱”写成“教买家购买或使用服务”。
-- 用户已确认合格的钱十七唯一内容主版本是 `style-engine/evaluation/spoken-style-profiler-qian17/钱十七-DNA-重构版.md`。`profiles/钱十七-闲鱼风格拆解.md` 只能作为指向它的 NTFS hard-link 工作台别名，两个路径必须保持同一 File ID；`style-dna.draft.json` 仅是机器审计契约。不得再创建“改进版、正式版、V2”等并行风格内容。清理前必须完整读取候选文件、逐节合并、核对差异并通过验证，禁止先删后看。
+- 完整文案在起稿前必须保存包含用户原话、解释目标、目标观众初始能力、排除假设、证据登记和 framework required slots 的 `task-brief.json`；contract 与 metadata 必须绑定其真实 SHA-256，并通过生成输入预检。市场可见信号、发布测试、真实订单、交付与收益必须分级，任何后一级证据不得由前一级推断；机械验证通过不能冒充任务语义正确或用户验收。
+- 选择钱十七 profile 或其中一个 framework 不等于已经应用钱十七风格。正式评测稿必须把稳定控制和实际启用的 pattern 逐项绑定到正文原句与本稿职责；声明但无正文 span 的规则视为未应用。机器只能验证“落位”，最终相似度仍由用户判断。
+- 用户已经通过或拒绝具体表达后，必须建立任务本地、绑定人工校准原文 SHA-256 的风格接受锁；通过原句、拒绝句壳和主要钩子兑现不能只留在 Markdown 备忘。任何框架、主要段落、内容占比或钩子链变化都会使旧 validation/style acceptance 失效；`draft/review_only` 必须重新生成并摘要绑定本轮 Baseline/Enhanced，机器通过仍只代表门禁落位。
+- 钱十七唯一人工可读主版本仍是 `style-engine/evaluation/spoken-style-profiler-qian17/钱十七-DNA-重构版.md`；2026-07-29 因旧语料漏掉 3 篇且混入目标测试稿事实，旧“已确认合格”状态已撤回，当前为 `draft/review_only`，等待 Baseline/Enhanced 实稿对照和用户重新确认。`profiles/钱十七-闲鱼风格拆解.md` 只能作为指向它的 NTFS hard-link 工作台别名，两个路径必须保持同一 File ID；`style-dna.draft.json` 仅是机器审计契约。不得再创建“改进版、正式版、V2”等并行风格内容。清理前必须完整读取候选文件、逐节合并、核对差异并通过验证，禁止先删后看。
 - GitHub projects are references only unless `DECISIONS.md` is updated with a concrete adoption decision.
 
 ## Operating Rules

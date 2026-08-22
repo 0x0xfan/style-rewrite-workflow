@@ -19,7 +19,13 @@
       "title": "知识条目标题",
       "locator": "可回读的文件路径或知识库记录 ID",
       "excerpt": "与本次主题直接相关的知识摘要",
-      "allowed_uses": ["explanation", "method", "mechanism", "risk"]
+      "allowed_uses": ["explanation", "method", "mechanism", "risk"],
+      "relevance": {
+        "task_brief_sha256": "...",
+        "allowed_stances": ["support", "supplement"],
+        "allowed_sections": ["learning_path"],
+        "core_claim_compatible": true
+      }
     }
   ]
 }
@@ -32,9 +38,10 @@
 1. 每次生成都先检索知识库，再写出知识包；不得用模型记忆冒充检索结果。
 2. `sources` 至少包含 1 条可回读、与主题相关且有非空摘要的来源；建议长稿筛选 2–4 条，避免堆砌。
 3. 只把知识用于解释、方法、机制和必要边界。知识中的数字、收益、案例、时效、平台规则或效果结论，必须先核实并写入 contract 才能进入观众稿。只要 `output_excerpt` 中有数值或结果主张，它的数字连同可识别的单位/时间表达，以及 `四位数`、`百分之X`、`X倍`、`翻倍`、`当天出单` 等定量结果短语，必须已能在 contract 中回读。
-4. 为每条实际使用的知识在 `generation-metadata.json` 记录 `source_id`、`section`、`output_excerpt` 和 `use_as`。`source_id` 必须精确匹配本包来源，`use_as` 必须出现在该来源的 `allowed_uses` 内。
-5. `output_excerpt` 必须是观众稿中真实存在的片段。来源说明只留在知识包和元数据，不写进观众稿。
-6. 缺少知识包、检索失败、零结果、来源不可回读或没有实际使用记录时停止生成；不要降级成“事实 + 风格”双输入。
+4. 每条来源必须用 `relevance` 绑定本次 task brief SHA-256，并声明允许的 `stance`、章节和是否能支持核心主张。`stance` 只能是 `support`、`supplement`、`counterevidence` 或 `conflict`。
+5. 在正文生成前，为每条计划使用的知识记录 `source_id`、`section`、`use_as` 和 `stance`。`source_id`、章节、用途和立场必须分别落在来源允许范围内；`counterevidence/conflict` 只能用于 `risk`，不能被改造成核心方法或正向证明。
+6. 正文生成后，为每条实际使用的知识补上 `output_excerpt`。该片段必须在观众稿中真实存在。来源说明只留在知识包和元数据，不写进观众稿。
+7. 缺少知识包、检索失败、零结果、来源不可回读或没有实际使用记录时停止生成；不要降级成“事实 + 风格”双输入。
 
 ## 边界
 

@@ -1,5 +1,115 @@
 # Current
 
+## Codex 远程安装文案视频配图 — 2026-07-31（已撤销）
+
+- 用户认为新增配图不合格，要求删除并恢复原状。
+- 已从本轮备份恢复 `research-runs/2026-07-27_codex代安装_refresh/style-application-20260730/钱十七风格-Codex远程安装项目文案.docx`。
+- 恢复验证：正文文本与备份一致，inline 图片恢复为原有 2 张；恢复后 SHA-256：`60A8BBF9A8CBEB1FBBCD61A758AAC2029C23187D1981FC4890EA8F9727047F2A`。
+- 本轮新增素材、渲染目录和生成缓存已移入回收站；本轮辅助脚本已删除。当前不再保留配图修改。
+
+## 提问式校准对话导出 — 2026-07-31
+
+- 已从本地 Codex 原始 rollout 记录中导出 2026-07-30 14:10:19–17:04:39（Asia/Shanghai）的用户/Codex 问答校准过程到桌面：`C:\Users\admin\Desktop\钱十七风格校准_提问式训练对话_20260730_1410-1704.md`。
+- 文件大小 80,716 bytes；SHA-256：`497097F5B2BDA04AE8A0E25863D45A6A98B1C5A92DE70918D279A905AFB2979E`。
+- 导出保留 14:10–17:04 时间段的问答正文，排除了自动注入的浏览器/环境上下文和 AGENTS 系统说明；未修改项目源码、未提交、未推送、未部署。
+
+## Codex 代安装中段与结尾重写 — 2026-07-31（当前）
+
+- 用户明确锁定：开头已在前一日校准，本轮只解决中段和结尾；不能继续把开头当作本轮成果。
+- 已重新逐篇读取权威 11 篇钱十七原稿。结论：钱十七项目稿的中段按资源/能力、流量、发布、咨询/成交条件、交付或放大等真实环节推进，只在大环节转换处重新包装价值；清单和小步骤直接交付，不按固定频率硬塞钩子。
+- Enhanced 已原位重写：三类买家压缩为一个需求证明段；主体改为“能力准备 → 发布获客 → 需求判断 → 报价 → 交付”；结尾删除全文复述，直接接免费安装包、安装教程、添加圣矾和身份。
+- Fresh Baseline SHA-256：`6CED29A44C461599B6C978DC722794817C10B1ABE5504EBFCEBE97D0F12F9EAF`；Enhanced SHA-256：`9D2B05D0BC3C5A4C12CE8D6359FDF525D621A6366CFCB40664849ED0787679FA`。
+- Enhanced 展示与纯 TTS 均为 1,251 个有效字符，按 240 字/分钟约 5:13；搜索与标题辅助内容 172/1,251，即 13.7%。
+- 输入预检 Baseline 8/8、Enhanced 8/8；输出验证 13/13、0 warning、0 failure；权威 11 篇 20 字连续引用泄漏 0 命中；32/32 tests、lint、validator syntax、JSON 和 `git diff --check` 通过。
+- Canonical Word：`research-runs/2026-07-27_codex代安装_refresh/codex代安装_纯口播稿_钱十七风格_改进版.docx`；348,672 bytes；SHA-256 `B682D8FA16AD0C12A3AF2809DE9AB892ABA5068B1C41709E684C71E050AAE809`。
+- Word 与 Markdown 19/19 段一致；2 张 inline 证据图、2 条语义 alt；a11y 0/0/0。内置渲染器缺少 `soffice`，已改用本机 Microsoft Word 真实导出 PDF，再用 bundled Poppler 生成 2 页 PNG 并逐页检查，无裁切、重叠、空白页、乱码、缺图或页眉页脚。
+- 状态：仅本地、未提交、未推送、未部署；profile 仍为 `draft/review_only`，当前候选等待用户判断中段与结尾是否合格。
+
+## Codex 代安装人工硬锁重写 — 2026-07-31（历史；已由中后段重写取代）
+
+- 用户拒绝上一份“只修内容占比”的稿件：虽然商品发布已压缩，但正文又退化为 AI 式分类与总结，用户已通过的中段钩子也被擅自改弱。
+- 已新增任务本地 `style-acceptance-locks.json`：绑定人工校准原文，硬锁 5 条通过原句、3 条语义关系、6 组拒绝表达、3 个 AI 句壳预算和 6 个钩子兑现职责；产品事实没有写入通用钱十七 DNA。
+- 预检新增“人工校准硬锁”和“fresh Baseline/Enhanced 计划”；结构性修改后旧 validation/style acceptance 未重置会直接失败。输出验证新增原句保留、拒绝句壳、钩子兑现、内容占比和双稿摘要门禁。
+- 本轮 fresh Baseline/Enhanced 已闭合。Enhanced 保留信息差开头、“最简单的单子有多简单”、价格关系、标题钩子和“有小伙伴问了”，并把钩子分别落在机会、付费原因、简单服务、复杂服务、商品表达与资源 CTA。
+- Enhanced 展示稿 1,170 个有效字符；TTS 1,153 个有效字符，按 240 字/分钟约 4:48。搜索页与商品发布为 159/1,170，即 13.6%，未超过本稿 15% 上限。
+- Canonical Word：`research-runs/2026-07-27_codex代安装_refresh/codex代安装_纯口播稿_钱十七风格_改进版.docx`；348,711 bytes；SHA-256 `811C94A177EF170E9F3D99E501E357AE5389741CB323FE753E9972AB3938D61F`。
+- Word 与 Markdown 22/22 段一致；2 张 inline 证据图、2 条语义 alt；a11y 0/0/0；无素材标记、页眉、页脚或私有审计标签。当前机器缺文档转换器，最新版未完成逐页视觉渲染，不得引用旧图冒充验证。
+- 门禁：生成前 8/8、生成后 13/13；32/32 tests；两个 Skills 均 valid；lint、validator syntax 与 `git diff --check` 通过。
+- ChatGPT Pro 对话：`https://chatgpt.com/c/6a69b4e9-dec8-83ee-80c4-8d9ad4a8e568`。发送连续两次因 `ab.chatgpt.com` 网络错误超时，本轮没有第三次硬试，也没有新回复。
+- 状态：仅本地、未提交、未推送、未部署；profile 仍为 `draft/review_only`，Enhanced 仍为 `pending_user_review`。
+
+## 业务架构可视化 — 2026-07-30
+
+- 已为用户生成业务逻辑版 draw.io 架构图：`D:\项目仓库\大脑\diagrams\04-风格仿写业务架构图.drawio`。
+- 因本地 Next AI Draw.io 的 `embed.diagrams.net` iframe 未完成加载，已补一个本地浏览器预览页：`D:\项目仓库\大脑\diagrams\04-风格仿写业务架构图.preview.html`；当前通过 `http://localhost:4317/04-%E9%A3%8E%E6%A0%BC%E4%BB%BF%E5%86%99%E4%B8%9A%E5%8A%A1%E6%9E%B6%E6%9E%84%E5%9B%BE.preview.html` 打开给用户查看。
+- 图中按业务层级表达：风格来源层、风格 DNA 层、目标内容输入层、仿写生成层、交付与复利层。
+- 重点标出三个闸门：来源事实不得流入新稿；未批准 DNA 只能 review_only；正式生成必须有 task brief、事实 contract、非空知识包和可回查素材。
+- 该图不改变当前项目状态；钱十七 profile 仍为 `draft/review_only`，风格接受仍等待用户判断。
+
+## 钱十七风格实际应用重写 — 2026-07-30
+
+- 用户确认应先问“这次为什么没有真正使用钱十七风格”，并要求按钱十七风格重写。
+- 已撤销“失败稿直接证明 DNA 有问题”的错误归因；本轮保留同一项目事实，建立无风格 Baseline 与实际风格稿对照。
+- 新稿使用 `fw-project-breakdown`，10 个路径 slot 全部有 verified/bounded/test-only 证据；不再写成“三道测试”的谨慎筛选说明。
+- A1–A6 与 P1/P7 共 8 个风格控制均绑定正文原句。`validate-generated-copy.mjs` 新增风格 span 门禁，metadata-only 的规则声明会失败；自动结果只证明落位，用户仍决定像不像。
+- 用户要求增加到约 5 分钟后，正文扩展到 1,240 个可朗读单位；偏快语速约 4.8 分钟，普通语速约 5.2 分钟。新增内容只补练习复现、详情页四项信息和咨询范围判断。
+- canonical Word 已原位更新：348,979 bytes；SHA-256 `77CD1353AB8AABFC1FBEE625D7927C9B83FCF0CC60A00EA68254D60F7E193083`。
+- Word 共 2 页，22 段正文与 Markdown 完全一致，2 张 inline 证据图、2 条 alt text、a11y 0/0/0；两页已逐页检查。
+- 输入预检 6/6、输出验证 8/8、19/19 tests、lint、Skill 校验和 `git diff --check` 全部通过。
+- 当前状态：仅本地、未提交/推送/部署；钱十七 profile 仍为 `draft/review_only`，等待用户阅读新 Word 后判断风格。
+
+## 2026-07-30 用户再次拒绝 Codex 代安装稿（历史；针对上一轮筛选稿）
+
+- 用户反馈：本轮 Enhanced 仍然 AI 味重，且看不出钱十七风格；canonical Word 与 Enhanced metadata 已标记为 rejected，不得再把技术门禁通过解释为风格通过。
+- 这次暴露出两个仍未解决的问题：内容方向被从“赚钱项目口播”改成了“谨慎的可行性筛选”；风格层只复现通用编号结构，没有复现钱十七的利益驱动、确定语气、口语毛边和边讲边卖的推进感。
+- 当前不继续润色或新增 Word。先与用户确认新的重做方向：补齐商业路径事实，同时从 11 篇中单独重建“赚钱项目文案”的语气/语言行为层，再做小段声音测试，确认像了以后才写完整稿。
+
+## Codex 代安装干净 Baseline / Enhanced — 2026-07-30
+
+- 已完成用户要求的“先查清问题再重做”：根因不是单纯句子不像，而是旧任务角色、F1 framework 准入、知识立场和验收状态在生成前已错位。
+- 已建立 `baseline-20260730/task-brief.json`，保存用户原话，并把“几分钟学会、接单赚钱”保留为待证假设；目标观众锁为尚未具备 Codex 交付能力的人。
+- 新增通用输入门禁 `style-engine/skills/style-copywriter/scripts/validate-generation-inputs.mjs` 与 5 个回归测试；通用/钱十七 Skill 均已加入 task SHA、framework slot 和知识 stance 约束。
+- 框架从不合格的 `fw-project-breakdown` 改为 `fw-screening-tutorial`。Baseline 和 Enhanced 的输入预检均 6/6 passed，输出验证均 7/7 passed；Enhanced 仅用 2 个有预算的辅助 pattern，被选为 canonical Word 内容。
+- canonical Word 已原位更新：`research-runs/2026-07-27_codex代安装_refresh/codex代安装_纯口播稿_钱十七风格_改进版.docx`；348,294 bytes；SHA-256 `1CE77870CBB76ECAC9464A7ECB73B0BF9C5CD020CF71C14D43F24BCC7C1D34F9`。
+- Word 2 页已真实导出并逐页检查；2 张 inline 证据图、2 条 alt text、a11y 0/0/0，无可见插图标记、页眉、页脚或页码。
+- 本地隔离安装 `@openai/codex@0.145.0` 成功，229.6 秒，返回 `codex-cli 0.145.0`；未登录、未读取凭据、未做真实客户交付。
+- ChatGPT Pro 对话：`https://chatgpt.com/c/6a69b4e9-dec8-83ee-80c4-8d9ad4a8e568`；另有 2 个 `gpt-5.6-terra / ultra` 后台核查任务完成，无 fallback。
+- 仓库门禁：lint passed；17/17 tests passed；个人 Skill valid；`git diff --check` 无 whitespace error。
+- 状态：仅本地、未提交、未推送、未部署。钱十七 profile 仍为 `draft/review_only`，下一步只等待用户对本轮 Word 的主观风格判断。
+
+## Codex 代安装稿用户拒绝与 Pro 复核 — 2026-07-29（历史；已由 2026-07-30 干净基线取代）
+
+- 用户确认最新稿与 2026-07-29 Claude 对话中被否定的稿子属于同一种问题；本稿已记录为 `rejected_by_user`，原技术验证通过不得再解释为风格通过。
+- 直接证据：用户要求面向“想通过闲鱼赚钱、尚未具备 Codex 交付能力的人”，但 contract 锁成“会一点电脑或 AI 工具的人”，正文继续以“你要是已经会装 Codex”作为前提。
+- F1 明确禁止在缺资源/获客/成交/交付关键环节、只有市场信号时启动；当前事实包只有商品卡、价格、想要/浏览和页面服务描述，强行选择 F1 违反自身准入条件。
+- `knowledge-01` 仅凭服务类标签进入，内容主张高门槛虚拟产品，随后把正文推成排错能力与服务边界，和用户希望验证的零基础机会角度相反。
+- ChatGPT Pro 第三轮复核同意：当前 Baseline 被需求理解、role lock、selector、knowledge relevance、商业链路与验收状态五类变量污染，不能证明新 DNA 正确或错误；首要缺陷是生成前输入控制链没有拒绝错误任务。
+- Pro 对话：`https://chatgpt.com/c/6a69b4e9-dec8-83ee-80c4-8d9ad4a8e568`。Codex 已发送进一步反驳，要求避免关键词门禁、过严全链路门禁和二元知识淘汰；页面连续两次未提交成功，停止重复点击。
+- 当前下一步不是改稿或加 DNA 条目，而是建立语义一致的任务 contract、分级证据/claim 边界和可 abstain 的 selector，再做干净 Baseline。
+
+## Codex 代安装纯框架实稿 — 2026-07-29（历史；用户已拒绝）
+
+- 已用钱十七重拆档案的 `fw-project-breakdown` 生成一篇纯框架 Baseline，未叠加辅助 pattern，用于隔离判断“主框架本身是否对”。
+- canonical Word 已原位更新：`research-runs/2026-07-27_codex代安装_refresh/codex代安装_纯口播稿_钱十七风格_改进版.docx`；正文聚焦需求证据、接单判断、服务拆分、定价边界、交付清单和 CTA。
+- 三输入已闭合：`source-contract.md`、非空 `knowledge-pack.json`、钱十七 draft profile；知识只使用一条机制，没有迁移收益/案例数字。
+- 生成验证 `passed`：7 项通过、0 warning、0 failure；与权威钱十七语料 20 字连续重合 0 命中。
+- Word 结构与无障碍检查通过：2 张真实证据图、2 条语义化 alt text、0 finding、无页眉页脚页码；Microsoft Word + Poppler 渲染 3 页并逐页检查通过。
+- DOCX：348,854 bytes，SHA-256 `4274BFFD964C374256D0831D4727C11AA308B7C3FFA8BD665E6AC902D6719FFC`。
+- `npm run lint` 通过，`npm run test:spoken-dna` 12/12 通过，`git diff --check` 通过。
+- 当前等待用户主观评审；profile 仍为 `draft / review_only`，没有批准、提交、推送或部署。
+
+## 钱十七完整语料重拆 — 2026-07-29
+
+- 用户提供的 `钱十七-闲鱼文案拆解.docx` 已核验为 11 篇原始稿；旧 Markdown/manifest 只有前 8 篇。u03/u07 沿用用户既有决定，按同稿转写版本合并，因此当前是 10 个独立证据簇。
+- 旧“用户已确认合格”状态已撤回。原因不只是漏稿：旧人工版还把目标测试稿中的项目、数据和作者身份写成“样本证据”，并把固定 3-5 次场景价值预演、全面禁二元对比/指图等编辑偏好升级成稳定 DNA。
+- 唯一主版本 `style-engine/evaluation/spoken-style-profiler-qian17/钱十七-DNA-重构版.md` 已原位重建；`profiles/钱十七-闲鱼风格拆解.md` 仍是同 File ID hard link。
+- 机器证据已更新为 `qian17-spoken-v2`：11 units、10 clusters、3 个 candidate framework、7 个 review-only pattern；结构验证 0 error/0 warning，泄漏扫描 0 match。
+- 新增 `style-engine/tests/qian17-reprofile.test.mjs`，仓库测试通过 12/12；lint 通过。
+- 实际生成入口 `C:\Users\admin\.codex\skills\qian17-copywriter\` 已同步移除固定 3-5 次场景预演、默认零对比句和单一风险块等旧硬编码，并改为先选 3 个候选框架、按需使用阶段价值重置；Skill 结构验证通过。
+- 当前状态仍为 `draft / profile_approval_required`。下一最小任务是用同一个真实 target contract 生成 Baseline 与 Enhanced 两篇完整稿，交给用户盲评后再决定是否批准。
+- 右侧 ChatGPT Pro 专项对话未成功创建：新聊天页可打开，但一般文件输入和可见附件按钮两条上传路径均超时，页面持续出现 `ab.chatgpt.com` 网络超时；没有文件、消息或对话链接送达，不能声称已完成外部 Pro 审查。
+- 可恢复 Pro 证据包已准备：`artifacts/dual-agent/2026-07-29-qian17-reprofile/qian17-reprofile-ab10111.zip`，80,872 bytes，SHA-256 `c69c8d8e544bac113808658c076b07022e9fb2098dd027b360868afda0d9e34b`；15 entries，凭据扫描 0 finding，禁入路径 0。
+
 ## GPT Pro GitHub Direct Dispatch Override — 2026-07-29
 
 - User explicitly replaced the ZIP-only transfer method with direct private-GitHub access for the right-side ChatGPT Pro conversation.
@@ -61,12 +171,12 @@
 
 ## Canonical Files
 
-- 用户确认的唯一内容主版本：`style-engine/evaluation/spoken-style-profiler-qian17/钱十七-DNA-重构版.md`
+- 唯一人工可读主版本（当前待重新批准）：`style-engine/evaluation/spoken-style-profiler-qian17/钱十七-DNA-重构版.md`
 - 工作台兼容路径：`profiles/钱十七-闲鱼风格拆解.md`，是主版本的 NTFS hard link，不是第二份内容
 - 同一风格的机器审计契约：`style-engine/evaluation/spoken-style-profiler-qian17/style-dna.draft.json`
 - 实际调用 Skill：`C:\Users\admin\.codex\skills\qian17-copywriter\SKILL.md`
 
-机器审计 JSON 只负责证据、状态和验证，不是第二套写法。用户已确认重构版为合格写作基准；JSON 仍为 `draft/review_only`，因为正式证据审批尚未单独完成。
+机器审计 JSON 只负责证据、状态和验证，不是第二套写法。旧“已确认合格”状态已撤回；人读主版本和 JSON 现在都等待新的 Baseline/Enhanced 实稿对照与用户批准。
 
 ## Mandatory Knowledge Input — 2026-07-28
 

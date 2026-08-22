@@ -2,6 +2,33 @@
 
 将 `source-contract.md` 解析为“可说内容”和“不可变关系”，而不是把它当作可自由改写的原稿。
 
+同一事实可以有不同输出面。`audit` 保存精确包名、命令、版本和环境；`visual` 保存需要上屏的精确文字；`spoken` 只保存语音合成可自然朗读的表达。事实锁保护三者的语义关系，不要求三者逐字相同，也不得把 audit 字面值自动提升为观众稿必说内容。
+
+解析前必须先读取 `task-brief.json`。Contract 不得重新解释用户是谁、观众会什么或内容要完成什么；它必须用下列 HTML 注释绑定同一份任务。`task_brief_sha256` 是 UTF-8 原始文件字节的 SHA-256，角色对象必须逐字段一致。
+
+```html
+<!-- style-copywriter-task-alignment
+{
+  "task_id": "task-example",
+  "task_brief_sha256": "...",
+  "content_mode": "feasibility_screening",
+  "selected_framework": "fw-screening-tutorial",
+  "narrative_role_lock": {
+    "narrator": "...",
+    "target_viewer": {
+      "goal": "...",
+      "starting_state": {},
+      "excluded_assumptions": []
+    },
+    "case_buyer": {},
+    "content_goal": "..."
+  }
+}
+-->
+```
+
+缺少注释、摘要不一致、内容模式漂移、framework 不一致或任一角色字段变化时停止。不要靠在正文中补一句“小白也能看”来修复任务语义漂移。
+
 ## 读取顺序
 
 优先识别以下章节；章节名称可以不同，但含义不得猜测：
@@ -85,3 +112,6 @@
 - 两处事实给出冲突的数值、时间范围、触发机制或步骤顺序。
 - CTA、收益、风险边界被要求生成但未在 contract 锁定。
 - contract 没有足够内容填充被选 framework 的必需 beat。
+- task brief、contract 与 generation metadata 的用户任务或叙事角色不一致。
+- 候选 framework 的任一 required slot 只有 `unverified/rejected` 证据，或把市场存在/测试动作误当成获客、成交、交付和收益证据。
+- 合成口播要求逐字保留包名、命令、版本、URL、文件路径、哈希或密钥字段，却没有单独的 visual/audit 值或自然发音别名。
