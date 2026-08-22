@@ -6,7 +6,8 @@
   "scripts": {
     "test": "node --test engine/tests/*.test.mjs",
     "test:spoken-dna": "node --test engine/tests/*.test.mjs",
-    "lint": "node --check engine/skills/style-copywriter/scripts/validate-generated-copy.mjs && node --check engine/skills/style-copywriter/scripts/validate-generation-inputs.mjs"
+    "lint": "node --check engine/skills/style-copywriter/scripts/validate-generated-copy.mjs && node --check engine/skills/style-copywriter/scripts/validate-generation-inputs.mjs && node --check engine/compliance/check-copy.mjs",
+    "check:compliance": "node engine/compliance/check-copy.mjs"
   },
   "engines": {
     "node": ">=18"
