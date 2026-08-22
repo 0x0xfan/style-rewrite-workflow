@@ -10,10 +10,21 @@ const RULES = JSON.parse(readFileSync(join(here, 'repetition-rules.json'), 'utf8
 
 const bodyOf = (text) =>
   text
+    // 先剔除 HTML 注释（可跨行），如文件头的轴注释 <!-- 开头:… -->，
+    // 否则会被当成正文，抬高两两比例并刷出假的"原样复用"命中。
+    .replace(/<!--[\s\S]*?-->/g, '')
     .split('\n')
     .filter((l) => !l.startsWith('#') && !l.startsWith('>') && l.trim() !== '---')
     .join('')
     .replace(/\s/g, '');
+
+// 选题主干：去掉路径 IP 段与 -长视频版/-短视频版/-图文版 后缀。
+// "闲鱼餐饮券-长视频版" 与 "闲鱼餐饮券-短视频版" 主干相同=同选题；
+// "01-二手书回收转卖" 与 "02-账号养号基础" 主干不同=不同选题。
+const topicOf = (key) => {
+  const seg = key.split('/').slice(1).join('/') || key;
+  return seg.replace(/-?(长视频版|短视频版|图文版)$/, '');
+};
 
 // 受保护的事实串不计入重复：事实该一致，硬换措辞会扭曲事实。
 const stripProtected = (s, protectedPhrases) => {
@@ -47,10 +58,12 @@ export function checkRepetition(docs, rules = RULES) {
       for (const g of ga) if (gb.has(g)) shared++;
       const denom = Math.max(1, Math.min(ga.size, gb.size));
       const ratio = shared / denom;
-      // 同 IP 的长短版本是同一内容的两个时长，允许更高重合。
+      // 同 IP 且同选题（长/短/图文版）才是同一内容的多个时长，允许更高重合；
+      // 同 IP 不同选题本该产出不同文本，走跨选题的 pairMaxRatio。
       const sameIp = a.split('/')[0] === b.split('/')[0];
-      const cap = sameIp ? sameIpPairMaxRatio : pairMaxRatio;
-      pairs.push({ a, b, shared, ratio, cap, sameIp, over: ratio > cap });
+      const sameTopic = sameIp && topicOf(a) === topicOf(b);
+      const cap = sameTopic ? sameIpPairMaxRatio : pairMaxRatio;
+      pairs.push({ a, b, shared, ratio, cap, sameIp, sameTopic, over: ratio > cap });
     }
   }
 
@@ -148,7 +161,8 @@ if (invokedDirectly) {
   console.log('两两重合：');
   for (const p of r.pairs) {
     const flag = p.over ? 'FAIL' : ' ok ';
-    console.log(`  [${flag}] ${p.a} vs ${p.b}  ${p.shared} 处  ${(p.ratio * 100).toFixed(1)}% (上限 ${(p.cap * 100).toFixed(0)}%)`);
+    const scope = p.sameTopic ? ' [同选题]' : '';
+    console.log(`  [${flag}] ${p.a} vs ${p.b}  ${p.shared} 处  ${(p.ratio * 100).toFixed(1)}% (上限 ${(p.cap * 100).toFixed(0)}%)${scope}`);
   }
   if (r.overusedPhrases.length) {
     console.log(`\n原样复用片段（出现在 ${RULES.sharedPhraseMaxDocs} 篇及以上）：`);

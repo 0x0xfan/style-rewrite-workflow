@@ -8,8 +8,8 @@
   "sharedPhraseMaxDocs": 3,
   "rationale": {
     "gram": "8 字连续重合足以判定是同一句表达，短于此容易误伤常用搭配。",
-    "pairMaxRatio": "跨 IP 同选题：不同风格就该产出不同文本，8% 以上说明风格没起作用。",
-    "sameIpPairMaxRatio": "同 IP 长短版是同一内容的两个时长，允许到 15%。",
+    "pairMaxRatio": "跨 IP 同选题、或同 IP 不同选题：都该产出不同文本，8% 以上说明风格/选题没起作用。",
+    "sameIpPairMaxRatio": "同 IP 同选题的长/短/图文版是同一内容的多个时长，允许到 15%；同 IP 不同选题按 pairMaxRatio(8%)。",
     "sharedPhraseMinLen": "12 字以上片段出现在 3 篇及以上，属于原样复用，不论整体比例。",
     "protectedPhrases": "事实性表述不计入重复。事实该一致，硬换措辞会扭曲事实。"
   },
