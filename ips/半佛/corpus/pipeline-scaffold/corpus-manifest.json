@@ -1,0 +1,112 @@
+{
+  "corpus_id": "banfo-wechat-v1",
+  "source_root": "D:\\项目仓库\\风格仿写\\ips\\半佛\\corpus\\pipeline-input.md",
+  "segmentation": {
+    "strategy": "markdown_h2_units",
+    "chars_per_minute": 240,
+    "title_counts_as_unit": false
+  },
+  "unit_count": 10,
+  "units": [
+    {
+      "id": "banfo-wechat-v1:u01",
+      "ordinal": 1,
+      "title": "三菜一汤的含金量只有余额宝知道",
+      "source_locator": "D:\\项目仓库\\风格仿写\\ips\\半佛\\corpus\\pipeline-input.md",
+      "source_line_start": 1,
+      "source_line_end": 127,
+      "character_count": 2487,
+      "estimated_seconds": 622
+    },
+    {
+      "id": "banfo-wechat-v1:u02",
+      "ordinal": 2,
+      "title": "不理解西贝招惹罗永浩干嘛",
+      "source_locator": "D:\\项目仓库\\风格仿写\\ips\\半佛\\corpus\\pipeline-input.md",
+      "source_line_start": 128,
+      "source_line_end": 221,
+      "character_count": 1690,
+      "estimated_seconds": 423
+    },
+    {
+      "id": "banfo-wechat-v1:u03",
+      "ordinal": 3,
+      "title": "为让你知道商家什么时候开门大众点评竟然砸了上百亿了",
+      "source_locator": "D:\\项目仓库\\风格仿写\\ips\\半佛\\corpus\\pipeline-input.md",
+      "source_line_start": 222,
+      "source_line_end": 373,
+      "character_count": 3388,
+      "estimated_seconds": 847
+    },
+    {
+      "id": "banfo-wechat-v1:u04",
+      "ordinal": 4,
+      "title": "五菱是彻底不想过下去了吗",
+      "source_locator": "D:\\项目仓库\\风格仿写\\ips\\半佛\\corpus\\pipeline-input.md",
+      "source_line_start": 374,
+      "source_line_end": 450,
+      "character_count": 1262,
+      "estimated_seconds": 316
+    },
+    {
+      "id": "banfo-wechat-v1:u05",
+      "ordinal": 5,
+      "title": "亚朵隐私风波给我看傻眼了",
+      "source_locator": "D:\\项目仓库\\风格仿写\\ips\\半佛\\corpus\\pipeline-input.md",
+      "source_line_start": 451,
+      "source_line_end": 492,
+      "character_count": 897,
+      "estimated_seconds": 224
+    },
+    {
+      "id": "banfo-wechat-v1:u06",
+      "ordinal": 6,
+      "title": "京东把线下商场打通关了",
+      "source_locator": "D:\\项目仓库\\风格仿写\\ips\\半佛\\corpus\\pipeline-input.md",
+      "source_line_start": 493,
+      "source_line_end": 648,
+      "character_count": 3256,
+      "estimated_seconds": 814
+    },
+    {
+      "id": "banfo-wechat-v1:u07",
+      "ordinal": 7,
+      "title": "京东把试用这事儿玩透了",
+      "source_locator": "D:\\项目仓库\\风格仿写\\ips\\半佛\\corpus\\pipeline-input.md",
+      "source_line_start": 649,
+      "source_line_end": 847,
+      "character_count": 4009,
+      "estimated_seconds": 1002
+    },
+    {
+      "id": "banfo-wechat-v1:u08",
+      "ordinal": 8,
+      "title": "今天的支付宝这么邪修吗",
+      "source_locator": "D:\\项目仓库\\风格仿写\\ips\\半佛\\corpus\\pipeline-input.md",
+      "source_line_start": 848,
+      "source_line_end": 936,
+      "character_count": 2141,
+      "estimated_seconds": 535
+    },
+    {
+      "id": "banfo-wechat-v1:u09",
+      "ordinal": 9,
+      "title": "何小鹏到底在想什么",
+      "source_locator": "D:\\项目仓库\\风格仿写\\ips\\半佛\\corpus\\pipeline-input.md",
+      "source_line_start": 937,
+      "source_line_end": 1164,
+      "character_count": 2981,
+      "estimated_seconds": 745
+    },
+    {
+      "id": "banfo-wechat-v1:u10",
+      "ordinal": 10,
+      "title": "你永远不知道二手房交易藏了多少坑",
+      "source_locator": "D:\\项目仓库\\风格仿写\\ips\\半佛\\corpus\\pipeline-input.md",
+      "source_line_start": 1165,
+      "source_line_end": 1353,
+      "character_count": 3670,
+      "estimated_seconds": 918
+    }
+  ]
+}

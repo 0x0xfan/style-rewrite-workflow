@@ -1,0 +1,16 @@
+{
+  "unit_count": 10,
+  "character_distribution": {
+    "min": 897,
+    "p50": 2487,
+    "max": 4009,
+    "total": 25781
+  },
+  "near_duplicate_pairs": [],
+  "suggested_duplicate_clusters": [],
+  "repeated_opening_groups": [],
+  "too_short_unit_ids": [],
+  "grade": "healthy",
+  "warnings": [],
+  "human_decision_required": false
+}
