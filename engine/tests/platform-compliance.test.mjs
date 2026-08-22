@@ -50,16 +50,35 @@ test('recruitment tone warns but does not block', () => {
   assert.ok(r.warnCount > 0);
 });
 
-test('the shipped short-video draft passes platform compliance', () => {
-  const copy = readFileSync(join(repo, 'ips', '钱十七', 'outputs', '闲鱼餐饮券-短视频版.md'), 'utf8');
-  const r = checkCopy(copy);
-  assert.equal(r.passed, true, JSON.stringify(r.findings, null, 2));
-});
+const SHORT = [
+  ['钱十七', '闲鱼餐饮券-短视频版.md'],
+  ['半佛', '闲鱼餐饮券-短视频版.md']
+];
+const LONG = [
+  ['钱十七', '闲鱼餐饮券-长视频版.md'],
+  ['半佛', '闲鱼餐饮券-长视频版.md']
+];
+const read = (ip, name) => readFileSync(join(repo, 'ips', ip, 'outputs', name), 'utf8');
 
-// 长视频稿不受这层约束，诱导设计照旧保留。这条测试锁住作用域，
+for (const [ip, name] of SHORT) {
+  test(`shipped short-video draft passes platform compliance: ${ip}`, () => {
+    const r = checkCopy(read(ip, name));
+    assert.equal(r.passed, true, JSON.stringify(r.findings, null, 2));
+  });
+}
+
+// 长视频稿不受这层约束，诱导设计照旧保留。这组断言锁住作用域，
 // 防止以后有人把合规层当成全局规则把长视频稿也洗一遍。
-test('the long-video draft is intentionally exempt and still carries its hooks', () => {
-  const copy = readFileSync(join(repo, 'ips', '钱十七', 'outputs', '闲鱼餐饮券-长视频版.md'), 'utf8');
-  const r = checkCopy(copy);
-  assert.equal(r.passed, false, '长视频稿应保留收益类诱导，不应被合规层洗掉');
-});
+for (const [ip, name] of LONG) {
+  test(`long-video draft stays exempt and keeps its hooks: ${ip}`, () => {
+    const r = checkCopy(read(ip, name));
+    assert.equal(r.passed, false, `${ip} 长视频稿应保留收益类诱导，不应被合规层洗掉`);
+  });
+}
+// 90 秒档位：按 240 字/分钟，控制在 75-115 秒。checkCopy 已经算好了正文字数。
+for (const [ip, name] of SHORT) {
+  test(`short-video draft stays near 90 seconds: ${ip}`, () => {
+    const seconds = (checkCopy(read(ip, name)).chars / 240) * 60;
+    assert.ok(seconds >= 75 && seconds <= 115, `${ip} 实测 ${seconds.toFixed(0)} 秒`);
+  });
+}
