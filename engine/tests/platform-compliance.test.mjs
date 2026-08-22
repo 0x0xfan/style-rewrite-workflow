@@ -50,8 +50,16 @@ test('recruitment tone warns but does not block', () => {
   assert.ok(r.warnCount > 0);
 });
 
-test('the shipped Qian17 draft passes platform compliance', () => {
-  const copy = readFileSync(join(repo, 'ips', '钱十七', 'outputs', '闲鱼餐饮券-口播版.md'), 'utf8');
+test('the shipped short-video draft passes platform compliance', () => {
+  const copy = readFileSync(join(repo, 'ips', '钱十七', 'outputs', '闲鱼餐饮券-短视频版.md'), 'utf8');
   const r = checkCopy(copy);
   assert.equal(r.passed, true, JSON.stringify(r.findings, null, 2));
+});
+
+// 长视频稿不受这层约束，诱导设计照旧保留。这条测试锁住作用域，
+// 防止以后有人把合规层当成全局规则把长视频稿也洗一遍。
+test('the long-video draft is intentionally exempt and still carries its hooks', () => {
+  const copy = readFileSync(join(repo, 'ips', '钱十七', 'outputs', '闲鱼餐饮券-长视频版.md'), 'utf8');
+  const r = checkCopy(copy);
+  assert.equal(r.passed, false, '长视频稿应保留收益类诱导，不应被合规层洗掉');
 });

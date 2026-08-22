@@ -72,6 +72,7 @@ if (invokedDirectly) {
     process.exit(2);
   }
   const r = checkCopy(readFileSync(file, 'utf8'));
+  console.log('作用域: 仅限短视频稿。长视频稿不走这层，诱导设计照旧保留。');
   console.log(`文件: ${file}`);
   console.log(`正文有效字符: ${r.chars}`);
   console.log(`赚钱类词密度: ${(r.densityRatio * 100).toFixed(2)}% (上限 ${(RULES.density.max_ratio * 100).toFixed(2)}%)`);
