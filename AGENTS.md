@@ -5,9 +5,9 @@
 
 - Project: 风格仿写
 - Type: 内容/写作工作流
-- Goal: 用通用 Skill 从任意中文短视频口播样本中拆出可验证、可人工批准、generation-ready 的风格 DNA 控制契约；批准后才与用户自己的内容事实结合做仿写。
-- Current first flow: 用钱十七样本验证通用口播风格拆解 Skill。
-- Stack: Codex Skill, JSON/Markdown evidence bundle, Node CLI; legacy workbench is frozen.
+- Goal: 不绑 IP 的双能力引擎。能力一（拆解）：从任意 IP 的样本中拆出可验证、可人工批准、generation-ready 的风格 DNA 控制契约。能力二（仿写）：拿指定 IP 的 DNA 改写用户提供的内容。
+- Current next step: F011 双路线对照——同一选题分别用钱十七 DNA（严谨线）和半佛 DNA（轻量线）各出一稿，判定哪套方法真的有效。
+- Stack: Codex Skill, JSON/Markdown evidence bundle, Node CLI. 无 UI、无模型调用、无外部服务；旧本地工作台已于 2026-08-22 删除。
 
 ## Read First
 
@@ -17,9 +17,9 @@
 4. `C:\Users\admin\.codex\skills\spoken-style-profiler\SKILL.md`
 5. `C:\Users\admin\.codex\skills\spoken-style-profiler\references\profile-schema.md`
 6. `C:\Users\admin\.codex\skills\spoken-style-profiler\references\generation-readiness.md`
-7. `style-engine/evaluation/spoken-style-profiler-qian17/forward-test-report.md`
-8. `style-engine/evaluation/spoken-style-profiler-qian17/钱十七-DNA-重构版.md`
-9. `style-engine/evaluation/spoken-style-profiler-qian17/style-dna.draft.json`
+7. `ips/钱十七/audits/forward-test-report.md`
+8. `ips/钱十七/dna/钱十七-DNA-重构版.md`
+9. `ips/钱十七/dna/style-dna.draft.json`
 10. `docs/source-inventory.md`
 11. `docs/github-style-tooling-research.md`
 12. `DECISIONS.md`
@@ -28,13 +28,12 @@
 
 - The authoritative Qian17 source is now `C:\Users\admin\Downloads\钱十七-闲鱼文案拆解.docx`, SHA-256 `036B6795AC894CCE20A81A2ACCFC08284C67337B8F20E27643592D0AC2F1E290`. It contains 11 raw units / 10 independent clusters. The old `F:\dai ma\钱十七剪辑拆解\钱十七文案素材\钱十七-闲鱼文案拆解.md` is an incomplete 8-unit legacy extraction and must not be used to rebuild the profile.
 - The canonical `goofish-research` implementation for this project is `.codex/skills/goofish-research/`. It must not use random/mock products, placeholder browser success, or screenshot filenames without image files; a screenshot is verified only after decode, dimension and SHA-256 checks, and dynamic search/detail values must remain separately attributed.
+- 仓库按能力和 IP 两轴分开：`engine/` 里不得出现任何具体 IP、平台、行业或赚钱公式；`ips/<IP名>/` 里不得出现通用逻辑。新增 IP 一律使用 corpus/dna/audits/generation/outputs 五段结构。
 - The generic Skill core must not contain any IP-specific, platform-specific, industry-specific, or money-making formula. Put those findings only in that IP's external profile and evidence bundle.
 - Learn only expression style: hook rhythm, structure, sentence pacing, evidence placement, CTA shape, risk patterns.
 - Do not reuse source facts unless the user explicitly provides them as facts for the new draft: earnings, cases, product tutorials, resource lists, platform tactics, screenshots, account operations, or public-account keywords.
 - Generated audience-facing copy must not expose the rewrite or evidence-audit process. Do not allow phrases such as `原稿里`, `原文里`, `文案里`, `飞书里`, `资料里`, `根据你提供的`, `下面这版`, `另一张截图里`, `截图显示`, `计算器显示`, `参考数据更新至`, or `结算数据更新至` in the final script unless the evidence carrier itself is the content being discussed; preserve source ownership and dates in the private audit instead.
-- For future Feishu input, do not infer from a link string. Fetch the actual document content and materials, then record the verified source in `docs/source-inventory.md`.
-- Feishu source text shown in the left editor must preserve and visually render document heading levels such as `#` and `##`; do not flatten H1/H2 into plain paragraphs or show headings at the same size as body text.
-- When adapting P002 workbench code, keep content-production modules that users expect in this project, especially `风格库` and `语音合成`, unless they are explicitly excluded. It is acceptable to leave out Jianying drafts, Chrome capture, storyboard, and video-template calibration code.
+- For user-supplied source documents, do not infer from a link or filename. Read the actual content and materials, then record the verified source in `docs/source-inventory.md`.
 - For Xianyu or income-related copy, keep all risk notes explicit in the private contract/audit, but do not turn the audience script into repeated disclaimers. The audience script should emphasize benefits, mechanisms, and steps; surface only copyright, privacy, illegality, financial-loss, or execution-blocking red lines, normally in at most one compact risk block. Do not invent platform safety, income certainty, official endorsement, or compliance status.
 - DNA 拆解先写不超过两句的一句话核心模型，再建立内容类型与框架主干；句式、叙事位置、认知推进、机会包装、人群代入和价值升维都只能作为有独立证据的辅助层，不能因为字段齐全就强行填满或压过主干。必须区分“场景型价值预演”和“段落价值承接”：前者把将要讲的普通内容翻译为学会后的生活升级、能力路径、当天可执行动作、效率或证据支持的收益画面，负责包装与留存；后者只连接当前步骤与下一步骤的真实依赖。钱十七稿在主要章节前反复出现前者时，应将其作为核心表达策略验证，不能降成一两次问题型承接；小步骤仍不强制包装。修辞式“不是X，而是Y”默认视为 AI 纠偏句壳，必要数据边界直接短说。单篇影子稿的修稿意见、目标内容专属揭晓顺序、一次第一人称动作不得直接上升为 IP 稳定 DNA。每轮新增控制后必须和“只用主框架”的简单基线比较；如果更绕、更像说明书/培训稿或用户评价下降，就删除或降级。对保留的口播句式仍须沉淀“抽象公式 + 适用条件 + 证据锚点 + 风险边界”，不得保存来源原句或把来源结果当成新稿事实。
 - 口播 DNA 必须另列“内容类型框架库”：每个框架写清适用条件、禁用条件、段落职责与证据锚点；候选框架至少要有两个独立证据簇，各自都出现完整且同序的框架路径，碎片不能拼成完整证据。
@@ -53,7 +52,7 @@
 - 完整文案在起稿前必须保存包含用户原话、解释目标、目标观众初始能力、排除假设、证据登记和 framework required slots 的 `task-brief.json`；contract 与 metadata 必须绑定其真实 SHA-256，并通过生成输入预检。市场可见信号、发布测试、真实订单、交付与收益必须分级，任何后一级证据不得由前一级推断；机械验证通过不能冒充任务语义正确或用户验收。
 - 选择钱十七 profile 或其中一个 framework 不等于已经应用钱十七风格。正式评测稿必须把稳定控制和实际启用的 pattern 逐项绑定到正文原句与本稿职责；声明但无正文 span 的规则视为未应用。机器只能验证“落位”，最终相似度仍由用户判断。
 - 用户已经通过或拒绝具体表达后，必须建立任务本地、绑定人工校准原文 SHA-256 的风格接受锁；通过原句、拒绝句壳和主要钩子兑现不能只留在 Markdown 备忘。任何框架、主要段落、内容占比或钩子链变化都会使旧 validation/style acceptance 失效；`draft/review_only` 必须重新生成并摘要绑定本轮 Baseline/Enhanced，机器通过仍只代表门禁落位。
-- 钱十七唯一人工可读主版本仍是 `style-engine/evaluation/spoken-style-profiler-qian17/钱十七-DNA-重构版.md`；2026-07-29 因旧语料漏掉 3 篇且混入目标测试稿事实，旧“已确认合格”状态已撤回，当前为 `draft/review_only`，等待 Baseline/Enhanced 实稿对照和用户重新确认。`profiles/钱十七-闲鱼风格拆解.md` 只能作为指向它的 NTFS hard-link 工作台别名，两个路径必须保持同一 File ID；`style-dna.draft.json` 仅是机器审计契约。不得再创建“改进版、正式版、V2”等并行风格内容。清理前必须完整读取候选文件、逐节合并、核对差异并通过验证，禁止先删后看。
+- 钱十七唯一人工可读主版本仍是 `ips/钱十七/dna/钱十七-DNA-重构版.md`；2026-07-29 因旧语料漏掉 3 篇且混入目标测试稿事实，旧“已确认合格”状态已撤回，当前为 `draft/review_only`，等待 Baseline/Enhanced 实稿对照和用户重新确认。`ips/钱十七/dna/钱十七-DNA-重构版.md` 只能作为指向它的 NTFS hard-link 工作台别名，两个路径必须保持同一 File ID；`style-dna.draft.json` 仅是机器审计契约。不得再创建“改进版、正式版、V2”等并行风格内容。清理前必须完整读取候选文件、逐节合并、核对差异并通过验证，禁止先删后看。
 - GitHub projects are references only unless `DECISIONS.md` is updated with a concrete adoption decision.
 
 ## Operating Rules

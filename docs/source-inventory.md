@@ -10,7 +10,7 @@ C:\Users\admin\Downloads\钱十七-闲鱼文案拆解.docx
 - Audited on: 2026-07-29
 - Structure: 86 paragraphs, 75 nonempty, no heading styles, no tables, no inline images.
 - Segmentation: 11 raw scripts / 10 independent evidence clusters.
-- Detailed paragraph boundaries: `style-engine/evaluation/spoken-style-profiler-qian17/source-audit-20260729.md`.
+- Detailed paragraph boundaries: `ips/钱十七/audits/source-audit-20260729.md`.
 
 ## Legacy Incomplete Extraction
 

@@ -7,7 +7,7 @@
 
 项目的近期目标不是做通用“文章仿写器”，也不是视频生成器，而是可靠地把一批**短视频口播稿**拆成可验证、可复用、但不携带原文事实的风格资产。
 
-第一对象仍为钱十七闲鱼口播样本。用户已确认 `style-engine/evaluation/spoken-style-profiler-qian17/钱十七-DNA-重构版.md` 为合格写作基准；`profiles/钱十七-闲鱼风格拆解.md` 是同一文件的工作台 hard-link 别名。机器 JSON 的正式证据状态仍独立保持 `draft/review_only`。
+第一对象仍为钱十七闲鱼口播样本。用户已确认 `ips/钱十七/dna/钱十七-DNA-重构版.md` 为合格写作基准；`ips/钱十七/dna/钱十七-DNA-重构版.md` 是同一文件的工作台 hard-link 别名。机器 JSON 的正式证据状态仍独立保持 `draft/review_only`。
 
 ## 本轮调研与取舍
 
@@ -88,7 +88,7 @@ M1 语料登记与分段
 ## 项目目录提案（暂不创建）
 
 ```text
-style-engine/
+engine/
   contracts/                 # 样本、规则、DNA、评测报告的 JSON 契约
   corpus/                    # 登记、切分、锚点，不放进公开 DNA
   health/                    # 重复、模板、覆盖度检查

@@ -1,12 +1,12 @@
 {
-  "name": "copy-style-rewrite-workbench",
-  "version": "0.1.0",
+  "name": "style-imitation-engine",
+  "version": "0.2.0",
   "private": true,
-  "description": "飞书文档读取与钱十七闲鱼风格仿写工作台",
+  "description": "不绑 IP 的风格拆解与风格仿写引擎",
   "scripts": {
-    "ui:dev": "node scripts/serve-workbench.mjs",
-    "lint": "node --check scripts/serve-workbench.mjs && node --check workbench-ui/app.js",
-    "test:spoken-dna": "node --test style-engine/tests/*.test.mjs"
+    "test": "node --test engine/tests/*.test.mjs",
+    "test:spoken-dna": "node --test engine/tests/*.test.mjs",
+    "lint": "node --check engine/skills/style-copywriter/scripts/validate-generated-copy.mjs && node --check engine/skills/style-copywriter/scripts/validate-generation-inputs.mjs"
   },
   "engines": {
     "node": ">=18"

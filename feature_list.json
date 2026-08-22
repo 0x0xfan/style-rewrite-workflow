@@ -4,178 +4,103 @@
     "done_requires_evidence": true,
     "block_after_repeated_same_failure": 2
   },
+  "goal": "不绑 IP 的双能力引擎：能力一从任意 IP 样本拆出风格 DNA，能力二用指定 IP 的 DNA 改写用户提供的内容。",
   "features": [
     {
       "id": "F001",
       "name": "钱十七闲鱼文案风格拆解",
       "status": "done",
-      "acceptance": [
-        "读取本地钱十七闲鱼文案样本。",
-        "输出可复用风格卡。",
-        "明确哪些只是风格、哪些事实不能复用。"
-      ],
-      "evidence": [
-        "style-engine/evaluation/spoken-style-profiler-qian17/钱十七-DNA-重构版.md",
-        "docs/source-inventory.md",
-        "docs/verification.md"
-      ],
-      "notes": "Historical first draft only. It is not approved and has been superseded as the formal profiling path by F008."
+      "acceptance": ["读取并拆解钱十七闲鱼文案样本。", "产出可复用风格卡。", "明确哪些只是风格、哪些是不可复用的来源事实。"],
+      "evidence": ["ips/钱十七/dna/钱十七-DNA-重构版.md", "docs/source-inventory.md", "docs/verification.md"],
+      "notes": "历史首版拆解，未获批准；作为正式拆解路径已被 F008 取代。"
     },
     {
       "id": "F002",
       "name": "飞书文档读取与素材抽取",
-      "status": "done",
-      "acceptance": [
-        "输入飞书文档链接后，真实读取文案和素材。",
-        "记录实际读取证据。",
-        "输出仿写所需事实、素材、证据、CTA。"
-      ],
-      "evidence": [
-        "scripts/serve-workbench.mjs",
-        "workbench-ui/",
-        "workbench_imports/feishu_20260627063050/import_manifest.json",
-        "workbench_imports/feishu_20260627063050/feishu_asset_index.json",
-        "workbench_imports/feishu_20260627063050/source_brief_preview.json",
-        "docs/verification.md"
-      ],
-      "notes": "Verified real Feishu readback through lark-cli: 55 paragraphs, 6 images, 6 downloaded, 0 failed."
+      "status": "obsolete",
+      "acceptance": [],
+      "evidence": ["docs/verification.md"],
+      "notes": "2026-08-22 随工作台一并删除。曾验证过真实飞书回读（55 段落、6 图片）；证据文件与实现均已从工作树移除，可从 git 历史恢复。"
     },
     {
       "id": "F003",
       "name": "基于风格卡的首篇仿写",
       "status": "pending",
-      "acceptance": [
-        "使用用户自己的事实和素材。",
-        "套用风格卡中的结构、节奏和 CTA 形态。",
-        "输出风险标注。"
-      ],
-      "evidence": [
-        "workbench_rewrites/rewrite_20260627065426/rewritten_script.txt",
-        "docs/verification.md"
-      ],
-      "notes": "Only the latest retained historical rewrite remains at workbench_rewrites/rewrite_20260627065426. The active Qian17 acceptance target is the canonical profile plus the current research-run script."
+      "acceptance": ["使用用户自己的事实与素材。", "能看出风格卡中的结构、节奏与 CTA 形态。", "风险显式标注。", "用户人工审阅通过。"],
+      "evidence": [],
+      "notes": "从未验收通过。钱十七路线连续三稿被用户拒绝（AI 味重、看不出风格）；半佛路线产出了两稿但用户尚未判定。"
     },
     {
       "id": "F004",
       "name": "恢复风格库与语音合成工作台模块",
-      "status": "done",
-      "acceptance": [
-        "页面重新显示风格库。",
-        "风格库可以读取、预览、保存本地 Markdown 风格卡。",
-        "页面重新显示语音合成。",
-        "语音合成 API 能读取 TTS 配置并尝试生成本地音频证据文件。",
-        "如果外部 TTS 不可用，必须返回可读失败原因，不伪造音频。"
-      ],
-      "evidence": [
-        "scripts/serve-workbench.mjs",
-        "workbench-ui/index.html",
-        "workbench-ui/app.js",
-        "workbench-ui/styles.css",
-        "docs/verification.md",
-        "HANDOFF.md"
-      ],
-      "notes": "UI/API verified. Actual audio generation is blocked by the current local proxy's Cloudflare challenge on /audio/speech; configure a working TTS endpoint to produce audio."
+      "status": "obsolete",
+      "acceptance": [],
+      "evidence": [],
+      "notes": "2026-08-22 随工作台一并删除。"
     },
     {
       "id": "F005",
       "name": "Style DNA 提取与风格匹配评分",
-      "status": "done",
-      "acceptance": [
-        "可从当前文本提取不含来源事实的结构化 Style DNA。",
-        "Style DNA 可随 Markdown 风格卡保存，并在读取时返回。",
-        "改写稿可与所选 DNA 进行可解释的轴向匹配评分。",
-        "评分不替代事实、风险、素材和元引用质量门。"
-      ],
-      "evidence": [
-        "docs/github-style-tooling-research.md",
-        "docs/style-dna-spec.md",
-        "scripts/serve-workbench.mjs",
-        "workbench-ui/index.html",
-        "workbench-ui/app.js",
-        "workbench-ui/styles.css",
-        "style-engine/evaluation/spoken-style-profiler-qian17/style-dna.draft.json",
-        "docs/verification.md"
-      ],
-      "notes": "基于 GitHub 方法研究的项目内实现，不引入外部仓库代码、模型或来源语料。已通过 API、保存/读取、浏览器交互与评分展示验证。"
+      "status": "obsolete",
+      "acceptance": [],
+      "evidence": [],
+      "notes": "2026-08-22 随工作台一并删除。评分只比较表层口播信号，无法替代人工风格判断，这一点已由后续多轮拒稿证实。"
     },
     {
       "id": "F006",
       "name": "样本健康、模板确认与 DNA 版本审计",
       "status": "done",
-      "acceptance": [
-        "提取前可报告样本单元、长度分布、近重复和模板候选。",
-        "模板候选默认不删除，只有用户勾选后才从 DNA 统计中剥离。",
-        "保存时记录草稿或人工确认状态；严重风险样本不能保存为已确认。",
-        "已保存 DNA 可生成只读版本快照并按版本回看。",
-        "持久化 DNA 不保存样本全文、模板候选原句或来源事实。"
-      ],
-      "evidence": [
-        "docs/style-imitation-upgrade-plan.md",
-        "scripts/serve-workbench.mjs",
-        "workbench-ui/index.html",
-        "workbench-ui/app.js",
-        "workbench-ui/styles.css",
-        "docs/verification.md",
-        "HANDOFF.md"
-      ],
-      "notes": "Historical workbench mechanism. It remains useful implementation evidence, but its UI confirmation is not equivalent to the external human approval record required by F008."
+      "acceptance": ["语料质量可检查。", "重复结构文本不被静默丢弃。", "DNA 决定留下审计轨迹。"],
+      "evidence": ["engine/health/sample-health.mjs", "ips/钱十七/corpus/sample-health.json", "ips/钱十七/audits/"],
+      "notes": "机制归项目所有，不把来源文本或事实写入持久 DNA。"
     },
     {
       "id": "F007",
       "name": "短视频口播 DNA 引擎",
       "status": "done",
-      "acceptance": [
-        "在无 UI、无改写调用的模块中完成语料切分、健康审计、七层标注、规则融合、内容类型框架库与草稿输出。",
-        "钱十七来源按 8 个 ## 口播单元切分，标题不计入单元。",
-        "候选规则可回查到至少两个单元锚点；输出默认要求人工确认。",
-        "DNA 持久化产物不含来源原文、收益、账号、资料关键词或 CTA。"
-      ],
-      "evidence": [
-        "style-engine/",
-        "docs/口播风格拆解-GitHub研究与模块蓝图.md",
-        "docs/verification.md"
-      ],
-      "notes": "Completed as a historical engineering prototype, not as an approved 钱十七 profile. Its 14 candidate rules/6 frameworks do not meet the stronger F008 external evidence and approval contract and must not be used formally."
+      "acceptance": ["仅识别 ## 口播单元。", "每条候选规则至少两个单元锚点。", "产物默认 draft 且需人工批准。", "输出不含来源全文、收益、账号名或 CTA。", "Node 测试覆盖切分、近重复、来源隔离与草稿状态。"],
+      "evidence": ["engine/analyzers/", "engine/corpus/", "engine/fusion/", "engine/tests/spoken-dna.test.mjs"],
+      "notes": ""
     },
     {
       "id": "F008",
       "name": "通用中文口播风格 DNA 拆解 Skill",
       "status": "done",
-      "acceptance": [
-        "创建可用于任意中文短视频口播 IP 的独立 Codex Skill，通用内核不写死钱十七、闲鱼、教程、收益或 CTA 规则。",
-        "提供 scaffold、validate、leakage、render 四个命令，并把语料清单、健康、人工决定、标注和批准记录作为外部证据闭环。",
-        "观察、候选和批准状态不能自动越级；approved 必须绑定独立人工批准记录。",
-        "钱十七真实样本和非教程型叙事夹具都通过验证与泄漏扫描。",
-        "完成结构验证、30 项确定性测试和独立对抗式终审。"
-      ],
-      "evidence": [
-        "C:\\Users\\admin\\.codex\\skills\\spoken-style-profiler\\SKILL.md",
-        "C:\\Users\\admin\\.codex\\skills\\spoken-style-profiler\\scripts\\self-test.mjs",
-        "style-engine/evaluation/spoken-style-profiler-qian17/",
-        "style-engine/evaluation/spoken-style-profiler-narrative-fixture/",
-        "docs/verification.md",
-        "HANDOFF.md"
-      ],
-      "notes": "Skill implementation is accepted, but no IP DNA is approved. 钱十七 remains a draft with unresolved u03/u07 sample handling and requires explicit user review."
+      "acceptance": ["通用 Skill 不含 IP/平台/行业专属内容。", "独立证据簇与外部锚点。", "泄漏扫描。", "独立批准记录。"],
+      "evidence": ["engine/skills/spoken-style-profiler-v2/", "engine/fixtures/narrative/"],
+      "notes": "Skill 真身在仓库外 C:/Users/admin/.codex/skills/spoken-style-profiler/，仓库内为副本，两者无同步机制。"
     },
     {
       "id": "F009",
       "name": "Style DNA 1.1 generation-ready control contract",
       "status": "done",
-      "acceptance": [
-        "将审计型 Style DNA 升级为 generation-ready control contract：typed selector DSL、可观察 persona/content strategy、beat/pattern 控制、audience effect、negative style、外部 content contract/output audit 与严格版本/视觉命名空间边界。",
-        "candidate profile、实际 approved control state、evidence bundle、reviewed generation suite 和 output set 必须用摘要共同绑定批准；approved profile 不得残留 candidate；机器校验只验证结构和摘要，不能证明现实人工身份或自然语言语义审计正确。",
-        "generation suite 覆盖 selectable framework 的 positive、excluded/abstain、fallback 分支，以及 selectable pattern 的预算和 avoid pattern 的 trigger。",
-        "两个实际 profile 均以真实 CLI 结果验证；在此之前保持 draft，不产生 approved DNA、正式仿写、UI 或视频。"
-      ],
-      "evidence": [
-        "C:\\Users\\admin\\.codex\\skills\\spoken-style-profiler\\SKILL.md",
-        "C:\\Users\\admin\\.codex\\skills\\spoken-style-profiler\\references\\profile-schema.md",
-        "C:\\Users\\admin\\.codex\\skills\\spoken-style-profiler\\references\\generation-readiness.md",
-        "docs/verification.md",
-        "HANDOFF.md"
-      ],
-      "notes": "Completed and independently accepted. Node syntax checks, six JSON assets, profile-template validation, Skill Creator validation and 50/50 deterministic tests pass. Both actual draft profiles pass full CLI validation and leakage scanning; 钱十七 correctly abstains with observation-only controls, while the narrative suite covers positive/fallback/excluded, candidate pattern maxima and the avoid trigger. Selector duplicates, pattern min/position/avoid_when, beat effect enums, profile-specific meta phrases and approved control-state binding are enforced. No DNA was approved."
+      "acceptance": ["typed selector DSL，无匹配或并列必须 abstain。", "persona/strategy/pattern 均带可执行控制、适用条件、证据与风险。", "五个摘要字段共同绑定批准记录。", "严格 1.1 字段白名单。"],
+      "evidence": ["ips/钱十七/dna/style-dna.draft.json", "ips/钱十七/generation/generation-test.draft.json", "engine/skills/style-copywriter/"],
+      "notes": "钱十七 profile 仍为 draft / review_only，从未批准。"
+    },
+    {
+      "id": "F010",
+      "name": "per-IP 目录标准与引擎/IP 分离",
+      "status": "done",
+      "acceptance": ["engine/ 不含具体 IP。", "ips/<IP>/ 结构统一为 corpus/dna/audits/generation/outputs。", "路径引用全部更新且测试通过。"],
+      "evidence": ["docs/architecture.md", "ips/钱十七/", "ips/半佛/"],
+      "notes": "2026-08-22 完成。"
+    },
+    {
+      "id": "F011",
+      "name": "双路线对照：判定哪套拆解方法真的有效",
+      "status": "pending",
+      "acceptance": ["同一选题分别用严谨线（钱十七 DNA）与轻量线（半佛 DNA）各产出一稿。", "用户判定哪套方法产出了能用的东西。", "结论写入 DECISIONS.md 并据此定路线。"],
+      "evidence": [],
+      "notes": "用户 2026-08-22 指定的下一步。路线取舍在此之前不预设。"
+    },
+    {
+      "id": "F012",
+      "name": "仿写能力通用化：解除对具体 IP 的硬编码",
+      "status": "pending",
+      "acceptance": ["style-copywriter 可用任意 ips/<IP>/dna/ 驱动。", "至少用两个 IP 的 DNA 各跑通一次。", "IP 专属约束只存在于该 IP 目录，不进入 engine/。"],
+      "evidence": [],
+      "notes": "依赖 F011 的路线结论。"
     }
   ]
 }

@@ -55,7 +55,7 @@
 - Initialized project files in `D:\项目仓库\风格仿写`.
 - Verified source sample exists at `F:\dai ma\钱十七剪辑拆解\钱十七文案素材\钱十七-闲鱼文案拆解.md`.
 - Extracted 8 `##` sections from the sample document.
-- Created `profiles/钱十七-闲鱼风格拆解.md`.
+- Created `ips/钱十七/dna/钱十七-DNA-重构版.md`.
 - Created GitHub tooling research note.
 - Verified `feature_list.json` parses with PowerShell `ConvertFrom-Json`.
 - Added local workbench files: `package.json`, `scripts/serve-workbench.mjs`, `workbench-ui/index.html`, `workbench-ui/app.js`, `workbench-ui/styles.css`.
@@ -156,13 +156,13 @@ A task is done only when evidence is recorded here or the blocker is explicitly 
 2026-07-22:
 
 - User confirmed that this phase is text spoken-script DNA only; UI, rewrite, Feishu, TTS, video and publishing work are frozen.
-- Added `style-engine/` with independent corpus segmentation, health assessment, seven-layer analysis, draft fusion/rendering and CLI entrypoint.
+- Added `engine/` with independent corpus segmentation, health assessment, seven-layer analysis, draft fusion/rendering and CLI entrypoint.
 - `npm run test:spoken-dna` passed 6/6:
   - only H2 headings become units;
   - near duplicates are surfaced;
   - DNA cannot contain test-source phrases or bypass human approval;
   - `先排雷再给方法` verifies risk-before-method order instead of merely co-occurring words.
-- Real run command produced `style-engine/profiles/qian17-xianyu-spoken/draft/`:
+- Real run command produced `engine/profiles/qian17-xianyu-spoken/draft/`:
   - `corpus-manifest.json`: 8 units;
   - `sample-health.json`: `warning`; near duplicate `u03/u07` at 0.871;
   - `style-dna.draft.json` and `Style-DNA.draft.md`: 14 candidate rules and 6 content-type frameworks, `status=draft`, `requires_human_approval=true`.
@@ -184,11 +184,11 @@ A task is done only when evidence is recorded here or the blocker is explicitly 
   - draft or free-text self-approval, incomplete approval checklists, non-human reviewer values, and invalid timestamps;
   - exact long fragments, titles, four-character earnings claims, punctuation-normalized matches, protected fields, and cross-field source reconstruction;
   - a valid two-beat non-tutorial framework without forced tutorial, income, project, data, or CTA fields.
-- 钱十七 forward test at `style-engine/evaluation/spoken-style-profiler-qian17/` passed `validate` and `leakage` with zero errors/warnings/matches. It remains draft; every item is `observation/review_only`, and `u03/u07` similarity 0.871 remains an unresolved human decision.
-- Synthetic everyday-reflection narrative fixture at `style-engine/evaluation/spoken-style-profiler-narrative-fixture/` passed `validate` and `leakage`. It uses a real two-beat narrative framework and empty `required_content_fields`, demonstrating that the core does not require a tutorial/commercial schema. This fixture is not a substitute for a second real IP corpus.
+- 钱十七 forward test at `ips/钱十七/` passed `validate` and `leakage` with zero errors/warnings/matches. It remains draft; every item is `observation/review_only`, and `u03/u07` similarity 0.871 remains an unresolved human decision.
+- Synthetic everyday-reflection narrative fixture at `engine/fixtures/narrative/` passed `validate` and `leakage`. It uses a real two-beat narrative framework and empty `required_content_fields`, demonstrating that the core does not require a tutorial/commercial schema. This fixture is not a substitute for a second real IP corpus.
 - Both human Markdown reports were rendered only from validated abstract rules and anchor references; source lines were not emitted into the profiles.
 - Independent adversarial review reran the attacks and both forward tests. All previously reported gaps were fixed; final verdict: `ACCEPTED`. Reviewed script SHA-256: `1C0EE401…231C7FC`.
-- No profile is approved. The historical workbench DNA and `style-engine/profiles/qian17-xianyu-spoken/draft/` do not satisfy the new approval contract and must not be selected for formal rewriting.
+- No profile is approved. The historical workbench DNA and `engine/profiles/qian17-xianyu-spoken/draft/` do not satisfy the new approval contract and must not be selected for formal rewriting.
 
 ## Style DNA 1.1 Control Contract Upgrade
 
@@ -337,3 +337,14 @@ A task is done only when evidence is recorded here or the blocker is explicitly 
   - caller-injected sample text, template phrases, and unknown JSON fields were removed by the DNA schema whitelist before current DNA and v1 snapshot persistence;
   - valid predefined signature signals, approval state, and version readback remained available.
 - Temporary test cards and version snapshots were deleted after verification. The default 钱十七 DNA remains an existing, unversioned fingerprint until a person reviews its reported sample-health warnings.
+
+## 2026-08-22 仓库整理与结构重构
+
+- 重构前基线：`npm run test:spoken-dna` 32/32 通过。
+- 重构后：`npm test` 31/31 通过，`npm run lint` 通过。
+- 少的一条是 `workbench alias content matches the canonical profile`。该测试断言 `profiles/钱十七-闲鱼风格拆解.md` 与正本内容一致；别名已随工作台退役，测试失去断言对象，已删除。删除前核验两文件 SHA-256 均为 `0c20c3c0d8d2a88f43f390cb3122c8dd09735dc7f232d3d6970764933285d80e`。
+- `feature_list.json` 通过 `json.load` 解析。
+- 路径引用改写覆盖 14 个文件；`DECISIONS.md` 与本文件中指向已删路径的历史记录**未修改**，因为那是当时的事实。
+- 删除的路径：`workbench-ui/`、`scripts/serve-workbench.mjs`、`init.ps1`、`review-context/`、`tmp/`、`workbench_imports/`。前四项已提交过，可从 git 历史恢复；后两项为未跟踪的本地缓存，不可恢复。
+- 未删除：`workbench_rewrites/`（2026-06-27 单次改写残留，未跟踪，本轮未获明确授权）。
+- 未提交、未推送、未部署之外的状态变化：无。钱十七 profile 仍为 `draft / review_only`。

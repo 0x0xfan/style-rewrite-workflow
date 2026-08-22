@@ -1,4 +1,0 @@
-interface:
-  display_name: "口播风格 DNA 拆解"
-  short_description: "拆解任意中文短视频口播 IP 的可验证、生成就绪风格 DNA"
-  default_prompt: "使用 $spoken-style-profiler 从这批参考口播中建立带生成控制层、待人工确认的 IP 风格档案。"

@@ -1,7 +1,0 @@
-interface:
-  display_name: "钱十七文案生成"
-  short_description: "把项目事实、知识和素材转成配图 Word 口播稿"
-  default_prompt: "Use $qian17-copywriter to lock the narrator, target viewer, case buyer, and content goal; then turn verified project facts, relevant knowledge, and evidence images into a clean illustrated Word script in 钱十七 style。"
-
-policy:
-  allow_implicit_invocation: true
