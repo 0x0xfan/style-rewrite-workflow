@@ -82,3 +82,15 @@ for (const [ip, name] of SHORT) {
     assert.ok(seconds >= 75 && seconds <= 115, `${ip} 实测 ${seconds.toFixed(0)} 秒`);
   });
 }
+
+// \u56de\u6e90\u5934\u5ba1\u8ba1\u53d1\u73b0\u65e7\u7a3f\u5957\u7528\u4e86\u6765\u6e90\u539f\u53e5\u5e76\u501f\u7528\u4e86\u6765\u6e90\u8eab\u4efd\u3002
+// \u98ce\u683c\u53ef\u4ee5\u5b66\uff0c\u539f\u53e5\u548c\u8d26\u53f7\u8d44\u4ea7\u4e0d\u80fd\u642c\u3002
+const LIFTED = ['\u6211\u7231\u8fd9\u4e2a\u9b54\u5e7b\u7684\u4e16\u754c', '\u6211\u662f\u534a\u4f5b', '\u9e21\u86cb\u5377', '\u95ee\u53f7\u6bd4'];
+for (const [ip, name] of [...SHORT, ...LONG]) {
+  test(`shipped draft carries no lifted source phrasing: ${ip} ${name}`, () => {
+    const copy = read(ip, name);
+    for (const phrase of LIFTED) {
+      assert.equal(copy.includes(phrase), false, `${ip}/${name} \u542b\u6765\u6e90\u539f\u53e5\u6216\u501f\u7528\u8eab\u4efd: ${phrase}`);
+    }
+  });
+}
