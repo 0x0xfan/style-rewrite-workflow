@@ -348,3 +348,15 @@ A task is done only when evidence is recorded here or the blocker is explicitly 
 - 删除的路径：`workbench-ui/`、`scripts/serve-workbench.mjs`、`init.ps1`、`review-context/`、`tmp/`、`workbench_imports/`。前四项已提交过，可从 git 历史恢复；后两项为未跟踪的本地缓存，不可恢复。
 - 未删除：`workbench_rewrites/`（2026-06-27 单次改写残留，未跟踪，本轮未获明确授权）。
 - 未提交、未推送、未部署之外的状态变化：无。钱十七 profile 仍为 `draft / review_only`。
+
+## 2026-08-22 晚（F011 收尾与四层→五层门禁）
+
+只记录本机实际跑过的验证。今晚 6 个提交（`c46b030`→`accf8c9`），`npm test` 数按 54→60→63 变化。
+
+- **`c46b030`（F011 报告刷新 + 修 A7 三句照抄）**：钱十七长稿 A7 三句重写后，禁用话术 grep 零命中；对权威语料做 12 字连续重合扫描命中 0、最长重合 6 字；跨稿重复 PASS；`npm test` **54/54**。
+- **`ad50600`（12 字来源泄漏扫描入仓）**：新增 6 条测试（4 内联 + 2 条件在本机语料上），两条条件测试在本机均跑过并通过；四稿在 12 字这一档全部干净。`npm test` **54→60**。
+- **`05bad9d`（半佛过通用流水线）**：`scaffold` 返回 `ok:true`、`unit_count:10`、`health:healthy`，产出 4 个草稿文件；`validate/leakage/render` 在 `readJson(--profile)` 处失败退出 1（半佛无 1.1 JSON 契约，未硬造）；新增文件未影响测试，`npm test` **60/60**。
+- **`d0bfe48`（机器契约同步——阻塞）**：外部 validator 基线 `ok:true`、0 error / 0 warning、pattern 7；写入四条修订后 validator 仍 `ok:true`、0/0、pattern 10（schema 接受）；但 `npm test` 变 **59 pass / 1 fail**（`qian17-reprofile.test.mjs` 断言 `10 !== 7`）。JSON 已按字节恢复，`npm test` 回到 **60/60**。
+- **`8f9319a`（10 篇压测）**：10 个选题各一篇 + 现有餐饮券短稿共 **11 篇**；每篇过平台合规、过 12 字来源泄漏扫描；去注释后正文两两重合最高 **1.6%**（55 对全部 ≤ 8% 上限），账本报“无跨稿重句”。`npm test` **60/60**。
+- **`accf8c9`（修重复工具两处缺陷）**：`bodyOf()` 剥 HTML 注释、同 IP 口径细分为同选题；压测批 FAIL→PASS，四稿仍 PASS；新增 3 条测试（含 10 篇 fixtures + 餐饮券短稿的条件回归锁）。`npm test` **60→63**。
+- **收尾态**：`npm test` **63/63** 通过；`feature_list.json` 通过 `json.load` 解析。钱十七 profile 仍为 `draft / review_only`；今晚提交均未推送。

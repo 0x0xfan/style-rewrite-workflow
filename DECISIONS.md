@@ -34,3 +34,12 @@ Record durable project decisions here.
 | 2026-08-22 | 删除本地工作台链路（`workbench-ui/`、`scripts/serve-workbench.mjs`、`init.ps1`）、已作废的 `review-context/` 及导入缓存。 | 该链路自 2026-07 起停工，README 自身已标注为历史；保留它们只会让新会话误以为飞书/TTS/改写 API 仍是当前路径。全部可从 git 历史恢复。 | `docs/architecture.md`, `feature_list.json` |
 | 2026-08-22 | 退役 `profiles/` 目录与钱十七 hard-link 别名，风格档案正本唯一存放于 `ips/<IP名>/dna/`。 | 该别名存在的唯一理由是兼容本地工作台，工作台已删除；两处同内容文件反而制造“哪个是正本”的歧义。删除前已核验两者 SHA-256 一致。 | `ips/钱十七/dna/钱十七-DNA-重构版.md`, `engine/tests/qian17-reprofile.test.mjs` |
 | 2026-08-22 | 路线取舍暂不决定，先做 F011 双路线同题对照，由用户判定后再定。 | 严谨线三稿全绿全拒、轻量线两天出稿，哪套方法真的有效目前没有证据。在拿到证据前给任何一条线加功能都是赌。 | `CURRENT.md`, `feature_list.json` |
+| 2026-08-22 | 长短视频分流：短视频不删收益整层，而用悬念/反差/损失厌恶等诱导设计做等价转换。 | 全局删钩子会把短稿削成流水账，等价转换既过合规又保住风格势能。 | `docs/platform-compliance.md`, `docs/F011-双路线对照-闲鱼餐饮券.md` |
+| 2026-08-22 | 平台合规层只对短视频稿生效，长视频稿明确不走。 | 长视频语境允许直接讲收益，把短视频口径套到长稿会误伤；测试锁住作用域（短稿必 PASS、长稿必 FAIL）。 | `docs/platform-compliance.md`, `engine/tests/platform-compliance.test.mjs` |
+| 2026-08-22 | 语义重复检测暂不做，只做字面 n-gram 重合。 | 用户明确搁置；当前先解决字面照抄，语义层留给变体轴与人工审。 | `docs/variation.md`, `HANDOFF.md` |
+| 2026-08-22 | “学结构不学词”成为项目规则：一条风格控制必须齐五要素（槽位/关系/功能/失效样例/≥3 条全新实例）才算结构，否则只是标签。 | 此前的“抽象公式”只是一句话标签，生成时只能换名词、看似像实则复制；五要素把公式写到能填空。 | `docs/structure-not-words.md`, `AGENTS.md` |
+| 2026-08-22 | 钱十七互动指令层（A7）从辅助升为贯穿全篇的主干层。 | 回源审计发现互动指令是钱十七贯穿全篇的漏项，不是可有可无的辅助模式。 | `ips/钱十七/dna/钱十七-DNA-重构版.md`, `ips/钱十七/audits/source-audit-20260729.md` |
+| 2026-08-22 | 两份 DNA 一律以回源审计为准重写/修订（人读档案），不再沿用旧档案的编造权重与原句。 | 旧档案把半佛主体误标为吐槽稿、钱十七漏了互动层，回源审计才是事实基准。 | `ips/钱十七/dna/钱十七-DNA-重构版.md`, `ips/半佛/dna/半佛-DNA-可执行版.md`, `ips/半佛/audits/` |
+| 2026-08-22 | 来源泄漏扫描阈值从 20 字降到 12 字，并做成仓库内工具入 `npm test`。 | 照抄的最长片段 18 字卡在 20 字阈值下逃过检查，降到 12 字才拦得住这类换名词照抄。 | `engine/leakage/check-source-leakage.mjs`, `engine/leakage/leakage-rules.json` |
+| 2026-08-22 | 钱十七机器契约同步阻塞于冻结测试，是否放宽待用户决定。 | 外部 validator 接受修订（pattern 7→10），但 `qian17-reprofile.test.mjs` 硬锁 7 pattern；放宽冻结测试超出自主授权范围。 | `ips/钱十七/audits/contract-sync-blocked-20260822.md`, `engine/tests/qian17-reprofile.test.mjs` |
+| 2026-08-22 | 同 IP 跨稿重复口径按“同选题”细分：15% 只给同选题长/短/图文版，同 IP 不同选题按 8%。 | 批量出稿几乎都是同 IP、不同选题，旧口径一律套 15% 会漏掉这一格。 | `docs/variation.md`, `engine/variation/repetition-rules.json`, `engine/fixtures/batch-test-20260822/report.md` |

@@ -91,8 +91,8 @@
       "name": "双路线对照：判定哪套拆解方法真的有效",
       "status": "pending",
       "acceptance": ["同一选题分别用严谨线（钱十七 DNA）与轻量线（半佛 DNA）各产出一稿。", "用户判定哪套方法产出了能用的东西。", "结论写入 DECISIONS.md 并据此定路线。"],
-      "evidence": [],
-      "notes": "用户 2026-08-22 指定的下一步。路线取舍在此之前不预设。"
+      "evidence": ["docs/F011-双路线对照-闲鱼餐饮券.md"],
+      "notes": "四稿已冻结；报告已刷新到最终态并补行级结构落位表（含 A7 照抄的发现与修复）；等用户判定。路线取舍在判定之前不预设。"
     },
     {
       "id": "F012",
@@ -101,6 +101,46 @@
       "acceptance": ["style-copywriter 可用任意 ips/<IP>/dna/ 驱动。", "至少用两个 IP 的 DNA 各跑通一次。", "IP 专属约束只存在于该 IP 目录，不进入 engine/。"],
       "evidence": [],
       "notes": "依赖 F011 的路线结论。"
+    },
+    {
+      "id": "F013",
+      "name": "学结构不学词：档案结构化升级",
+      "status": "done",
+      "acceptance": ["确立“一条风格控制必须齐五要素（槽位/关系/功能/失效样例/≥3 条全新实例）才算结构”为项目规则。", "两份人读 DNA 按该规则做结构化升级。"],
+      "evidence": ["docs/structure-not-words.md", "ips/钱十七/dna/钱十七-DNA-重构版.md", "ips/半佛/dna/半佛-DNA-可执行版.md"],
+      "notes": "解决“只学到用词、没理解结构”导致的换名词式复制。"
+    },
+    {
+      "id": "F014",
+      "name": "来源泄漏扫描 12 字入仓",
+      "status": "done",
+      "acceptance": ["稿件对来源语料做连续字符滑窗比对，命中即失败。", "阈值 20→12 字。", "能读 .txt/.md/.docx，保护性事实枚举先遮罩。", "入 npm test（含本机语料条件测试）。"],
+      "evidence": ["engine/leakage/check-source-leakage.mjs", "engine/leakage/leakage-rules.json", "engine/tests/source-leakage.test.mjs"],
+      "notes": "四稿在 12 字这一档全部 0 命中。54→60 测试。"
+    },
+    {
+      "id": "F015",
+      "name": "跨稿重复工具 10 篇压测与修复",
+      "status": "done",
+      "acceptance": ["10 篇不同选题 + 现有餐饮券短稿共 11 篇过重复工具。", "修复注释污染（bodyOf 剥 HTML 注释）与同选题口径（同 IP 不同选题按 8%）。", "回归锁入 npm test。"],
+      "evidence": ["engine/fixtures/batch-test-20260822/report.md", "engine/variation/check-repetition.mjs", "engine/variation/repetition-rules.json", "docs/variation.md", "engine/tests/repetition.test.mjs"],
+      "notes": "正文重合最高 1.6%，轴轮换有效；下一缺口是连接壳（转场/下期口/P8 句框）第 3 次复用枯竭，缺轮换库。60→63 测试。"
+    },
+    {
+      "id": "F016",
+      "name": "钱十七机器契约同步",
+      "status": "blocked",
+      "acceptance": ["把人读 DNA 的 2026-08-22 修订（A7/P8/A2/对立语气）写进 style-dna.draft.json。", "外部 validator 通过。", "npm test 全过。"],
+      "evidence": ["ips/钱十七/audits/contract-sync-blocked-20260822.md"],
+      "notes": "validator 接受（pattern 7→10），但冻结测试 engine/tests/qian17-reprofile.test.mjs 硬锁 7 pattern，撞 length===7。JSON 已恢复原状。放不放宽冻结测试待用户决定。"
+    },
+    {
+      "id": "F017",
+      "name": "半佛走通用拆解流水线（能力一二次实证）",
+      "status": "partial",
+      "acceptance": ["通用 scaffold 换第二个 IP 无改动跑通。", "validate/leakage/render 跑通。", "取证达到与钱十七同级。"],
+      "evidence": ["ips/半佛/audits/pipeline-run-20260822.md"],
+      "notes": "确定性前半段（scaffold+health+草稿）零改动跑通（ok:true、10 单元、healthy）；后半段跑不了，卡点不在换 IP 而在半佛无 1.1 JSON 契约（需人工标注→起草）。“还差什么”清单见报告第七节。"
     }
   ]
 }
