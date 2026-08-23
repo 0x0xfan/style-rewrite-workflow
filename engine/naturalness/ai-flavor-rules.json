@@ -1,0 +1,92 @@
+{
+  "version": "1.0",
+  "updated": "2026-08-23",
+  "scope": "中文口播/口语稿的 AI 味量化预检。阈值取自 docs/research/ai-flavor-diagnosis-20260823.md 的真人基线（钱十七口播转写 10 段 + 半佛原创文章 10 篇）。",
+  "disclaimer": "这些是保守启发式，不是审美裁决。单次出现无罪，真正暴露 AI 味的是重复/空洞/跨稿撞骨架（见诊断第 4.3 节）。通过不代表读起来一定像人，未通过也可能是命中了该 IP 本人的签名手法——block 级要清零，warn 级要人工复核。",
+  "measurement": {
+    "body": "正文 = 去掉标题行(#)、HTML 注释(<!-- -->)、分隔线(---)后的文本。密度均按去空白后的正文字数折算每千字。",
+    "sentenceSplit": "按 。！？!? 切句，段落换行也作句界；句长为去空白去句末标点后的字符数。",
+    "caveat_qian17_length": "诊断第 0 节：钱十七真人语料是口播转写稿，转写者极少用句号，按句号切句会切出伪长句（真人 A_mean 46.97 是标点伪影）。因此句长 CV 只对半佛（书面句读正常）和未指定 IP 作门禁，钱十七只报数不门禁。"
+  },
+  "summaryShells": [
+    "说白了",
+    "说人话",
+    "这就是",
+    "一句话",
+    "记住一条",
+    "先记一句",
+    "核心是",
+    "本质上",
+    "换句话说",
+    "归根结底"
+  ],
+  "fillerWords": [
+    "其实",
+    "就是",
+    "然后",
+    "怎么说呢",
+    "对吧",
+    "诶",
+    "啊",
+    "嘛",
+    "呢",
+    "吧"
+  ],
+  "notButShellPattern": "不是[^，。]{1,15}[，,]?(而)?是",
+  "danglingDe": {
+    "endsWith": ["的。", "的！", "的？"],
+    "nounSuffixWindow": 6,
+    "nounSuffixes": ["券", "人", "钱", "东西", "事", "货", "号", "店", "稿"],
+    "rationale": "句末以『的』收尾且『的』前 6 字内无常见中心词后缀（券/人/钱/东西/事/货/号/店/稿）时判为悬空『的』——宾语被吞的电报体，用户两个原始吐槽之一。真人全稿仅 3-4 处且多为完整『是…的』句，此处目标清零。"
+  },
+  "profiles": {
+    "default": {
+      "label": "未指定 IP，通用档",
+      "gateSentenceCV": true,
+      "metrics": {
+        "dashPer1000": { "max": 0.8, "level": "block", "rationale": "破折号——：两真人 0.21-0.30/千字，我们 3.86（13-18×），最强最通用的 AI tell。上限 0.8≈真人 2.5-4×，超了基本是拿它抖包袱/接补充。" },
+        "summaryShellPer1000": { "max": 0.6, "level": "block", "rationale": "总结壳：两真人 0.37-0.43/千字，我们 1.38（3.2-3.7×）。上限 0.6≈真人 1.5×，禁把观点装壳再端出来。" },
+        "danglingDeCount": { "max": 0, "level": "block", "rationale": "悬空『的』：低频高毒，必须清零。" },
+        "consecutiveQuestions": { "max": 3, "level": "block", "rationale": "连续反问：最长连续以？收尾的句串。默认 ≤3，超过即机械轰炸（压测半佛短稿曾 6 连问）。" },
+        "notButShellCount": { "max": 1, "level": "warn", "rationale": "『不是X是Y』每篇 ≤1。真人半佛 2.30/千字属签名，但通用稿默认收紧。" },
+        "colonPer1000": { "max": 1.0, "level": "warn", "rationale": "冒号：钱十七真人仅 0.42，半佛 2.70。默认取严 1.0，防冒号金句列点腔。" },
+        "quotePer1000": { "max": 1.0, "level": "warn", "rationale": "引号：钱十七真人仅 0.30，半佛 3.48。默认取严 1.0，防吓人引号框金句。" },
+        "questionPer1000": { "max": 8.0, "level": "warn", "rationale": "问号：钱十七 0.97、半佛 5.03。默认放到 8（≈半佛 1.6×），只拦极端密集。" },
+        "ellipsisPer1000": { "max": 1.0, "level": "warn", "rationale": "省略号：三方语料全 0。给个小上限 1.0 兜底。" },
+        "sentenceCvMin": { "min": 0.7, "level": "block", "rationale": "句长变异系数下限：半佛真人 0.80（长铺陈+短猛砸交替），我们 0.53-0.62 太匀。未指定 IP 时按书面稿标准门禁 0.7。" }
+      }
+    },
+    "钱十七": {
+      "label": "口播转写基线",
+      "gateSentenceCV": false,
+      "metrics": {
+        "dashPer1000": { "max": 0.8, "level": "block", "rationale": "真人 0.30/千字。上限 0.8≈2.6×。" },
+        "summaryShellPer1000": { "max": 0.6, "level": "block", "rationale": "真人 0.43/千字。上限 0.6≈1.4×。" },
+        "danglingDeCount": { "max": 0, "level": "block", "rationale": "钱十七仿写与压测稿是悬空『的』重灾区（『只收说得清出处的』），清零。" },
+        "consecutiveQuestions": { "max": 3, "level": "block", "rationale": "真人问号密度极低（0.97/千字），不靠连续反问推进。" },
+        "notButShellCount": { "max": 1, "level": "warn", "rationale": "真人 0.40/千字，很少用否定对照壳。每篇 ≤1。" },
+        "colonPer1000": { "max": 1.0, "level": "warn", "rationale": "真人 0.42/千字，我们 8×。真人口播是连着说，不加『规矩：xxx』冒号列点。上限 1.0≈2.4×。" },
+        "quotePer1000": { "max": 1.0, "level": "warn", "rationale": "真人 0.30/千字，我们 18×。上限 1.0≈3×，防引号框金句。" },
+        "questionPer1000": { "max": 2.0, "level": "warn", "rationale": "真人 0.97/千字。上限 2.0≈2×，钱十七不靠反问。" },
+        "ellipsisPer1000": { "max": 1.0, "level": "warn", "rationale": "真人 0。给小上限兜底。" },
+        "sentenceCvMin": { "min": 0.6, "level": "info", "rationale": "只报不门禁：口播转写标点伪影使句长不可直接比（诊断第 0 节）。真人参考 CV 0.60。" }
+      }
+    },
+    "半佛": {
+      "label": "书面文章基线",
+      "gateSentenceCV": true,
+      "metrics": {
+        "dashPer1000": { "max": 0.8, "level": "block", "rationale": "真人 0.21/千字，全稿几乎不用破折号。上限 0.8≈3.8×。" },
+        "summaryShellPer1000": { "max": 0.6, "level": "block", "rationale": "真人 0.37/千字。上限 0.6≈1.6×。" },
+        "danglingDeCount": { "max": 0, "level": "block", "rationale": "悬空『的』清零。" },
+        "consecutiveQuestions": { "max": 4, "level": "block", "rationale": "半佛靠反问推进（真人 5.03/千字），会连问但夹陈述喘气。上限 4，拦 6 连问式轰炸。" },
+        "notButShellCount": { "max": 2, "level": "warn", "rationale": "『不是X是Y』是半佛签名（真人 2.30/千字），放宽到每篇 ≤2，只拦滥用。" },
+        "colonPer1000": { "max": 3.5, "level": "warn", "rationale": "真人 2.70/千字，本就用冒号。上限 3.5≈1.3×。" },
+        "quotePer1000": { "max": 4.5, "level": "warn", "rationale": "真人 3.48/千字，内心独白偶用引号。上限 4.5≈1.3×。" },
+        "questionPer1000": { "max": 8.0, "level": "warn", "rationale": "真人 5.03/千字。上限 8≈1.6×，半佛短稿曾到 19.65（4×）。" },
+        "ellipsisPer1000": { "max": 1.0, "level": "warn", "rationale": "真人 0。给小上限兜底。" },
+        "sentenceCvMin": { "min": 0.7, "level": "block", "rationale": "真人 CV 0.80、均长 28 字，长短句剧烈交错；我们摊平成清一色中短句（CV 0.53-0.62）。门禁下限 0.7——这是用户投诉『句子太齐』的量化根源。" }
+      }
+    }
+  }
+}
