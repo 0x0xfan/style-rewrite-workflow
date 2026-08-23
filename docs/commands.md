@@ -132,7 +132,7 @@ node engine\naturalness\check-lexicon.mjs --drafts `
 node engine\naturalness\check-lexicon.mjs --ip 钱十七 --drafts '某篇稿.md'
 ```
 
-拿 `ips/<IP>/corpus/lexicon.json`（由语料经 jieba 统计的内容词表，另含"业务词"子表）对稿子做**最大正向匹配**切词：切得出的=语料里出现过；切不出的相邻字聚成 2–4 字**片段**即"可疑用词"，逐条列给人过目。三类输出：①可疑用词清单（语料 0 出现，**warn 级、不 block**——语料小，没出现≠错）；②业务词命中数（命中词表业务词只计数加分）；③替换建议（先查 `engine/naturalness/lexicon-hints.json` 的人工映射，如"找货→找货源""散在→都在/藏在""打哪来→从哪来"，hints key 是可疑片段子串也命中；否则按同首/同尾字从词表取近邻词）。因是内容词表 MFM，功能字/黏合词会落进片段，工具已剥两端助词并丢弃单字与高频黏合词，但片段仍是"span 视图"、需人工逐句判读，不是精确分词。IP 识别：`--ip` 优先 → 路径 `ips/<IP>/` 推断。**退出码恒为 0**（纯报告工具），仅 lexicon 缺失时非 0。词表重建：语料变动后重跑分词脚本刷新 `ips/<IP>/corpus/lexicon.json`（jieba `posseg` 留名词/动词/形容词、去停用词/单字/纯数字，doc 频次按语料"篇"数）。
+拿 `ips/<IP>/corpus/lexicon.json`（由语料经 jieba 统计的内容词表，另含"业务词"子表）对稿子分词后逐词比对：**默认走 jieba 分词后端**（`engine/naturalness/segment.py`，与词表构建同一口径——`posseg` 只留 n/v/a 词性、去单字/纯数字/停用词），jieba 切出的**完整词**中不在 `terms` 里的即"可疑用词"。**需要系统 python + jieba（0.42.1，建词表用的就是它）；缺失则自动回退最大正向匹配（MFM），并在报告里标注"回退 MFM（未分词）"**——MFM 把切不出的相邻字聚成 2–4 字片段，噪声较大、仅兜底。三类输出：①可疑用词清单（语料 0 出现，**warn 级、不 block**——语料小，没出现≠错），jieba 路径每个可疑词**附所在原句（截 30 字）**供人工直接判"该不该换"；②业务词命中数（命中词表业务词只计数加分）；③替换建议（先查 `engine/naturalness/lexicon-hints.json` 的人工映射，如"找货→找货源""散在→都在/藏在""打哪来→从哪来"，hints key 是可疑词子串也命中；否则按同首/同尾字从词表取近邻词）。通用过滤：`lexicon-hints.json` 的 `allowlist`（事实性专名，如闲鱼/肯德基/车厘子）、数字/量词组合（三天/一周/50块）、人称代词虚词一律不算陌生用词。IP 识别：`--ip` 优先 → 路径 `ips/<IP>/` 推断。**退出码恒为 0**（纯报告工具），仅 lexicon 缺失时非 0。词表重建：语料变动后重跑 `segment.py` 同口径刷新 `ips/<IP>/corpus/lexicon.json`（doc 频次按语料"篇"数）。
 
 ## 当前各 IP 入口
 

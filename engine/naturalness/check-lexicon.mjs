@@ -6,12 +6,14 @@
 // 最大正向匹配切词：切得出的=语料里出现过；切不出的 2–4 字片段=可疑用词，逐个列给人过目。
 // 语料小，"没出现≠错"，所以只 warn 不 block；退出码恒为 0（缺 lexicon 除外）。
 import { readFileSync, existsSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
-import { bodyOf } from './check-ai-flavor.mjs';
+import { bodyOf, splitSentences } from './check-ai-flavor.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const HINTS_PATH = join(here, 'lexicon-hints.json');
+const SEGMENT_PY = join(here, 'segment.py');
 
 const HAN = /[一-鿿]/;
 // 连续非汉字（标点/数字/字母/空白）作为切割点：切词只在纯汉字串内进行。
@@ -42,6 +44,72 @@ export function loadLexicon(ip, opts = {}) {
 export function loadHints(path = HINTS_PATH) {
   if (!existsSync(path)) return { hints: {} };
   return JSON.parse(readFileSync(path, 'utf8'));
+}
+
+// 用 jieba 分词后端（engine/naturalness/segment.py，与词表构建同一口径）切正文。
+// 正文经 stdin 传给 python（裸 UTF-8，绕开 Windows 控制台编码），逐行读回「词\t词性」。
+// 返回 { ok:true, tokens:[{word,flag}], python } 或 { ok:false, reason }。
+// python 或 jieba 不可用时 ok=false，上层据此回退最大正向匹配（MFM）。
+export function segmentWithJieba(text, opts = {}) {
+  const script = opts.scriptPath || SEGMENT_PY;
+  if (!existsSync(script)) return { ok: false, reason: `分词脚本缺失: ${script}` };
+  // 依次尝试候选解释器：显式指定 > 环境变量 > python > py（Windows 启动器）> python3。
+  const candidates = [];
+  if (opts.python) candidates.push(opts.python);
+  if (process.env.PYTHON) candidates.push(process.env.PYTHON);
+  candidates.push('python', 'py', 'python3');
+  let lastReason = '未知错误';
+  for (const bin of candidates) {
+    const res = spawnSync(bin, [script], {
+      input: Buffer.from(text, 'utf8'),
+      maxBuffer: 64 * 1024 * 1024
+    });
+    if (res.error) { lastReason = `${bin}: ${res.error.message}`; continue; }
+    if (res.status !== 0) {
+      // 找到了解释器但脚本非 0 退出（多半是 jieba 缺失）——不再换解释器，直接回退。
+      const stderr = (res.stderr && res.stderr.toString('utf8').trim()) || '';
+      return { ok: false, reason: `${bin} 退出码 ${res.status}${stderr ? `：${stderr.split('\n').pop()}` : ''}` };
+    }
+    const out = res.stdout.toString('utf8').trim();
+    const tokens = out
+      ? out.split('\n').map((line) => {
+          const tab = line.indexOf('\t');
+          return tab < 0 ? { word: line, flag: '' } : { word: line.slice(0, tab), flag: line.slice(tab + 1) };
+        }).filter((t) => t.word)
+      : [];
+    return { ok: true, tokens, python: bin };
+  }
+  return { ok: false, reason: `无可用 python：${lastReason}` };
+}
+
+// 通用过滤（jieba 完整词路径专用）——把"不算陌生用词"的词剔除，只留真正需要人过目的。
+// 纯数字/量词组合：三天/一周/50块/两次。含至少一个数字字符且其余全为量词字时丢弃。
+const DIGIT_CHARS = new Set('0123456789０１２３４５６７８９零一二三四五六七八九十百千万亿两俩仨几半多整第上下'.split(''));
+const QUANT_CHARS = new Set('天日周月年秒分钟点块钱元角毛次遍回趟个只件条张份倍成折份份份'.split(''));
+export function isNumericQuantity(word) {
+  let hasDigit = false;
+  for (const ch of word) {
+    if (DIGIT_CHARS.has(ch)) { hasDigit = true; continue; }
+    if (QUANT_CHARS.has(ch)) continue;
+    return false;
+  }
+  return hasDigit;
+}
+// 人称/代词/虚词安全网：绝大多数被 segment.py 的 n/v/a 词性过滤挡掉，
+// 少数被 jieba 误标成实词的在这里兜底。
+const PRONOUN_FUNC = new Set([
+  '什么', '怎么', '为什么', '这样', '那样', '怎样', '这么', '那么', '自己', '大家',
+  '咱们', '咱', '人家', '别人', '这个', '那个', '哪个', '这些', '那些', '一样', '一直'
+]);
+
+// 给一个可疑词找到它在正文里出现的第一句，截前 maxLen 字供人工判断该不该换。
+function sentenceContextFor(word, sentences, maxLen = 30) {
+  for (const s of sentences) {
+    if (s.includes(word)) {
+      return s.length > maxLen ? s.slice(0, maxLen) + '…' : s;
+    }
+  }
+  return '';
 }
 
 // 把 lexicon 编成切词字典：term→{freq,docs,business}。
@@ -151,11 +219,83 @@ function suggestFor(frag, hints, lexicon, bizSet) {
   return options.length ? { source: 'lexicon-neighbor', options } : null;
 }
 
-export function checkLexicon(text, { lexicon, hints } = {}) {
-  const hintMap = (hints && hints.hints) || (hints || {});
+// 入口。分词后端优先级：显式 tokens > jieba（默认）> MFM 回退。
+//   opts.tokens   —— 直接喂 [{word,flag}]（测试用，跳过 python）。
+//   opts.noJieba  —— 强制走 MFM（测试回退路径 / 明确不想调 python 时）。
+//   两者都无      —— 调 segment.py 分词；python/jieba 不可用则回退 MFM 并注明。
+export function checkLexicon(text, { lexicon, hints, tokens, noJieba } = {}) {
+  const hintObj = hints || {};
+  const hintMap = hintObj.hints || hintObj;
+  const allowlist = new Set(hintObj.allowlist || []);
   const { dict, maxLen, bizSet } = buildDict(lexicon);
   const body = bodyOf(text);
 
+  let jTokens = tokens || null;
+  let fallbackReason;
+  if (!jTokens && !noJieba) {
+    const seg = segmentWithJieba(body);
+    if (seg.ok) jTokens = seg.tokens;
+    else fallbackReason = seg.reason;
+  }
+  if (jTokens) {
+    return checkWithTokens(jTokens, { dict, bizSet, allowlist, hintMap, lexicon, body });
+  }
+  return checkWithMFM(body, { dict, maxLen, bizSet, hintMap, lexicon, fallbackReason });
+}
+
+// jieba 完整词路径：可疑用词 = 切出的完整词里不在 lexicon.terms、又过不了通用过滤的。
+function checkWithTokens(tokens, { dict, bizSet, allowlist, hintMap, lexicon, body }) {
+  const sentences = splitSentences(body).map((s) => s.text);
+  const suspicious = new Map();   // word -> { count, flag, sentence }
+  const businessUsed = new Map(); // term -> count
+  let knownTokenCount = 0;
+
+  for (const { word, flag } of tokens) {
+    if (dict.has(word)) {
+      knownTokenCount += 1;
+      if (bizSet.has(word)) businessUsed.set(word, (businessUsed.get(word) || 0) + 1);
+      continue;
+    }
+    if (allowlist.has(word)) continue;       // 事实性专名，不算陌生用词
+    if (isNumericQuantity(word)) continue;    // 数字/量词组合
+    if (PRONOUN_FUNC.has(word)) continue;     // 人称/代词/虚词兜底
+    const cur = suspicious.get(word) || { count: 0, flag, sentence: null };
+    cur.count += 1;
+    if (cur.sentence == null) cur.sentence = sentenceContextFor(word, sentences);
+    suspicious.set(word, cur);
+  }
+
+  const suspiciousList = [...suspicious.entries()]
+    .map(([term, info]) => {
+      const sug = suggestFor(term, hintMap, lexicon, bizSet);
+      return { term, count: info.count, flag: info.flag, sentence: info.sentence, ...(sug ? { suggest: sug } : {}) };
+    })
+    .sort((a, b) => (b.count - a.count) || (b.term.length - a.term.length) || a.term.localeCompare(b.term));
+
+  const businessList = [...businessUsed.entries()]
+    .map(([term, count]) => ({ term, count }))
+    .sort((a, b) => b.count - a.count);
+
+  return {
+    ip: lexicon.ip,
+    corpusId: lexicon.corpus_id,
+    docCount: lexicon.doc_count,
+    segmenter: 'jieba',
+    knownTokenCount,
+    businessHitTypes: businessList.length,
+    businessHitTotal: businessList.reduce((s, x) => s + x.count, 0),
+    businessList,
+    suspiciousTypes: suspiciousList.length,
+    suspiciousTotal: [...suspicious.values()].reduce((a, b) => a + b.count, 0),
+    suspiciousList,
+    warnCount: suspiciousList.length,
+    blockCount: 0,
+    passed: true
+  };
+}
+
+// 回退路径：无分词器时，沿用最大正向匹配 + 残串分片（噪声较大，仅兜底）。
+function checkWithMFM(body, { dict, maxLen, bizSet, hintMap, lexicon, fallbackReason }) {
   const runs = body.replace(NON_HAN_RUN, '\n').split('\n').filter(Boolean);
   const suspicious = new Map();   // frag -> count
   const businessUsed = new Map(); // term -> count
@@ -187,6 +327,8 @@ export function checkLexicon(text, { lexicon, hints } = {}) {
     ip: lexicon.ip,
     corpusId: lexicon.corpus_id,
     docCount: lexicon.doc_count,
+    segmenter: 'mfm',
+    fallbackReason: fallbackReason || '未分词（回退最大正向匹配）',
     knownTokenCount,
     businessHitTypes: businessList.length,
     businessHitTotal: businessList.reduce((s, x) => s + x.count, 0),
@@ -236,12 +378,14 @@ if (invokedDirectly) {
     const r = checkLexicon(readFileSync(file, 'utf8'), { lexicon, hints });
     console.log(`\n文件: ${file}`);
     console.log(`IP: ${r.ip}  语料: ${r.corpusId}（${r.docCount} 篇）`);
+    console.log(`分词后端: ${r.segmenter === 'jieba' ? 'jieba（词性 n/v/a）' : `回退 MFM（未分词${r.fallbackReason ? '：' + r.fallbackReason : ''}）`}`);
     console.log(`业务词命中: ${r.businessHitTypes} 种 / ${r.businessHitTotal} 次` +
       (r.businessList.length ? `  [${r.businessList.slice(0, 10).map((b) => `${b.term}x${b.count}`).join('、')}${r.businessList.length > 10 ? '…' : ''}]` : ''));
     console.log(`可疑用词（语料 0 出现，warn 不 block）: ${r.suspiciousTypes} 种 / ${r.suspiciousTotal} 次。前 ${TOP}：`);
     for (const s of r.suspiciousList.slice(0, TOP)) {
       const sug = s.suggest ? `  → 建议: ${s.suggest.options.join(' / ')}（${s.suggest.source}）` : '';
-      console.log(`  [warn] ${s.term}  x${s.count}${sug}`);
+      const ctx = s.sentence ? `\n         原句: ${s.sentence}` : '';
+      console.log(`  [warn] ${s.term}  x${s.count}${sug}${ctx}`);
     }
   }
   process.exit(0); // 纯报告工具，恒 0
