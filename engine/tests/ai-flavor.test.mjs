@@ -33,8 +33,31 @@ test('悬空"的"命中：只收说得清出处的。', () => {
   assert.equal(r.passed, false, '悬空"的" >0 应 block');
 });
 
+test('悬空"的"命中：先挑最便宜的。（无中心词、无系动词）', () => {
+  const r = checkAiFlavor('先挑最便宜的。' + filler);
+  assert.equal(r.metrics.danglingDeCount.value, 1);
+  assert.ok(r.metrics.danglingDeCount.samples[0].includes('先挑最便宜的'));
+});
+
 test('悬空"的"不命中：我拿的是最便宜的券。（有中心词"券"收尾）', () => {
   const r = checkAiFlavor('我拿的是最便宜的券。' + filler);
+  assert.equal(r.metrics.danglingDeCount.value, 0);
+});
+
+test('悬空"的"不命中：是…的判断句豁免（是/不是/复合式）', () => {
+  const cases = [
+    '这券是真的。',
+    '这是我自己跑出来的。',
+    '它不是躺着来的。'
+  ];
+  for (const s of cases) {
+    const r = checkAiFlavor(s + filler);
+    assert.equal(r.metrics.danglingDeCount.value, 0, `应豁免："${s}"`);
+  }
+});
+
+test('悬空"的"不命中："…的话。"条件句（句末天然为"话"）', () => {
+  const r = checkAiFlavor('要是能说清出处的话。' + filler);
   assert.equal(r.metrics.danglingDeCount.value, 0);
 });
 
@@ -86,8 +109,9 @@ test('切句：段落换行也作句界', () => {
   assert.equal(s[2].end, '？');
 });
 
-// 信息性用例：只打印四篇交付稿现状，不断言。它们当前会 FAIL，这正是后续要改的清单。
-test('交付稿 AI 味现状（信息性，不断言）', () => {
+// 回归锁：四篇交付稿去 AI 味后必须 block=0（PASS）。原为信息性用例（只报不断言），
+// 2026-08-23 去 AI 味重写后改为断言，锁住成果，防止后续再引入 AI 味。
+test('交付稿 AI 味回归锁：四篇必须 PASS（block=0）', () => {
   const drafts = [
     ['钱十七', '闲鱼餐饮券-长视频版.md'],
     ['钱十七', '闲鱼餐饮券-短视频版.md'],
@@ -96,10 +120,11 @@ test('交付稿 AI 味现状（信息性，不断言）', () => {
   ];
   for (const [ip, name] of drafts) {
     const p = join(repo, 'ips', ip, 'outputs', name);
-    if (!existsSync(p)) continue;
+    assert.ok(existsSync(p), `交付稿缺失: ${ip}/${name}`);
     const r = checkAiFlavor(readFileSync(p, 'utf8'), { ip });
-    console.log(`  [信息] ${ip}/${name}: ${r.passed ? 'PASS' : 'FAIL'} block=${r.blockCount} warn=${r.warnCount} ` +
+    console.log(`  [回归] ${ip}/${name}: ${r.passed ? 'PASS' : 'FAIL'} block=${r.blockCount} warn=${r.warnCount} ` +
       `破折号=${r.metrics.dashPer1000.value.toFixed(2)} 悬空的=${r.metrics.danglingDeCount.value} 连问=${r.metrics.consecutiveQuestions.value} CV=${r.metrics.sentenceCvMin.value.toFixed(2)}`);
+    assert.equal(r.blockCount, 0, `${ip}/${name} 应无 block 级 AI 味命中`);
+    assert.equal(r.passed, true, `${ip}/${name} 应 PASS`);
   }
-  assert.ok(true);
 });

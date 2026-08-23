@@ -45,10 +45,17 @@ export function splitSentences(body) {
 const countMatches = (s, re) => (s.match(re) || []).length;
 
 // 悬空"的"：句末以"的"收尾（其后为 。！？），且"的"前 window 字内无中心词后缀。
+// 豁免：
+//  1) "是…的"判断句——同句内出现系动词"是"（含"不是/就是/算是/才是/也是"等复合形式）
+//     时，视为中文正常的"是…的"结构，不判悬空（"这券是真的。""它不是躺着来的。"）。
+//  2) "…的话。"条件句——句末天然以"话"结尾（不进入本函数的候选），此处不需额外处理，
+//     记录于此便于回顾。
 function danglingDeSentences(sentences, cfg) {
   const hits = [];
   for (const { text } of sentences) {
     if (!text.endsWith('的')) continue;
+    const body = text.slice(0, -1); // 去掉句末"的"再看句中是否有系动词
+    if (body.includes('是')) continue; // "是…的"判断句豁免
     const before = text.slice(-1 - cfg.nounSuffixWindow, -1); // "的"前 window 字
     const anchored = cfg.nounSuffixes.some((n) => before.includes(n));
     if (!anchored) hits.push(text + '。');
