@@ -48,14 +48,23 @@ const countMatches = (s, re) => (s.match(re) || []).length;
 // 豁免：
 //  1) "是…的"判断句——同句内出现系动词"是"（含"不是/就是/算是/才是/也是"等复合形式）
 //     时，视为中文正常的"是…的"结构，不判悬空（"这券是真的。""它不是躺着来的。"）。
-//  2) "…的话。"条件句——句末天然以"话"结尾（不进入本函数的候选），此处不需额外处理，
+//  2) 疑问代词收尾——句末"的"前 3 字内含"谁/什么/哪/啥/咋/怎么"时，是"听谁的/算谁
+//     的/凭什么的/怎么说的"这类口语省略疑问句，视为完整表达。
+//  3) "说/来/捡/弄/整 + 数量 + 形容词 + 的"惯用语——如"说两句实在的""来点实际的"
+//     "捡现成的"，是固定口语搭配，视为完整表达。
+//  4) "…的话。"条件句——句末天然以"话"结尾（不进入本函数的候选），此处不需额外处理，
 //     记录于此便于回顾。
+const QUESTION_PRONOUNS = ['谁', '什么', '哪', '啥', '咋', '怎么'];
+const IDIOM_DE_RE = /(说|来|捡|弄|整)(两句|几句|一句|点儿?|些|个)[^，。！？,]{0,4}的[。！？]?$/;
 function danglingDeSentences(sentences, cfg) {
   const hits = [];
   for (const { text } of sentences) {
     if (!text.endsWith('的')) continue;
     const body = text.slice(0, -1); // 去掉句末"的"再看句中是否有系动词
     if (body.includes('是')) continue; // "是…的"判断句豁免
+    const qWindow = text.slice(-4, -1); // "的"前 3 字
+    if (QUESTION_PRONOUNS.some((q) => qWindow.includes(q))) continue; // 疑问代词收尾豁免
+    if (IDIOM_DE_RE.test(text)) continue; // "说/来+点+形容词+的"惯用语豁免
     const before = text.slice(-1 - cfg.nounSuffixWindow, -1); // "的"前 window 字
     const anchored = cfg.nounSuffixes.some((n) => before.includes(n));
     if (!anchored) hits.push(text + '。');

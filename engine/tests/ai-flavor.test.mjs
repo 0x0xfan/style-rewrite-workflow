@@ -61,6 +61,31 @@ test('悬空"的"不命中："…的话。"条件句（句末天然为"话"）',
   assert.equal(r.metrics.danglingDeCount.value, 0);
 });
 
+test('悬空"的"不命中：疑问代词收尾（听谁的/算谁的/凭什么的/怎么说的）', () => {
+  const cases = [
+    '平台听谁的。',
+    '砸手里的算谁的。',
+    '这事凭什么的。',
+    '你倒怎么说的。'
+  ];
+  for (const s of cases) {
+    const r = checkAiFlavor(s + filler);
+    assert.equal(r.metrics.danglingDeCount.value, 0, `应豁免："${s}"`);
+  }
+});
+
+test('悬空"的"不命中：说/来+点+形容词惯用语', () => {
+  const cases = [
+    '说两句实在的。',
+    '说点实在的。',
+    '来点实际的。'
+  ];
+  for (const s of cases) {
+    const r = checkAiFlavor(s + filler);
+    assert.equal(r.metrics.danglingDeCount.value, 0, `应豁免："${s}"`);
+  }
+});
+
 test('"不是…是…"句壳计数', () => {
   const r = checkAiFlavor('这不是倒券，是拿时间换差价。它不是躺着收钱，而是辛苦活。' + filler);
   assert.equal(r.metrics.notButShellCount.value, 2);
