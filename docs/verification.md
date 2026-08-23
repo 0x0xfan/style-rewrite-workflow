@@ -371,3 +371,25 @@ A task is done only when evidence is recorded here or the blocker is explicitly 
 - **`49a6321`（检查器入仓）**：`engine/naturalness/check-ai-flavor.mjs` 按 IP 分别定阈值；对现有 **14 篇稿实测全 FAIL**（改前）——主要命中：破折号（钱十七短 6.5/千字）、悬空"的"、句长过匀、总结壳。新增 12 条测试，`npm test` **63→75**；`npm run check:ai-flavor` 已挂 package.json。
 - **`4352528`（四稿重写）**：内容/结构/受众/事实/长度未动，只调措辞。检查器启发式同步调优（`是…的` 判定不再算悬空）；测试锁四稿 PASS 作为回归。跑过：AI 味 四稿 **block=0 warn=0**、短稿合规 PASS、跨 IP 重合最高 **0.5%**、12 字来源泄漏 **0** 命中（钱十七两稿对源 docx、半佛两稿对 10 篇源 txt）；`npm test` **75→78**。
 - **收尾态**：`npm test` **78/78** 通过；`feature_list.json` 通过 `json.load` 解析。钱十七 profile 仍为 `draft / review_only`；今早提交均未推送。
+
+## 2026-08-23 上午（二）（用词层：IP 词表 + 用词陌生度报告 + 四稿逐句润色）
+
+只记录本机实际跑过的验证。今早第二轮 4 个提交（`a958449`→`fb9cf89`→`3557c34`→`81420ab`），`npm test` 从 78 → 80 → 89 → 89 → 94。触发是用户读第一轮去 AI 味重写稿后评价"凑合、勉强能用、距离好还差很多"，举了三处用词证据：`找货 → 找货源`、`散在…这些口子`（没人这么说）、`说不说得清打哪来 → 得搞清楚渠道从哪来`。
+
+- **`a958449`（用词层入规则）**：`docs/de-ai-writing.md` 加"一之二 · 用这个 IP 自己的词"整节（缩略/生造搭配/硬装口语/压缩四条零容忍，各附用户 bad→good 对），并入两份 DNA 负面清单与 `AGENTS.md`/`docs/generation-intake.md` 作交付前置；文档明写"六道门禁全过 ≠ 好，好 = 这个 IP 的读者听不出换了人"。`npm test` **78→80**（新增 2 条测试锁两份 DNA 负面清单条目）。
+- **`fb9cf89`（IP 词表 + 报告工具入仓）**：
+  - 词表构建：`ips/钱十七/corpus/lexicon.json` **1,525 词 / 11 篇**、`ips/半佛/corpus/lexicon.json` **2,378 词 / 10 篇**，分词器为 **jieba posseg**（保留 n/v/a），另出行业词子集；两份 JSON 均通过 `python -c "import json; json.load(open(...))"`。
+  - 工具：`engine/naturalness/check-lexicon.mjs`（最大正向匹配作为初版后端）+ `lexicon-hints.json`（seed 三条：货→货源、散在→都在/藏在、打哪来→从哪来）；命令 `npm run check:lexicon`；warn 级、非 block。
+  - 已知缺陷：MFM 在只含内容词的词表上会产出跨度碎片而非整词，jieba 后端在下一提交补齐。
+  - 新增 9 条测试，`npm test` **80→89**。
+- **`3557c34`（四稿逐句用词润色 24 处）**：用户三例按原话改；另 21 处同类（钱十七：差价 not 价差、渠道 not 口子、限流 not 掐流量、下期/选品 not 下条/挑品牌；半佛：来路 not 出处、塞在犄角旮旯 not 散在；不使用 IP 从未说过的"掂量掂量/蹲得住"）。结构、事实、数字、受众、钩子位置**未动**。跑过：
+  - **AI 味检查器**：四稿全 **block=0 warn=0**（半佛短/长、钱十七短/长四稿 PASS）。
+  - **平台合规**：两条短稿 PASS、两条长稿 FAIL（按测试锁定的作用域）。
+  - **跨 IP 重复**：最高 **0.5%**（远低于同 IP 不同选题 8% 阈值）。
+  - **12 字来源泄漏**：**0 命中**（钱十七两稿对源 docx；半佛两稿对 10 篇源 txt）。
+  - `npm test` **89/89**（未新增测试；四稿 fixture 未变，原 fixture 锁继续通过）。
+  - 长度未变：短稿两篇各约 400+ 字（长视频稿约 1,400–1,600 字），与重写前同量级。
+  - 残留：P8 框架"一周买一次"复原、极少数压缩句尾待下次微调（见提交说明）。
+- **`81420ab`（check-lexicon 换 jieba 后端）**：`engine/naturalness/segment.py` 用 jieba posseg 对稿件分词（与词表构建口径一致），Node 端 spawn Python，Python/jieba 缺席时回退 MFM；加专名/数量词白名单，报告改为"整词 + 整句上下文"。新增 5 条测试，`npm test` **89→94**。
+- **收尾态**：`npm test` **94/94** 通过；`feature_list.json` 通过 `json.load` 解析。钱十七 profile 仍为 `draft / review_only`；今早第二轮提交均未推送。**用户读四稿后评价"凑合、勉强能用、距离好还差很多"**——判定为**六道门禁全过 ≠ 好**。用词层作为报告工具入仓，最终由人判。
+

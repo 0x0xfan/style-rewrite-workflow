@@ -10,8 +10,16 @@
       "id": "F001",
       "name": "钱十七闲鱼文案风格拆解",
       "status": "done",
-      "acceptance": ["读取并拆解钱十七闲鱼文案样本。", "产出可复用风格卡。", "明确哪些只是风格、哪些是不可复用的来源事实。"],
-      "evidence": ["ips/钱十七/dna/钱十七-DNA-重构版.md", "docs/source-inventory.md", "docs/verification.md"],
+      "acceptance": [
+        "读取并拆解钱十七闲鱼文案样本。",
+        "产出可复用风格卡。",
+        "明确哪些只是风格、哪些是不可复用的来源事实。"
+      ],
+      "evidence": [
+        "ips/钱十七/dna/钱十七-DNA-重构版.md",
+        "docs/source-inventory.md",
+        "docs/verification.md"
+      ],
       "notes": "历史首版拆解，未获批准；作为正式拆解路径已被 F008 取代。"
     },
     {
@@ -19,14 +27,21 @@
       "name": "飞书文档读取与素材抽取",
       "status": "obsolete",
       "acceptance": [],
-      "evidence": ["docs/verification.md"],
+      "evidence": [
+        "docs/verification.md"
+      ],
       "notes": "2026-08-22 随工作台一并删除。曾验证过真实飞书回读（55 段落、6 图片）；证据文件与实现均已从工作树移除，可从 git 历史恢复。"
     },
     {
       "id": "F003",
       "name": "基于风格卡的首篇仿写",
       "status": "pending",
-      "acceptance": ["使用用户自己的事实与素材。", "能看出风格卡中的结构、节奏与 CTA 形态。", "风险显式标注。", "用户人工审阅通过。"],
+      "acceptance": [
+        "使用用户自己的事实与素材。",
+        "能看出风格卡中的结构、节奏与 CTA 形态。",
+        "风险显式标注。",
+        "用户人工审阅通过。"
+      ],
       "evidence": [],
       "notes": "从未验收通过。钱十七路线连续三稿被用户拒绝（AI 味重、看不出风格）；半佛路线产出了两稿但用户尚未判定。"
     },
@@ -50,55 +65,109 @@
       "id": "F006",
       "name": "样本健康、模板确认与 DNA 版本审计",
       "status": "done",
-      "acceptance": ["语料质量可检查。", "重复结构文本不被静默丢弃。", "DNA 决定留下审计轨迹。"],
-      "evidence": ["engine/health/sample-health.mjs", "ips/钱十七/corpus/sample-health.json", "ips/钱十七/audits/"],
+      "acceptance": [
+        "语料质量可检查。",
+        "重复结构文本不被静默丢弃。",
+        "DNA 决定留下审计轨迹。"
+      ],
+      "evidence": [
+        "engine/health/sample-health.mjs",
+        "ips/钱十七/corpus/sample-health.json",
+        "ips/钱十七/audits/"
+      ],
       "notes": "机制归项目所有，不把来源文本或事实写入持久 DNA。"
     },
     {
       "id": "F007",
       "name": "短视频口播 DNA 引擎",
       "status": "done",
-      "acceptance": ["仅识别 ## 口播单元。", "每条候选规则至少两个单元锚点。", "产物默认 draft 且需人工批准。", "输出不含来源全文、收益、账号名或 CTA。", "Node 测试覆盖切分、近重复、来源隔离与草稿状态。"],
-      "evidence": ["engine/analyzers/", "engine/corpus/", "engine/fusion/", "engine/tests/spoken-dna.test.mjs"],
+      "acceptance": [
+        "仅识别 ## 口播单元。",
+        "每条候选规则至少两个单元锚点。",
+        "产物默认 draft 且需人工批准。",
+        "输出不含来源全文、收益、账号名或 CTA。",
+        "Node 测试覆盖切分、近重复、来源隔离与草稿状态。"
+      ],
+      "evidence": [
+        "engine/analyzers/",
+        "engine/corpus/",
+        "engine/fusion/",
+        "engine/tests/spoken-dna.test.mjs"
+      ],
       "notes": ""
     },
     {
       "id": "F008",
       "name": "通用中文口播风格 DNA 拆解 Skill",
       "status": "done",
-      "acceptance": ["通用 Skill 不含 IP/平台/行业专属内容。", "独立证据簇与外部锚点。", "泄漏扫描。", "独立批准记录。"],
-      "evidence": ["engine/skills/spoken-style-profiler-v2/", "engine/fixtures/narrative/"],
+      "acceptance": [
+        "通用 Skill 不含 IP/平台/行业专属内容。",
+        "独立证据簇与外部锚点。",
+        "泄漏扫描。",
+        "独立批准记录。"
+      ],
+      "evidence": [
+        "engine/skills/spoken-style-profiler-v2/",
+        "engine/fixtures/narrative/"
+      ],
       "notes": "Skill 真身在仓库外 C:/Users/admin/.codex/skills/spoken-style-profiler/，仓库内为副本，两者无同步机制。"
     },
     {
       "id": "F009",
       "name": "Style DNA 1.1 generation-ready control contract",
       "status": "done",
-      "acceptance": ["typed selector DSL，无匹配或并列必须 abstain。", "persona/strategy/pattern 均带可执行控制、适用条件、证据与风险。", "五个摘要字段共同绑定批准记录。", "严格 1.1 字段白名单。"],
-      "evidence": ["ips/钱十七/dna/style-dna.draft.json", "ips/钱十七/generation/generation-test.draft.json", "engine/skills/style-copywriter/"],
+      "acceptance": [
+        "typed selector DSL，无匹配或并列必须 abstain。",
+        "persona/strategy/pattern 均带可执行控制、适用条件、证据与风险。",
+        "五个摘要字段共同绑定批准记录。",
+        "严格 1.1 字段白名单。"
+      ],
+      "evidence": [
+        "ips/钱十七/dna/style-dna.draft.json",
+        "ips/钱十七/generation/generation-test.draft.json",
+        "engine/skills/style-copywriter/"
+      ],
       "notes": "钱十七 profile 仍为 draft / review_only，从未批准。"
     },
     {
       "id": "F010",
       "name": "per-IP 目录标准与引擎/IP 分离",
       "status": "done",
-      "acceptance": ["engine/ 不含具体 IP。", "ips/<IP>/ 结构统一为 corpus/dna/audits/generation/outputs。", "路径引用全部更新且测试通过。"],
-      "evidence": ["docs/architecture.md", "ips/钱十七/", "ips/半佛/"],
+      "acceptance": [
+        "engine/ 不含具体 IP。",
+        "ips/<IP>/ 结构统一为 corpus/dna/audits/generation/outputs。",
+        "路径引用全部更新且测试通过。"
+      ],
+      "evidence": [
+        "docs/architecture.md",
+        "ips/钱十七/",
+        "ips/半佛/"
+      ],
       "notes": "2026-08-22 完成。"
     },
     {
       "id": "F011",
       "name": "双路线对照：判定哪套拆解方法真的有效",
       "status": "pending",
-      "acceptance": ["同一选题分别用严谨线（钱十七 DNA）与轻量线（半佛 DNA）各产出一稿。", "用户判定哪套方法产出了能用的东西。", "结论写入 DECISIONS.md 并据此定路线。"],
-      "evidence": ["docs/F011-双路线对照-闲鱼餐饮券.md"],
+      "acceptance": [
+        "同一选题分别用严谨线（钱十七 DNA）与轻量线（半佛 DNA）各产出一稿。",
+        "用户判定哪套方法产出了能用的东西。",
+        "结论写入 DECISIONS.md 并据此定路线。"
+      ],
+      "evidence": [
+        "docs/F011-双路线对照-闲鱼餐饮券.md"
+      ],
       "notes": "四稿已冻结；报告已刷新到最终态并补行级结构落位表（含 A7 照抄的发现与修复）；等用户判定。路线取舍在判定之前不预设。"
     },
     {
       "id": "F012",
       "name": "仿写能力通用化：解除对具体 IP 的硬编码",
       "status": "pending",
-      "acceptance": ["style-copywriter 可用任意 ips/<IP>/dna/ 驱动。", "至少用两个 IP 的 DNA 各跑通一次。", "IP 专属约束只存在于该 IP 目录，不进入 engine/。"],
+      "acceptance": [
+        "style-copywriter 可用任意 ips/<IP>/dna/ 驱动。",
+        "至少用两个 IP 的 DNA 各跑通一次。",
+        "IP 专属约束只存在于该 IP 目录，不进入 engine/。"
+      ],
       "evidence": [],
       "notes": "依赖 F011 的路线结论。"
     },
@@ -106,47 +175,91 @@
       "id": "F013",
       "name": "学结构不学词：档案结构化升级",
       "status": "done",
-      "acceptance": ["确立“一条风格控制必须齐五要素（槽位/关系/功能/失效样例/≥3 条全新实例）才算结构”为项目规则。", "两份人读 DNA 按该规则做结构化升级。"],
-      "evidence": ["docs/structure-not-words.md", "ips/钱十七/dna/钱十七-DNA-重构版.md", "ips/半佛/dna/半佛-DNA-可执行版.md"],
+      "acceptance": [
+        "确立“一条风格控制必须齐五要素（槽位/关系/功能/失效样例/≥3 条全新实例）才算结构”为项目规则。",
+        "两份人读 DNA 按该规则做结构化升级。"
+      ],
+      "evidence": [
+        "docs/structure-not-words.md",
+        "ips/钱十七/dna/钱十七-DNA-重构版.md",
+        "ips/半佛/dna/半佛-DNA-可执行版.md"
+      ],
       "notes": "解决“只学到用词、没理解结构”导致的换名词式复制。"
     },
     {
       "id": "F014",
       "name": "来源泄漏扫描 12 字入仓",
       "status": "done",
-      "acceptance": ["稿件对来源语料做连续字符滑窗比对，命中即失败。", "阈值 20→12 字。", "能读 .txt/.md/.docx，保护性事实枚举先遮罩。", "入 npm test（含本机语料条件测试）。"],
-      "evidence": ["engine/leakage/check-source-leakage.mjs", "engine/leakage/leakage-rules.json", "engine/tests/source-leakage.test.mjs"],
+      "acceptance": [
+        "稿件对来源语料做连续字符滑窗比对，命中即失败。",
+        "阈值 20→12 字。",
+        "能读 .txt/.md/.docx，保护性事实枚举先遮罩。",
+        "入 npm test（含本机语料条件测试）。"
+      ],
+      "evidence": [
+        "engine/leakage/check-source-leakage.mjs",
+        "engine/leakage/leakage-rules.json",
+        "engine/tests/source-leakage.test.mjs"
+      ],
       "notes": "四稿在 12 字这一档全部 0 命中。54→60 测试。"
     },
     {
       "id": "F015",
       "name": "跨稿重复工具 10 篇压测与修复",
       "status": "done",
-      "acceptance": ["10 篇不同选题 + 现有餐饮券短稿共 11 篇过重复工具。", "修复注释污染（bodyOf 剥 HTML 注释）与同选题口径（同 IP 不同选题按 8%）。", "回归锁入 npm test。"],
-      "evidence": ["engine/fixtures/batch-test-20260822/report.md", "engine/variation/check-repetition.mjs", "engine/variation/repetition-rules.json", "docs/variation.md", "engine/tests/repetition.test.mjs"],
+      "acceptance": [
+        "10 篇不同选题 + 现有餐饮券短稿共 11 篇过重复工具。",
+        "修复注释污染（bodyOf 剥 HTML 注释）与同选题口径（同 IP 不同选题按 8%）。",
+        "回归锁入 npm test。"
+      ],
+      "evidence": [
+        "engine/fixtures/batch-test-20260822/report.md",
+        "engine/variation/check-repetition.mjs",
+        "engine/variation/repetition-rules.json",
+        "docs/variation.md",
+        "engine/tests/repetition.test.mjs"
+      ],
       "notes": "正文重合最高 1.6%，轴轮换有效；下一缺口是连接壳（转场/下期口/P8 句框）第 3 次复用枯竭，缺轮换库。60→63 测试。"
     },
     {
       "id": "F016",
       "name": "钱十七机器契约同步",
       "status": "blocked",
-      "acceptance": ["把人读 DNA 的 2026-08-22 修订（A7/P8/A2/对立语气）写进 style-dna.draft.json。", "外部 validator 通过。", "npm test 全过。"],
-      "evidence": ["ips/钱十七/audits/contract-sync-blocked-20260822.md"],
+      "acceptance": [
+        "把人读 DNA 的 2026-08-22 修订（A7/P8/A2/对立语气）写进 style-dna.draft.json。",
+        "外部 validator 通过。",
+        "npm test 全过。"
+      ],
+      "evidence": [
+        "ips/钱十七/audits/contract-sync-blocked-20260822.md"
+      ],
       "notes": "validator 接受（pattern 7→10），但冻结测试 engine/tests/qian17-reprofile.test.mjs 硬锁 7 pattern，撞 length===7。JSON 已恢复原状。放不放宽冻结测试待用户决定。"
     },
     {
       "id": "F017",
       "name": "半佛走通用拆解流水线（能力一二次实证）",
       "status": "partial",
-      "acceptance": ["通用 scaffold 换第二个 IP 无改动跑通。", "validate/leakage/render 跑通。", "取证达到与钱十七同级。"],
-      "evidence": ["ips/半佛/audits/pipeline-run-20260822.md"],
+      "acceptance": [
+        "通用 scaffold 换第二个 IP 无改动跑通。",
+        "validate/leakage/render 跑通。",
+        "取证达到与钱十七同级。"
+      ],
+      "evidence": [
+        "ips/半佛/audits/pipeline-run-20260822.md"
+      ],
       "notes": "确定性前半段（scaffold+health+草稿）零改动跑通（ok:true、10 单元、healthy）；后半段跑不了，卡点不在换 IP 而在半佛无 1.1 JSON 契约（需人工标注→起草）。“还差什么”清单见报告第七节。"
     },
     {
       "id": "F018",
       "name": "去 AI 味：调研、诊断、规则、检查器、四稿重写",
       "status": "done",
-      "acceptance": ["调研 12 源、22 特征、13 条可机器测。", "14 篇稿对 21 篇真人做指标对照并出诊断。", "写作规则入两份 DNA 与 intake，作为交付前置。", "检查器按 IP 分别定阈值并入 npm test。", "四稿按规则重写，六道门禁全过（AI 味 block=0 warn=0、合规 PASS、跨 IP 重合最高 0.5%、12 字泄漏 0、npm test 78/78）。"],
+      "acceptance": [
+        "调研 12 源、22 特征、13 条可机器测。",
+        "14 篇稿对 21 篇真人做指标对照并出诊断。",
+        "写作规则入两份 DNA 与 intake，作为交付前置。",
+        "检查器按 IP 分别定阈值并入 npm test。",
+        "四稿按规则重写，六道门禁全过（AI 味 block=0 warn=0、合规 PASS、跨 IP 重合最高 0.5%、12 字泄漏 0、npm test 78/78）。"
+      ],
       "evidence": [
         "docs/research/de-ai-flavor-20260823.md",
         "docs/research/ai-flavor-diagnosis-20260823.md",
@@ -160,6 +273,35 @@
         "ips/半佛/outputs/闲鱼餐饮券-短视频版.md"
       ],
       "notes": "启发式抓表层特征（标点密度、句长 CV、悬空的、总结壳等），抓不到\"换 IP 也能原样用\"的骨架同构，这一层由写作规则 §4 与人审兜底。钱十七不门禁句长（转写口径），半佛与默认 CV≥0.7。5 个提交 d3dac6f→4352528；npm test 63→75→78。"
+    },
+    {
+      "id": "F019",
+      "name": "用词层：IP 词表、陌生度报告、四稿逐句润色",
+      "status": "done",
+      "acceptance": [
+        "从真人语料建两份 IP 词表，jieba posseg 抽 n/v/a：钱十七 1525 词/11 篇，半佛 2378 词/10 篇；两份 JSON 均通过 json.load。",
+        "写作规则加入用词层（缩略/生造搭配/硬装口语/压缩零容忍，附用户 bad→good 对），并入两份 DNA 与 AGENTS/generation-intake 作为交付前置。",
+        "check-lexicon 报告工具入仓：命令 npm run check:lexicon，报『这个 IP 没用过的词』与替换建议；warn 级、非 block、最终人判。",
+        "四稿逐句用词润色 24 处（用户三例按原话改，另 21 处同类），结构/事实/长度/受众/钩子位置未动；六道门禁再全过。",
+        "check-lexicon 分词后端换成 jieba posseg（与词表构建口径一致），加专名/数量词白名单，报告改为整词＋整句上下文。",
+        "npm test 80→89→94 通过。"
+      ],
+      "evidence": [
+        "docs/de-ai-writing.md",
+        "ips/钱十七/corpus/lexicon.json",
+        "ips/半佛/corpus/lexicon.json",
+        "engine/naturalness/check-lexicon.mjs",
+        "engine/naturalness/lexicon-hints.json",
+        "engine/naturalness/segment.py",
+        "engine/tests/lexicon.test.mjs",
+        "ips/钱十七/dna/钱十七-DNA-重构版.md",
+        "ips/半佛/dna/半佛-DNA-可执行版.md",
+        "ips/钱十七/outputs/闲鱼餐饮券-长视频版.md",
+        "ips/钱十七/outputs/闲鱼餐饮券-短视频版.md",
+        "ips/半佛/outputs/闲鱼餐饮券-长视频版.md",
+        "ips/半佛/outputs/闲鱼餐饮券-短视频版.md"
+      ],
+      "notes": "触发：用户读第一轮去 AI 味重写稿后评价『凑合、勉强能用、距离好还差很多』，举了三处用词问题（找货→找货源、散在→都在/藏在、说不说得清打哪来→得搞清楚渠道从哪来）。判定：六道门禁全过 ≠ 好；好 = 这个 IP 的读者听不出换了人。用词层由词表报告＋人审兜底，机器不判定。提交 a958449→fb9cf89→3557c34→81420ab。"
     }
   ]
 }
