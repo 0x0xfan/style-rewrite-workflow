@@ -1,0 +1,7838 @@
+{
+  "ip": "钱十七",
+  "corpus_id": "qian17-spoken-v2",
+  "built": "2026-08-23",
+  "tokenizer": "jieba-0.42.1 posseg (keep n/v/a, drop stopwords/single-char/pure-digit)",
+  "doc_count": 11,
+  "term_count": 1525,
+  "business_count": 40,
+  "business": [
+    {
+      "term": "闲鱼",
+      "freq": 72,
+      "docs": 10
+    },
+    {
+      "term": "流量",
+      "freq": 55,
+      "docs": 10
+    },
+    {
+      "term": "平台",
+      "freq": 45,
+      "docs": 8
+    },
+    {
+      "term": "选品",
+      "freq": 44,
+      "docs": 7
+    },
+    {
+      "term": "发货",
+      "freq": 29,
+      "docs": 8
+    },
+    {
+      "term": "货源",
+      "freq": 28,
+      "docs": 6
+    },
+    {
+      "term": "上架",
+      "freq": 26,
+      "docs": 8
+    },
+    {
+      "term": "渠道",
+      "freq": 19,
+      "docs": 8
+    },
+    {
+      "term": "回复",
+      "freq": 18,
+      "docs": 10
+    },
+    {
+      "term": "关键词",
+      "freq": 17,
+      "docs": 5
+    },
+    {
+      "term": "利润",
+      "freq": 17,
+      "docs": 5
+    },
+    {
+      "term": "卖家",
+      "freq": 15,
+      "docs": 3
+    },
+    {
+      "term": "成本",
+      "freq": 14,
+      "docs": 6
+    },
+    {
+      "term": "权重",
+      "freq": 14,
+      "docs": 1
+    },
+    {
+      "term": "订单",
+      "freq": 12,
+      "docs": 3
+    },
+    {
+      "term": "引流",
+      "freq": 11,
+      "docs": 6
+    },
+    {
+      "term": "售后",
+      "freq": 11,
+      "docs": 5
+    },
+    {
+      "term": "曝光",
+      "freq": 10,
+      "docs": 4
+    },
+    {
+      "term": "养号",
+      "freq": 10,
+      "docs": 3
+    },
+    {
+      "term": "话术",
+      "freq": 9,
+      "docs": 5
+    },
+    {
+      "term": "违规",
+      "freq": 9,
+      "docs": 5
+    },
+    {
+      "term": "标题",
+      "freq": 9,
+      "docs": 3
+    },
+    {
+      "term": "买家",
+      "freq": 8,
+      "docs": 3
+    },
+    {
+      "term": "商家",
+      "freq": 5,
+      "docs": 4
+    },
+    {
+      "term": "爆品",
+      "freq": 5,
+      "docs": 3
+    },
+    {
+      "term": "代发",
+      "freq": 5,
+      "docs": 1
+    },
+    {
+      "term": "复购",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "封号",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "分销",
+      "freq": 4,
+      "docs": 1
+    },
+    {
+      "term": "评价",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "定价",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "采购",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "出单",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "咨询",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "客单",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "差价",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "库存",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "变现",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "详情页",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "转化",
+      "freq": 1,
+      "docs": 1
+    }
+  ],
+  "terms": [
+    {
+      "term": "商品",
+      "freq": 88,
+      "docs": 8
+    },
+    {
+      "term": "闲鱼",
+      "freq": 72,
+      "docs": 10
+    },
+    {
+      "term": "产品",
+      "freq": 65,
+      "docs": 10
+    },
+    {
+      "term": "账号",
+      "freq": 58,
+      "docs": 8
+    },
+    {
+      "term": "流量",
+      "freq": 55,
+      "docs": 10
+    },
+    {
+      "term": "需要",
+      "freq": 53,
+      "docs": 10
+    },
+    {
+      "term": "资料",
+      "freq": 52,
+      "docs": 9
+    },
+    {
+      "term": "用户",
+      "freq": 48,
+      "docs": 6
+    },
+    {
+      "term": "咸鱼",
+      "freq": 47,
+      "docs": 9
+    },
+    {
+      "term": "平台",
+      "freq": 45,
+      "docs": 8
+    },
+    {
+      "term": "选品",
+      "freq": 44,
+      "docs": 7
+    },
+    {
+      "term": "资源",
+      "freq": 42,
+      "docs": 4
+    },
+    {
+      "term": "视频",
+      "freq": 41,
+      "docs": 11
+    },
+    {
+      "term": "虚拟",
+      "freq": 39,
+      "docs": 5
+    },
+    {
+      "term": "分享",
+      "freq": 30,
+      "docs": 11
+    },
+    {
+      "term": "自动",
+      "freq": 30,
+      "docs": 6
+    },
+    {
+      "term": "发货",
+      "freq": 29,
+      "docs": 8
+    },
+    {
+      "term": "货源",
+      "freq": 28,
+      "docs": 6
+    },
+    {
+      "term": "搜索",
+      "freq": 26,
+      "docs": 9
+    },
+    {
+      "term": "上架",
+      "freq": 26,
+      "docs": 8
+    },
+    {
+      "term": "建议",
+      "freq": 26,
+      "docs": 8
+    },
+    {
+      "term": "笔记",
+      "freq": 26,
+      "docs": 3
+    },
+    {
+      "term": "直接",
+      "freq": 24,
+      "docs": 9
+    },
+    {
+      "term": "考研",
+      "freq": 23,
+      "docs": 3
+    },
+    {
+      "term": "找到",
+      "freq": 22,
+      "docs": 9
+    },
+    {
+      "term": "电商",
+      "freq": 22,
+      "docs": 6
+    },
+    {
+      "term": "方法",
+      "freq": 21,
+      "docs": 7
+    },
+    {
+      "term": "服务",
+      "freq": 21,
+      "docs": 2
+    },
+    {
+      "term": "发布",
+      "freq": 20,
+      "docs": 8
+    },
+    {
+      "term": "新手",
+      "freq": 20,
+      "docs": 8
+    },
+    {
+      "term": "项目",
+      "freq": 20,
+      "docs": 8
+    },
+    {
+      "term": "想要",
+      "freq": 20,
+      "docs": 7
+    },
+    {
+      "term": "监督",
+      "freq": 20,
+      "docs": 1
+    },
+    {
+      "term": "工具",
+      "freq": 19,
+      "docs": 8
+    },
+    {
+      "term": "渠道",
+      "freq": 19,
+      "docs": 8
+    },
+    {
+      "term": "回复",
+      "freq": 18,
+      "docs": 10
+    },
+    {
+      "term": "赚钱",
+      "freq": 18,
+      "docs": 9
+    },
+    {
+      "term": "点击",
+      "freq": 18,
+      "docs": 6
+    },
+    {
+      "term": "谈钱",
+      "freq": 17,
+      "docs": 10
+    },
+    {
+      "term": "准备",
+      "freq": 17,
+      "docs": 7
+    },
+    {
+      "term": "简单",
+      "freq": 17,
+      "docs": 7
+    },
+    {
+      "term": "关键词",
+      "freq": 17,
+      "docs": 5
+    },
+    {
+      "term": "利润",
+      "freq": 17,
+      "docs": 5
+    },
+    {
+      "term": "内容",
+      "freq": 17,
+      "docs": 4
+    },
+    {
+      "term": "信用",
+      "freq": 17,
+      "docs": 3
+    },
+    {
+      "term": "壁纸",
+      "freq": 17,
+      "docs": 1
+    },
+    {
+      "term": "伤感情",
+      "freq": 16,
+      "docs": 10
+    },
+    {
+      "term": "成交",
+      "freq": 16,
+      "docs": 8
+    },
+    {
+      "term": "减肥",
+      "freq": 16,
+      "docs": 1
+    },
+    {
+      "term": "不到",
+      "freq": 15,
+      "docs": 8
+    },
+    {
+      "term": "获取",
+      "freq": 15,
+      "docs": 5
+    },
+    {
+      "term": "卖家",
+      "freq": 15,
+      "docs": 3
+    },
+    {
+      "term": "榜单",
+      "freq": 15,
+      "docs": 3
+    },
+    {
+      "term": "状元",
+      "freq": 15,
+      "docs": 2
+    },
+    {
+      "term": "网站",
+      "freq": 15,
+      "docs": 1
+    },
+    {
+      "term": "领取",
+      "freq": 14,
+      "docs": 11
+    },
+    {
+      "term": "一键",
+      "freq": 14,
+      "docs": 9
+    },
+    {
+      "term": "看到",
+      "freq": 14,
+      "docs": 8
+    },
+    {
+      "term": "可能",
+      "freq": 14,
+      "docs": 7
+    },
+    {
+      "term": "图片",
+      "freq": 14,
+      "docs": 7
+    },
+    {
+      "term": "成本",
+      "freq": 14,
+      "docs": 6
+    },
+    {
+      "term": "权重",
+      "freq": 14,
+      "docs": 1
+    },
+    {
+      "term": "推荐",
+      "freq": 13,
+      "docs": 10
+    },
+    {
+      "term": "我会",
+      "freq": 13,
+      "docs": 8
+    },
+    {
+      "term": "手机",
+      "freq": 13,
+      "docs": 7
+    },
+    {
+      "term": "核心",
+      "freq": 13,
+      "docs": 7
+    },
+    {
+      "term": "表格",
+      "freq": 13,
+      "docs": 6
+    },
+    {
+      "term": "芝麻",
+      "freq": 13,
+      "docs": 3
+    },
+    {
+      "term": "购买",
+      "freq": 12,
+      "docs": 6
+    },
+    {
+      "term": "需求",
+      "freq": 12,
+      "docs": 4
+    },
+    {
+      "term": "订单",
+      "freq": 12,
+      "docs": 3
+    },
+    {
+      "term": "不会",
+      "freq": 11,
+      "docs": 7
+    },
+    {
+      "term": "总结",
+      "freq": 11,
+      "docs": 7
+    },
+    {
+      "term": "重要",
+      "freq": 11,
+      "docs": 7
+    },
+    {
+      "term": "开始",
+      "freq": 11,
+      "docs": 6
+    },
+    {
+      "term": "引流",
+      "freq": 11,
+      "docs": 6
+    },
+    {
+      "term": "整理",
+      "freq": 11,
+      "docs": 6
+    },
+    {
+      "term": "做好",
+      "freq": 11,
+      "docs": 5
+    },
+    {
+      "term": "售后",
+      "freq": 11,
+      "docs": 5
+    },
+    {
+      "term": "宝贝",
+      "freq": 11,
+      "docs": 5
+    },
+    {
+      "term": "提升",
+      "freq": 11,
+      "docs": 3
+    },
+    {
+      "term": "公众",
+      "freq": 10,
+      "docs": 10
+    },
+    {
+      "term": "博主",
+      "freq": 10,
+      "docs": 8
+    },
+    {
+      "term": "注意",
+      "freq": 10,
+      "docs": 7
+    },
+    {
+      "term": "关键",
+      "freq": 10,
+      "docs": 5
+    },
+    {
+      "term": "店铺",
+      "freq": 10,
+      "docs": 5
+    },
+    {
+      "term": "类目",
+      "freq": 10,
+      "docs": 5
+    },
+    {
+      "term": "曝光",
+      "freq": 10,
+      "docs": 4
+    },
+    {
+      "term": "养号",
+      "freq": 10,
+      "docs": 3
+    },
+    {
+      "term": "童装",
+      "freq": 10,
+      "docs": 2
+    },
+    {
+      "term": "批发",
+      "freq": 10,
+      "docs": 1
+    },
+    {
+      "term": "免费",
+      "freq": 9,
+      "docs": 9
+    },
+    {
+      "term": "容易",
+      "freq": 9,
+      "docs": 7
+    },
+    {
+      "term": "选择",
+      "freq": 9,
+      "docs": 7
+    },
+    {
+      "term": "打开",
+      "freq": 9,
+      "docs": 6
+    },
+    {
+      "term": "小时",
+      "freq": 9,
+      "docs": 5
+    },
+    {
+      "term": "话术",
+      "freq": 9,
+      "docs": 5
+    },
+    {
+      "term": "违规",
+      "freq": 9,
+      "docs": 5
+    },
+    {
+      "term": "使用",
+      "freq": 9,
+      "docs": 4
+    },
+    {
+      "term": "支付宝",
+      "freq": 9,
+      "docs": 4
+    },
+    {
+      "term": "名字",
+      "freq": 9,
+      "docs": 3
+    },
+    {
+      "term": "描述",
+      "freq": 9,
+      "docs": 3
+    },
+    {
+      "term": "标题",
+      "freq": 9,
+      "docs": 3
+    },
+    {
+      "term": "获得",
+      "freq": 9,
+      "docs": 3
+    },
+    {
+      "term": "部分",
+      "freq": 9,
+      "docs": 3
+    },
+    {
+      "term": "包装",
+      "freq": 9,
+      "docs": 1
+    },
+    {
+      "term": "好评",
+      "freq": 9,
+      "docs": 1
+    },
+    {
+      "term": "提醒",
+      "freq": 9,
+      "docs": 1
+    },
+    {
+      "term": "操作",
+      "freq": 8,
+      "docs": 7
+    },
+    {
+      "term": "有用",
+      "freq": 8,
+      "docs": 7
+    },
+    {
+      "term": "不能",
+      "freq": 8,
+      "docs": 6
+    },
+    {
+      "term": "喜欢",
+      "freq": 8,
+      "docs": 6
+    },
+    {
+      "term": "流程",
+      "freq": 8,
+      "docs": 6
+    },
+    {
+      "term": "块钱",
+      "freq": 8,
+      "docs": 5
+    },
+    {
+      "term": "处理",
+      "freq": 8,
+      "docs": 5
+    },
+    {
+      "term": "复制",
+      "freq": 8,
+      "docs": 5
+    },
+    {
+      "term": "全国",
+      "freq": 8,
+      "docs": 4
+    },
+    {
+      "term": "闲置",
+      "freq": 8,
+      "docs": 4
+    },
+    {
+      "term": "买家",
+      "freq": 8,
+      "docs": 3
+    },
+    {
+      "term": "拿货",
+      "freq": 8,
+      "docs": 3
+    },
+    {
+      "term": "服装",
+      "freq": 8,
+      "docs": 2
+    },
+    {
+      "term": "模板",
+      "freq": 8,
+      "docs": 2
+    },
+    {
+      "term": "软件",
+      "freq": 8,
+      "docs": 2
+    },
+    {
+      "term": "常见",
+      "freq": 8,
+      "docs": 1
+    },
+    {
+      "term": "广州",
+      "freq": 8,
+      "docs": 1
+    },
+    {
+      "term": "打卡",
+      "freq": 8,
+      "docs": 1
+    },
+    {
+      "term": "问题",
+      "freq": 7,
+      "docs": 6
+    },
+    {
+      "term": "告诉",
+      "freq": 7,
+      "docs": 4
+    },
+    {
+      "term": "淘宝",
+      "freq": 7,
+      "docs": 4
+    },
+    {
+      "term": "中国",
+      "freq": 7,
+      "docs": 3
+    },
+    {
+      "term": "便宜",
+      "freq": 7,
+      "docs": 3
+    },
+    {
+      "term": "入驻",
+      "freq": 7,
+      "docs": 3
+    },
+    {
+      "term": "副业",
+      "freq": 7,
+      "docs": 3
+    },
+    {
+      "term": "完善",
+      "freq": 7,
+      "docs": 3
+    },
+    {
+      "term": "小伙伴",
+      "freq": 7,
+      "docs": 3
+    },
+    {
+      "term": "微信",
+      "freq": 7,
+      "docs": 3
+    },
+    {
+      "term": "截图",
+      "freq": 7,
+      "docs": 3
+    },
+    {
+      "term": "注册",
+      "freq": 7,
+      "docs": 3
+    },
+    {
+      "term": "登录",
+      "freq": 7,
+      "docs": 3
+    },
+    {
+      "term": "细分",
+      "freq": 7,
+      "docs": 3
+    },
+    {
+      "term": "服饰",
+      "freq": 7,
+      "docs": 2
+    },
+    {
+      "term": "角色",
+      "freq": 7,
+      "docs": 1
+    },
+    {
+      "term": "逻辑",
+      "freq": 6,
+      "docs": 6
+    },
+    {
+      "term": "不用",
+      "freq": 6,
+      "docs": 5
+    },
+    {
+      "term": "价格",
+      "freq": 6,
+      "docs": 5
+    },
+    {
+      "term": "分为",
+      "freq": 6,
+      "docs": 5
+    },
+    {
+      "term": "授权",
+      "freq": 6,
+      "docs": 5
+    },
+    {
+      "term": "用来",
+      "freq": 6,
+      "docs": 5
+    },
+    {
+      "term": "专门",
+      "freq": 6,
+      "docs": 4
+    },
+    {
+      "term": "实物",
+      "freq": 6,
+      "docs": 4
+    },
+    {
+      "term": "客户",
+      "freq": 6,
+      "docs": 4
+    },
+    {
+      "term": "拿到",
+      "freq": 6,
+      "docs": 4
+    },
+    {
+      "term": "收益",
+      "freq": 6,
+      "docs": 4
+    },
+    {
+      "term": "数据",
+      "freq": 6,
+      "docs": 4
+    },
+    {
+      "term": "关注",
+      "freq": 6,
+      "docs": 3
+    },
+    {
+      "term": "努力",
+      "freq": 6,
+      "docs": 3
+    },
+    {
+      "term": "品类",
+      "freq": 6,
+      "docs": 3
+    },
+    {
+      "term": "新人",
+      "freq": 6,
+      "docs": 3
+    },
+    {
+      "term": "热门",
+      "freq": 6,
+      "docs": 3
+    },
+    {
+      "term": "设置",
+      "freq": 6,
+      "docs": 3
+    },
+    {
+      "term": "进去",
+      "freq": 6,
+      "docs": 3
+    },
+    {
+      "term": "主打",
+      "freq": 6,
+      "docs": 2
+    },
+    {
+      "term": "学霸",
+      "freq": 6,
+      "docs": 2
+    },
+    {
+      "term": "文案",
+      "freq": 6,
+      "docs": 2
+    },
+    {
+      "term": "竞争",
+      "freq": 6,
+      "docs": 2
+    },
+    {
+      "term": "高考",
+      "freq": 6,
+      "docs": 2
+    },
+    {
+      "term": "提前",
+      "freq": 6,
+      "docs": 1
+    },
+    {
+      "term": "头像",
+      "freq": 5,
+      "docs": 5
+    },
+    {
+      "term": "收藏",
+      "freq": 5,
+      "docs": 5
+    },
+    {
+      "term": "注意事项",
+      "freq": 5,
+      "docs": 5
+    },
+    {
+      "term": "遇到",
+      "freq": 5,
+      "docs": 5
+    },
+    {
+      "term": "了解",
+      "freq": 5,
+      "docs": 4
+    },
+    {
+      "term": "发现",
+      "freq": 5,
+      "docs": 4
+    },
+    {
+      "term": "商家",
+      "freq": 5,
+      "docs": 4
+    },
+    {
+      "term": "在于",
+      "freq": 5,
+      "docs": 4
+    },
+    {
+      "term": "希望",
+      "freq": 5,
+      "docs": 4
+    },
+    {
+      "term": "最好",
+      "freq": 5,
+      "docs": 4
+    },
+    {
+      "term": "环节",
+      "freq": 5,
+      "docs": 4
+    },
+    {
+      "term": "记录",
+      "freq": 5,
+      "docs": 4
+    },
+    {
+      "term": "运营",
+      "freq": 5,
+      "docs": 4
+    },
+    {
+      "term": "优势",
+      "freq": 5,
+      "docs": 3
+    },
+    {
+      "term": "保存",
+      "freq": 5,
+      "docs": 3
+    },
+    {
+      "term": "信息",
+      "freq": 5,
+      "docs": 3
+    },
+    {
+      "term": "品牌",
+      "freq": 5,
+      "docs": 3
+    },
+    {
+      "term": "学会",
+      "freq": 5,
+      "docs": 3
+    },
+    {
+      "term": "市场",
+      "freq": 5,
+      "docs": 3
+    },
+    {
+      "term": "朋友",
+      "freq": 5,
+      "docs": 3
+    },
+    {
+      "term": "根本",
+      "freq": 5,
+      "docs": 3
+    },
+    {
+      "term": "爆品",
+      "freq": 5,
+      "docs": 3
+    },
+    {
+      "term": "稳定",
+      "freq": 5,
+      "docs": 3
+    },
+    {
+      "term": "箱包",
+      "freq": 5,
+      "docs": 3
+    },
+    {
+      "term": "精准",
+      "freq": 5,
+      "docs": 3
+    },
+    {
+      "term": "重点",
+      "freq": 5,
+      "docs": 3
+    },
+    {
+      "term": "销量",
+      "freq": 5,
+      "docs": 3
+    },
+    {
+      "term": "验证",
+      "freq": 5,
+      "docs": 3
+    },
+    {
+      "term": "方式",
+      "freq": 5,
+      "docs": 2
+    },
+    {
+      "term": "玩具",
+      "freq": 5,
+      "docs": 2
+    },
+    {
+      "term": "生意",
+      "freq": 5,
+      "docs": 2
+    },
+    {
+      "term": "用品",
+      "freq": 5,
+      "docs": 2
+    },
+    {
+      "term": "种类",
+      "freq": 5,
+      "docs": 2
+    },
+    {
+      "term": "代发",
+      "freq": 5,
+      "docs": 1
+    },
+    {
+      "term": "出图",
+      "freq": 5,
+      "docs": 1
+    },
+    {
+      "term": "数量",
+      "freq": 5,
+      "docs": 1
+    },
+    {
+      "term": "看起来",
+      "freq": 5,
+      "docs": 1
+    },
+    {
+      "term": "详情",
+      "freq": 5,
+      "docs": 1
+    },
+    {
+      "term": "豆包",
+      "freq": 5,
+      "docs": 1
+    },
+    {
+      "term": "资本",
+      "freq": 5,
+      "docs": 1
+    },
+    {
+      "term": "进货",
+      "freq": 5,
+      "docs": 1
+    },
+    {
+      "term": "饮食",
+      "freq": 5,
+      "docs": 1
+    },
+    {
+      "term": "个人资料",
+      "freq": 4,
+      "docs": 4
+    },
+    {
+      "term": "人群",
+      "freq": 4,
+      "docs": 4
+    },
+    {
+      "term": "先点",
+      "freq": 4,
+      "docs": 4
+    },
+    {
+      "term": "全程",
+      "freq": 4,
+      "docs": 4
+    },
+    {
+      "term": "办法",
+      "freq": 4,
+      "docs": 4
+    },
+    {
+      "term": "包括",
+      "freq": 4,
+      "docs": 4
+    },
+    {
+      "term": "在用",
+      "freq": 4,
+      "docs": 4
+    },
+    {
+      "term": "学员",
+      "freq": 4,
+      "docs": 4
+    },
+    {
+      "term": "目的",
+      "freq": 4,
+      "docs": 4
+    },
+    {
+      "term": "看看",
+      "freq": 4,
+      "docs": 4
+    },
+    {
+      "term": "要点",
+      "freq": 4,
+      "docs": 4
+    },
+    {
+      "term": "详细",
+      "freq": 4,
+      "docs": 4
+    },
+    {
+      "term": "下单",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "介绍",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "单价",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "卖出",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "变成",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "围绕",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "复购",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "大类",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "学生",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "封号",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "工作",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "干货",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "情况",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "才能",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "搜一",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "放大",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "效果",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "无人",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "昵称",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "能出",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "节省",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "记住",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "跟着",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "进来",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "配置",
+      "freq": 4,
+      "docs": 3
+    },
+    {
+      "term": "低价",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "全自动",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "吸引",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "基础",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "定制",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "感兴趣",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "提供",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "提高",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "教程",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "最低",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "款式",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "策略",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "简介",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "结果",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "肯定",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "行业",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "设计",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "说明",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "调整",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "超过",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "适合",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "配件",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "限制",
+      "freq": 4,
+      "docs": 2
+    },
+    {
+      "term": "任务",
+      "freq": 4,
+      "docs": 1
+    },
+    {
+      "term": "分钱",
+      "freq": 4,
+      "docs": 1
+    },
+    {
+      "term": "分销",
+      "freq": 4,
+      "docs": 1
+    },
+    {
+      "term": "化妆品",
+      "freq": 4,
+      "docs": 1
+    },
+    {
+      "term": "可乐",
+      "freq": 4,
+      "docs": 1
+    },
+    {
+      "term": "大包",
+      "freq": 4,
+      "docs": 1
+    },
+    {
+      "term": "大街",
+      "freq": 4,
+      "docs": 1
+    },
+    {
+      "term": "学姐",
+      "freq": 4,
+      "docs": 1
+    },
+    {
+      "term": "批量",
+      "freq": 4,
+      "docs": 1
+    },
+    {
+      "term": "母婴",
+      "freq": 4,
+      "docs": 1
+    },
+    {
+      "term": "灯笼",
+      "freq": 4,
+      "docs": 1
+    },
+    {
+      "term": "礼物",
+      "freq": 4,
+      "docs": 1
+    },
+    {
+      "term": "群聊",
+      "freq": 4,
+      "docs": 1
+    },
+    {
+      "term": "英语",
+      "freq": 4,
+      "docs": 1
+    },
+    {
+      "term": "进群",
+      "freq": 4,
+      "docs": 1
+    },
+    {
+      "term": "一分钱",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "万能",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "不错",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "买来",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "交给",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "京东",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "例子",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "值守",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "免费资源",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "全网",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "公屏",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "关键点",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "分类",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "利用微",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "动手",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "双手",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "场景",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "基本",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "妥妥",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "完美",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "实现",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "市面上",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "底层",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "店家",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "庞大",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "彻底",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "得有",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "想想",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "成功",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "投入",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "挑选",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "推广",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "收钱",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "方便",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "无需",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "时期",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "最全",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "有没有",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "有点",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "浏览",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "火爆",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "爆单",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "玩法",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "省力",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "秘诀",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "筛选",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "继续",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "解放",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "认为",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "讲解",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "起跑线",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "道理",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "领域",
+      "freq": 3,
+      "docs": 3
+    },
+    {
+      "term": "一般",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "人家",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "优化",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "兄弟",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "出售",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "出现",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "功能",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "动漫",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "包含",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "占用",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "发给",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "合理",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "同款",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "套路",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "学习",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "宠物",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "小商品",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "情侣",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "愿意",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "手册",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "技巧",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "提示",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "搞定",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "收入",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "有效",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "步骤",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "照着",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "爆款",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "电脑",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "畅销",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "看上去",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "砍价",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "类型",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "粉丝",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "系统",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "莆田",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "评价",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "试试",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "课程",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "身份",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "链接",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "长尾",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "风格",
+      "freq": 3,
+      "docs": 2
+    },
+    {
+      "term": "下架",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "义乌",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "供应链",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "公式",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "具体",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "内衣",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "周卡",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "套餐",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "定价",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "工具包",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "工厂",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "搬运",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "支持",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "收法",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "数学",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "数码产品",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "新款",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "普通",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "档口",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "死粉",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "清理",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "演出",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "理由",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "生图",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "画风",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "算术",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "群主",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "联网",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "舞蹈",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "采购",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "陪伴",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "食品",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "食谱",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "鼓励",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "齐全",
+      "freq": 3,
+      "docs": 1
+    },
+    {
+      "term": "上发",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "上新",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "上限",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "不高",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "专业",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "专注",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "个人",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "主页",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "举例",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "人数",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "代替",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "代表",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "优秀",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "优质",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "依托",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "便利店",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "关键问题",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "出单",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "分配",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "动力",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "动动",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "包邮",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "反应",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "发财",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "合集",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "同学",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "后续",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "咨询",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "售价",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "商城",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "回到",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "回来",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "图标",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "复制粘贴",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "好友",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "好玩",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "学科",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "完能",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "实操",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "实际",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "对比",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "小手",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "小财",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "尖子生",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "就算",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "屏幕",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "屏蔽",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "属于",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "巨大",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "差距",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "带来",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "性别",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "手机号",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "打造",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "执行",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "扶持",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "换成",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "搜微信",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "收获",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "旅行",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "无法",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "是否",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "显示",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "最多",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "月销量",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "有限",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "末尾",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "查看",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "标黄",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "概率",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "汽车",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "测试",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "浏览量",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "满屏",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "满足",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "点赞",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "玩家",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "疑问",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "白费",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "目标",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "相似",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "空谈",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "突破",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "答应",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "答案",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "签到",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "类产品",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "精力",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "精心",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "绑定",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "聊聊",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "舒服",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "节奏",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "节点",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "花钱",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "行为",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "覆盖",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "观看",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "说完",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "赚来",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "走量",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "轻松",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "输入",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "达到",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "送给",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "避坑",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "间隔",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "非常明显",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "风险",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "高价",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "高效",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "鱼会",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "麻烦",
+      "freq": 2,
+      "docs": 2
+    },
+    {
+      "term": "下载",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "世界",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "严重",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "主题",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "产品描述",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "价钱",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "企业",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "作用",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "假货",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "健身",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "全球",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "全站",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "冻品",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "出名",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "加群",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "单张",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "原创",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "原材料",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "反馈",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "垃圾",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "墙角",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "增加",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "复古",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "大量",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "奖杯",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "套利",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "女生",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "女装",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "奶茶",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "学长",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "安全",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "官方",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "实体",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "客单",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "家居",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "宿舍",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "巨量",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "差价",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "平安夜",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "平板",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "床垫",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "库存",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "建档",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "开卖",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "开衫",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "情怀",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "感谢",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "批发市场",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "拆解",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "排队",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "收音机",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "攻略",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "政治",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "敦煌",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "数据线",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "文具",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "方面",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "无限",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "显示器",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "暴力",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "机会",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "校园",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "消费",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "淘汰",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "添加",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "演出服",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "热卖",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "爆火",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "父亲节",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "版权",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "特卖",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "特色",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "琉璃",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "瑕疵",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "电器",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "男性",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "男生",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "百度",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "相关",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "看不上",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "知名",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "祭祀",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "等于",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "细粉",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "维度",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "网盘",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "老式",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "聊天",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "脚本",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "行车",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "表白",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "装饰品",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "计划",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "记录仪",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "讲透",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "语音",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "贺卡",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "赚取",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "足够",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "进口",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "金币",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "销售",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "阿里巴巴",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "限速",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "陷阱",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "零花钱",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "龙头",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "龙舟",
+      "freq": 2,
+      "docs": 1
+    },
+    {
+      "term": "一块钱",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "万圣节",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "万粉",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "三围",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "上品",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "上手",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "上班",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "上班族",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "上线",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "上表",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "上车",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "下加",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "不值钱",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "不变",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "不同",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "不够",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "不好意思",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "不对",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "不怪",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "不想",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "不易",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "不聊",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "不贵",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "不赔",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "专业知识",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "专家",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "专属",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "个号",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "个品",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "个知",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "为主",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "举行",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "久违",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "乐贝贝",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "书包",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "买购",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "事项",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "二手物品",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "云仓",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "五彩",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "五毛",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "亚马逊",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "交付",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "交易",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "产品质量",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "亲测",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "人为",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "人会",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "人头",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "人民",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "人用",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "人画",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "代办",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "价格便宜",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "任由",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "众人",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "众号",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "优先",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "优点",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "会员",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "传到",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "传统节日",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "伪装",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "估计",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "但胜",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "侧重于",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "促成",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "保姆",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "保护",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "保证",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "信任",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "信任度",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "信心",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "值钱",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "做出",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "做到",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "做成",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "偷来",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "催泪",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "儿童",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "儿童节",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "充实",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "先动网",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "先立",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "光是",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "入口",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "全世界",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "全家",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "全款",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "全都",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "公示",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "公考",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "兰州",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "共计",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "共鸣",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "兴起",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "兴趣",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "典型",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "养出",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "养好",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "兼职",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "内卷性",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "内衣网",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "写真",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "决定",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "净赚",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "凉席",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "几块钱",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "出去",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "出完",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "出货",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "分币",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "分数",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "分析",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "分水岭",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "切成",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "切记",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "列表",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "创意",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "判断",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "别以为",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "别动",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "别急",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "别碰",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "制造",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "刷闲",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "前十页",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "剥削",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "副食",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "力气",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "力量",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "劝阻",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "办公桌",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "加上",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "加低",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "加入",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "加工",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "加餐",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "加高",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "劳动",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "包不",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "包包",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "包和",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "包定",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "包装纸",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "包装袋",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "包里",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "化妆包",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "北极光",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "匹配",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "区别",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "半价",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "华品",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "单人",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "单号",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "单干",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "单慢",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "卖价",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "卖出去",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "卖到",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "卖法",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "卖货",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "南瓜",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "卡后",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "卡通",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "卫士",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "卷到",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "原因",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "原有",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "原材",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "原理",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "反复",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "发到",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "发展",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "发技",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "发挥",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "发紫",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "发车",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "取暖",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "变现",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "口袋",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "口诀",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "口述",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "只能",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "可穿",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "可行性",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "可靠",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "号码牌",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "合作",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "合格率",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "同名",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "名牌产品",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "后点",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "告别",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "告知",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "周卡来",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "咸宜",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "品和",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "品牌效应",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "品种",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "品都",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "售卖",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "售数",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "商场",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "商户",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "喂到",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "器猫",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "回头",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "回答",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "囤货",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "固定",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "图里",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "圣诞树",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "圣诞礼物",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "地板",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "地铁",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "坏处",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "坐垫",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "坚持",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "垄断",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "埋进",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "城图",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "增多",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "增长",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "复印",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "复杂",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "复盘",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "外卖",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "多用户",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "多花钱",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "大坑",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "大方",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "大暑",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "大牌",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "大用",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "大门",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "天生",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "太慢",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "失败",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "头疼",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "夸夸",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "夸张",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "奖赛",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "套件",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "套出",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "套套",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "套着",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "套进",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "女性",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "女鞋",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "好卖",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "好找",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "好看",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "娜拉",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "字数",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "季卡",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "季度",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "季节",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "学完",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "学期",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "学生用品",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "安全带",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "完全",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "完图",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "完成",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "完整",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "完高",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "实体店",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "实名",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "实战",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "实拍",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "实用",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "家人",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "家长",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "密码",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "寒假",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "对应",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "对接",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "对方",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "对联",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "对象",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "导流",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "导致",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "小女生",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "小学生",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "小屋",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "小帅",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "小户",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "小狗",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "小看",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "小红书",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "小说",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "尺寸",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "屏壳",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "展开",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "展示",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "工业",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "工业品",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "工业用品",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "工作室",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "巨坑",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "布娃娃",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "布局",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "布置",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "帮写",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "帮到",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "常识",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "帽子",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "年轻",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "年轻人",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "年龄",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "年龄段",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "幻觉",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "庄园",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "床上用品",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "床单",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "底线",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "店主",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "废话",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "度过",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "延伸",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "建党",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "建立",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "开发",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "开头",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "开学",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "开工",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "弓手",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "引起",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "张得",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "强大",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "当抖",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "形成",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "形象",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "彩妆",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "彩旗",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "影响",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "很大",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "循环",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "微商",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "心仪",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "必售",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "必备",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "必考",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "忘记",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "总量",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "恶意",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "恶搞",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "情人节",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "想到",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "想得到",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "想法",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "想选",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "意味着",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "意识",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "愚人节",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "感动",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "感情",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "感觉",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "懂得",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "成交率",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "成交量",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "成型",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "戒烟",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "所有人",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "手套",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "扎实",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "打击",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "打包",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "打印机",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "打工",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "打成",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "扩大化",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "扫把",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "扫码",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "批发商",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "批发网",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "找出",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "找来",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "承诺",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "抓住",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "投稿",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "投诉",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "护肤品",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "报名",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "报备",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "抨击",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "担心",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "拉低",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "拉杆箱",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "拉面",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "拍照",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "拍随",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "拓展",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "拜托",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "拥有",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "拿抖",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "拿来",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "持续",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "挂上去",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "挂职",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "指令",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "指南",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "指导",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "指望",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "按钮",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "挚爱",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "挤同",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "损失",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "掏出",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "排名",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "排在",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "排雷",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "接盘",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "提到",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "揭阳",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "搜款",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "搜款网",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "搜索引擎",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "搞钱",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "搭建",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "搭配",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "摆件",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "摆设",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "摊下来",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "摩德",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "摸清",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "摸鱼",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "擦边",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "支架",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "收割",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "收好",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "收款",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "收藏夹",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "收货",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "改成",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "放下",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "放到",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "放在",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "放心",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "放进",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "教你用",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "教师节",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "教材",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "教给",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "教资",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "数码",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "文件",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "新书",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "新号",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "新颖",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "新风",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "方向",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "旅游",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "无偿",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "时限",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "明显",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "明显提高",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "明白",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "明码标价",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "星座",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "星空",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "普宁",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "普通人",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "智能",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "暴走",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "最大",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "最强",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "最稳",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "最高",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "月份",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "月入",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "月卡",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "月饼",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "有关",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "有着",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "服用",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "期发",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "期望",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "期货",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "本店",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "机构",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "材料",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "条件",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "条路",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "来源",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "来自",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "来讲",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "板块",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "板鞋",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "构图",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "枕头",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "查找",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "标价",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "标准化",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "标志",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "标识",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "样机",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "案例",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "档案",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "档次",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "梯度",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "检测",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "棉被",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "模仿",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "模具",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "模拟",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "模特",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "欧美",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "正下方",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "正常人",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "残酷",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "比较稳定",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "毕业",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "毛巾",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "毛毛虫",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "毛绒玩具",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "气球",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "水印",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "水电",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "汇集",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "汽车用品",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "汽配",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "沙河",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "沟通",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "没人",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "没得",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "没用",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "没错",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "河北",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "治愈",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "洛曦",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "活力",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "活动",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "活跃",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "流水线",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "测评",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "浴室",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "海报",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "消息",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "消耗",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "深圳华强",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "混进",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "清单",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "清明",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "清楚",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "清洁",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "游戏",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "滑板车",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "漏洞",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "潜伏",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "澳洲",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "点开",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "点点",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "烧烤",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "热情",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "热量",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "热销",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "热闹",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "煤气费",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "熟悉",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "熬出来",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "熬夜",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "物品",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "特产",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "特别强调",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "犯人",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "猜到",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "环球",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "现金流",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "珠宝",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "球鞋",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "生成",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "生活费",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "用过",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "电子",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "电子产品",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "电子网",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "电影",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "男人",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "男女",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "男童",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "男装",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "男鞋",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "界面",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "留下",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "留言",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "番茄",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "疯狂",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "痛点",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "登陆",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "白搭",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "白沟",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "白狼",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "白色",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "白领",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "白马",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "百强",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "的品",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "皮书",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "皮箱",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "盘点",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "盯上",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "直到",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "相信",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "相册",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "相差",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "相当于",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "省去",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "看完",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "看热",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "看着",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "看见",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "真题",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "眼睛",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "眼线笔",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "着重",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "睫毛膏",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "知乎",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "知识",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "石七",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "砂盆",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "破事",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "硬菜",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "确保",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "确认",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "碰到",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "磁带机",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "礼品",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "神仙",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "神器",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "神奇",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "禁品",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "禁售",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "秀名",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "私聊",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "科目",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "秒杀",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "积累",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "称号",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "程序",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "稳赚",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "空调",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "突然",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "窗口期",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "立马",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "竞争力",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "竹席",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "笔筒",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "答完",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "简示",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "算准",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "算法",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "算行",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "管饱",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "类为",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "类似",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "粉高",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "糖果",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "累死",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "繁多",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "纠纷",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "红包",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "红海",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "级养号",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "纪念品",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "纪念活动",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "纯利",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "纯色",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "纸包",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "线下",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "组织",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "细节",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "细说",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "经营",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "经验总结",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "结尾",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "绝版",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "续费",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "维持",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "缴纳",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "缺口",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "网织",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "网购",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "羊毛",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "美妆",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "美妆网",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "翅膀",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "老号",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "老客户",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "老师",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "老朋友",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "老爷",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "老规矩",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "考公",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "考生",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "考虑",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "考证",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "考试",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "职业",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "肌肉",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "能算",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "脑袋",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "脚踏",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "腰带",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "自取",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "自带",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "自律",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "自用",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "自由职业者",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "自营",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "良好",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "节目",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "花卉",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "花束",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "花篮",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "花费",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "花里胡哨",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "苗族",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "苹果",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "药品",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "菜单",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "菜鸟",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "营销",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "落地",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "蓝海",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "蛋白粉",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "蜡烛",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "衣服",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "衣架",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "表彰",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "装网",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "装饰",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "裤子",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "要卖",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "要定",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "要求",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "要用",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "要紧",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "要选",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "观众",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "观察",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "规避",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "解析",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "言语",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "计较",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "订包",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "订阅",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "认准",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "认可",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "认真",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "认知",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "认证",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "训练",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "记不住",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "记得",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "讲究",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "讲通",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "证据",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "评论",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "试用",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "试错",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "诚信",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "询盘",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "详情页",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "语言",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "说到",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "说起",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "贝尔",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "账算",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "购上",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "购物",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "贴合",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "贵精",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "贿赂",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "资产",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "资生堂",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "资质",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "赚到",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "赚够",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "走向",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "起好",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "超市",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "超清",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "跑腿",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "距离",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "跟踪",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "跟风",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "跨境",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "路径",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "路费",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "车牌",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "车衣",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "转化",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "转化率",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "转售",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "转述",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "转销",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "轮椅",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "较差",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "辛苦",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "过滤",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "运动",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "进店",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "进行",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "进阶",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "连和丽华",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "连系",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "迭代",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "迷路",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "追责",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "退出",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "退换",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "适当",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "适用",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "选无",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "选项",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "选高",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "透透",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "透露",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "速卖通",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "速度",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "遇过",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "道具",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "道德",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "避开",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "配色",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "醒醒",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "重新",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "重要性",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "重返",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "钢笔",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "钥匙",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "铲子",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "锁定",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "锁屏",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "镜头",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "长大",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "长度",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "门槛",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "闲于",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "防暑",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "阿道夫",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "降低",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "陪聊",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "隐晦",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "隐藏",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "雅诗兰黛",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "零售店",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "零头",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "雾化器",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "需求量",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "露营",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "青睐",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "静默",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "面具",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "面子",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "面膜",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "鞋子",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "鞋网",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "韩妆",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "韭菜",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "音刷",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "页面",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "顺便",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "顾客",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "预期",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "频率",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "风景",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "飙升",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "食品网",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "餐饮店",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "饮水机",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "饰品",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "首付",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "首选",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "首饰",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "香水",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "马甲",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "高性能",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "高手",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "高端",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "高赞",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "鱼养号",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "鱼塘",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "黄金",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "黑市",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "默认",
+      "freq": 1,
+      "docs": 1
+    },
+    {
+      "term": "龙船",
+      "freq": 1,
+      "docs": 1
+    }
+  ]
+}

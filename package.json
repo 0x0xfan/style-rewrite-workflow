@@ -6,11 +6,12 @@
   "scripts": {
     "test": "node --test engine/tests/*.test.mjs",
     "test:spoken-dna": "node --test engine/tests/*.test.mjs",
-    "lint": "node --check engine/skills/style-copywriter/scripts/validate-generated-copy.mjs && node --check engine/skills/style-copywriter/scripts/validate-generation-inputs.mjs && node --check engine/compliance/check-copy.mjs && node --check engine/variation/check-repetition.mjs && node --check engine/leakage/check-source-leakage.mjs && node --check engine/naturalness/check-ai-flavor.mjs",
+    "lint": "node --check engine/skills/style-copywriter/scripts/validate-generated-copy.mjs && node --check engine/skills/style-copywriter/scripts/validate-generation-inputs.mjs && node --check engine/compliance/check-copy.mjs && node --check engine/variation/check-repetition.mjs && node --check engine/leakage/check-source-leakage.mjs && node --check engine/naturalness/check-ai-flavor.mjs && node --check engine/naturalness/check-lexicon.mjs",
     "check:compliance": "node engine/compliance/check-copy.mjs",
     "check:repetition": "node engine/variation/check-repetition.mjs",
     "check:leakage": "node engine/leakage/check-source-leakage.mjs",
     "check:ai-flavor": "node engine/naturalness/check-ai-flavor.mjs",
+    "check:lexicon": "node engine/naturalness/check-lexicon.mjs",
     "ledger": "node engine/variation/check-repetition.mjs --ledger"
   },
   "engines": {
