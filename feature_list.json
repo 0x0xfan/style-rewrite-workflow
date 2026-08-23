@@ -141,6 +141,25 @@
       "acceptance": ["通用 scaffold 换第二个 IP 无改动跑通。", "validate/leakage/render 跑通。", "取证达到与钱十七同级。"],
       "evidence": ["ips/半佛/audits/pipeline-run-20260822.md"],
       "notes": "确定性前半段（scaffold+health+草稿）零改动跑通（ok:true、10 单元、healthy）；后半段跑不了，卡点不在换 IP 而在半佛无 1.1 JSON 契约（需人工标注→起草）。“还差什么”清单见报告第七节。"
+    },
+    {
+      "id": "F018",
+      "name": "去 AI 味：调研、诊断、规则、检查器、四稿重写",
+      "status": "done",
+      "acceptance": ["调研 12 源、22 特征、13 条可机器测。", "14 篇稿对 21 篇真人做指标对照并出诊断。", "写作规则入两份 DNA 与 intake，作为交付前置。", "检查器按 IP 分别定阈值并入 npm test。", "四稿按规则重写，六道门禁全过（AI 味 block=0 warn=0、合规 PASS、跨 IP 重合最高 0.5%、12 字泄漏 0、npm test 78/78）。"],
+      "evidence": [
+        "docs/research/de-ai-flavor-20260823.md",
+        "docs/research/ai-flavor-diagnosis-20260823.md",
+        "docs/de-ai-writing.md",
+        "engine/naturalness/check-ai-flavor.mjs",
+        "engine/naturalness/ai-flavor-rules.json",
+        "engine/tests/ai-flavor.test.mjs",
+        "ips/钱十七/outputs/闲鱼餐饮券-长视频版.md",
+        "ips/钱十七/outputs/闲鱼餐饮券-短视频版.md",
+        "ips/半佛/outputs/闲鱼餐饮券-长视频版.md",
+        "ips/半佛/outputs/闲鱼餐饮券-短视频版.md"
+      ],
+      "notes": "启发式抓表层特征（标点密度、句长 CV、悬空的、总结壳等），抓不到\"换 IP 也能原样用\"的骨架同构，这一层由写作规则 §4 与人审兜底。钱十七不门禁句长（转写口径），半佛与默认 CV≥0.7。5 个提交 d3dac6f→4352528；npm test 63→75→78。"
     }
   ]
 }

@@ -360,3 +360,14 @@ A task is done only when evidence is recorded here or the blocker is explicitly 
 - **`8f9319a`（10 篇压测）**：10 个选题各一篇 + 现有餐饮券短稿共 **11 篇**；每篇过平台合规、过 12 字来源泄漏扫描；去注释后正文两两重合最高 **1.6%**（55 对全部 ≤ 8% 上限），账本报“无跨稿重句”。`npm test` **60/60**。
 - **`accf8c9`（修重复工具两处缺陷）**：`bodyOf()` 剥 HTML 注释、同 IP 口径细分为同选题；压测批 FAIL→PASS，四稿仍 PASS；新增 3 条测试（含 10 篇 fixtures + 餐饮券短稿的条件回归锁）。`npm test` **60→63**。
 - **收尾态**：`npm test` **63/63** 通过；`feature_list.json` 通过 `json.load` 解析。钱十七 profile 仍为 `draft / review_only`；今晚提交均未推送。
+
+## 2026-08-23 上午（去 AI 味：调研→诊断→规则→检查器→四稿重写）
+
+只记录本机实际跑过的验证。今早 5 个提交（`d3dac6f`→`4352528`），`npm test` 从 63 → 75 → 78。
+
+- **`d3dac6f`（调研）**：`docs/research/de-ai-flavor-20260823.md` 汇总 12 源、22 特征（13 条可机器测），每条附一 bad/good 对；对两篇已出短稿的抽检确认清单能咬中。npm test 不变（60/60，`accf8c9` 后基线 63 但本机在此提交前后为 63）。
+- **`9cede2c`（诊断）**：`docs/research/ai-flavor-diagnosis-20260823.md` 对 14 篇稿（四稿+10 压测）与 21 篇真人（钱十七 11 + 半佛 10）按每千字标点/短语密度、句长 mean/SD/CV、悬空"的"等测算。最大偏离：破折号 13–18×、总结壳 3×；对钱十七 引号 18×/冒号 8×（列点腔）；对半佛 句长过匀过短（CV 0.5–0.6 对 0.8，mean 15 对 28）。判为无罪：口语衬字密度、三段排比、具体名词密度。IP-native 不砍：半佛一句话/连问/警句收尾，钱十七编号/排比。
+- **`401d6a0`（规则+入档）**：`docs/de-ai-writing.md` + 两份 DNA 加"AI 味负面清单" + AGENTS.md/generation-intake.md 加交付前置。`npm test` **63/63**。
+- **`49a6321`（检查器入仓）**：`engine/naturalness/check-ai-flavor.mjs` 按 IP 分别定阈值；对现有 **14 篇稿实测全 FAIL**（改前）——主要命中：破折号（钱十七短 6.5/千字）、悬空"的"、句长过匀、总结壳。新增 12 条测试，`npm test` **63→75**；`npm run check:ai-flavor` 已挂 package.json。
+- **`4352528`（四稿重写）**：内容/结构/受众/事实/长度未动，只调措辞。检查器启发式同步调优（`是…的` 判定不再算悬空）；测试锁四稿 PASS 作为回归。跑过：AI 味 四稿 **block=0 warn=0**、短稿合规 PASS、跨 IP 重合最高 **0.5%**、12 字来源泄漏 **0** 命中（钱十七两稿对源 docx、半佛两稿对 10 篇源 txt）；`npm test` **75→78**。
+- **收尾态**：`npm test` **78/78** 通过；`feature_list.json` 通过 `json.load` 解析。钱十七 profile 仍为 `draft / review_only`；今早提交均未推送。
