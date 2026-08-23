@@ -28,6 +28,8 @@
 
 - **每一次文案生成任务开始前，先问两件事，得到回答再动手：（1）短视频还是长视频？（2）用谁的风格？** 不靠猜，也不“先写一版看看”。长视频稿诱导设计照旧，可用收益数字与资源 CTA；短视频稿的诱导不删，换成悬念、反差、信息缺口、损失厌恶和互动钩子，并必须过 `npm run check:compliance`。详见 `docs/generation-intake.md` 与 `docs/platform-compliance.md`。
 
+- **生成稿交付前必须过去 AI 味自检：** 对照 `docs/de-ai-writing.md` 的规则并跑 `npm run check:ai-flavor`。电报体与悬空“的”字句零容忍；破折号、冒号、引号、总结壳、连续反问、金句收尾按 `engine/naturalness/ai-flavor-rules.json` 的对应 IP 阈值控量（IP 本人签名只降密度、不清零）；跨 IP 不得共用规矩句与结尾动作序列。依据 `docs/research/ai-flavor-diagnosis-20260823.md` 第 4 节。
+
 - The authoritative Qian17 source is now `C:\Users\admin\Downloads\钱十七-闲鱼文案拆解.docx`, SHA-256 `036B6795AC894CCE20A81A2ACCFC08284C67337B8F20E27643592D0AC2F1E290`. It contains 11 raw units / 10 independent clusters. The old `F:\dai ma\钱十七剪辑拆解\钱十七文案素材\钱十七-闲鱼文案拆解.md` is an incomplete 8-unit legacy extraction and must not be used to rebuild the profile.
 - The canonical `goofish-research` implementation for this project is `.codex/skills/goofish-research/`. It must not use random/mock products, placeholder browser success, or screenshot filenames without image files; a screenshot is verified only after decode, dimension and SHA-256 checks, and dynamic search/detail values must remain separately attributed.
 - 仓库按能力和 IP 两轴分开：`engine/` 里不得出现任何具体 IP、平台、行业或赚钱公式；`ips/<IP名>/` 里不得出现通用逻辑。新增 IP 一律使用 corpus/dna/audits/generation/outputs 五段结构。
