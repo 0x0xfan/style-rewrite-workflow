@@ -76,3 +76,4 @@ Record durable project decisions here.
 | 2026-09-04 | **恢复强制知识包**：每篇出稿前必须检索知识包，零结果或知识库不可访问则停止生成；与事实卡并列为硬输入。 | 用户 2026-09-04 明确选择恢复，否决"知识包可选"的建议。现状：`engine/knowledge/build_knowledge_pack.py` 与 `docs/知识包规范.md` 已有，但 CLI 零引用。**实施排在京东家政单稿验收之后**，避免与写稿会话同时改 `cli/`，且避免硬停挡住正在进行的单稿。 | `docs/知识包规范.md`, `docs/requirements.md` §"Future Flow" |
 | 2026-09-04 | 8 月 23 日待决第 1 项（F011 双路线方法判定）与第 2 项（样稿未核实数字）记为**关闭，被实践替代**。 | 钱十七人读 DNA 已成唯一写作基线；数字一律来自事实卡制度。用户 2026-09-04 确认。 | `docs/明早待确认清单-20260823.md`, `docs/事实卡规范.md` |
 | 2026-09-04 | 暂不推送 GitHub，等京东家政单稿验收通过后一起推。 | 用户 2026-09-04 选定。本地领先 41 提交。 | — |
+| 2026-09-04 | 冻结期例外一次：把钱十七线固定收尾句与签名句加进 `repetition-rules.contractPhrases` 与 `leakage-rules.protectedPhrases`。 | 五篇每篇同一句收尾是既定写法（细读文档结构行），门禁把它判为「≥3 篇原样复用」和「抄范文」是误判；这是白名单修正，不是阈值或门禁数量变动，符合冻结规则的误判例外。 | `docs/反馈台账.md`, `engine/variation/repetition-rules.json`, `engine/leakage/leakage-rules.json` |
