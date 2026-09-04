@@ -1,7 +1,8 @@
 // 提示词组装。把风格 DNA 全文 + 信任配方 + 去 AI 味规则 + 学结构不学词 + 受众锁 +
 // 事实卡全文 + 工单 points/assetsHint 全部拼进系统提示，并写死红线与招牌话术硬拦截名单。
-import { readFileSync } from 'node:fs';
-import { resolveStyle, locateFactCard, readRepoDoc, LENGTH_PRESETS, DEFAULT_LENGTH_PRESET } from './inputs.mjs';
+import { readFileSync, existsSync } from 'node:fs';
+import { isAbsolute, join } from 'node:path';
+import { resolveStyle, locateFactCard, readRepoDoc, REPO_ROOT, LENGTH_PRESETS, DEFAULT_LENGTH_PRESET } from './inputs.mjs';
 import { loadHints } from '../../engine/naturalness/check-lexicon.mjs';
 import { DEVICE_RULES, buildUsedDeviceList } from '../../engine/variation/check-devices.mjs';
 import { AI_FLAVOR_RULES, fillerWordsFor } from '../../engine/naturalness/check-ai-flavor.mjs';
@@ -21,6 +22,280 @@ export function loadWrittenWords(hintsObj) {
       word: w, level: (ww.block || []).includes(w) ? 'block' : 'warn', spoken: spokenFor(w)
     }))
   };
+}
+
+// ============================================================================
+// 范文段（2026-09-04 路线：提示词改范文优先）
+//
+// 为什么要有这一节（DECISIONS.md 2026-09-04 第三条）：连续三轮「没有钱十七的味」，每一轮
+// 我们都用「再加一条规则」回应，写法本身没换。模型模仿**范文**远强于遵守几十条抽象规则；
+// 语料只有 2.3 万字，整段放得下。所以本节**排在所有负面清单/规则清单之前**（紧跟任务描述），
+// 后面那些「少做什么」的清单全部后置、内容一个字不改。
+//
+// 三类范文：
+//   1. 这个 IP 的**同体裁原文**（authoritative corpus 按篇切分后，按工单选 3–5 期）；
+//   2. 用户明确说过「还可以」的参照稿（mac 微信多开，在 remotion 仓库里）；
+//   3. 用户明确说过「差不多了」的餐饮券短稿（本仓库 ips/ 下）。
+//
+// 路径全部走下面的常量 / 环境变量；任何一份读不到就跳过它并记一条中文说明，绝不抛错。
+// ============================================================================
+
+// 每份范文源都可以用环境变量顶掉路径（测试与换机用）。relative=true 表示相对仓库根。
+export const STYLE_EXAMPLE_SOURCES = {
+  钱十七: {
+    corpus: {
+      label: '钱十七权威语料（12 期整段原文）',
+      env: 'STYLE_EXAMPLE_CORPUS',
+      relative: true,
+      path: 'research-runs/2026-07-27_codex代安装_refresh/style-application-20260730/qian17-authoritative-corpus.txt'
+    },
+    approved: [
+      {
+        key: 'mac',
+        label: 'mac 微信多开长视频稿（用户原话「还可以」）',
+        env: 'STYLE_EXAMPLE_MAC_SCRIPT',
+        relative: false,
+        path: 'D:/项目仓库/remotion视频制作/ips/xianyu-fanshen/films/mac-weixin-duokai/script.txt',
+        note: '这是我们自己写、用户读完说「还可以」的一篇，是目前的达标线。'
+      },
+      {
+        key: 'canyinquan',
+        label: '闲鱼餐饮券短视频稿（用户原话「差不多了」）',
+        env: 'STYLE_EXAMPLE_CANYINQUAN',
+        relative: true,
+        path: 'ips/钱十七/outputs/闲鱼餐饮券-短视频版.md',
+        note: '短稿的达标线。文件首行的 # 标题只是文件名，不是口播。'
+      }
+    ]
+  }
+};
+
+// 语料按篇切分的边界（这三条是本文件唯一的切分口径，改了要同步改 engine/tests 的用例）：
+//   A. 编号行：整行是「3.」「4、」这类 1–2 位数字加句点/顿号（后面可跟标题），且整行不超过 TITLE_MAX 字；
+//   B. 抬头行：整行以「钱十七-」开头（语料里的分册抬头），且整行不超过 TITLE_MAX 字；
+//   C. 裸标题行：整行不超过 TITLE_MAX 字，且**紧接的下一非空行**长度 ≥ BLOB_MIN（这一期整篇挤在一行里）。
+// 三条都不命中的行一律算正文。空行忽略。一条边界都不命中时，整份语料当成一期返回。
+const EPISODE_TITLE_MAX = 120;
+// 800 字是「整期挤在一行」与「普通正文段」之间的安全带：语料里最长的正文段 285 字，
+// 最短的整期一行 1140 字，中间没有别的东西，随便怎么挪都不会切错。
+const EPISODE_BLOB_MIN = 800;
+const EPISODE_NUM_MARKER = /^\d{1,2}\s*[.、．]\s*(.*)$/;
+const EPISODE_HEAD_MARKER = /^钱十七\s*[-－—]\s*(.+)$/;
+
+export function splitCorpusEpisodes(text) {
+  const lines = String(text || '')
+    .replace(/\r\n?/g, '\n')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean);
+  if (!lines.length) return [];
+
+  const starts = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (line.length > EPISODE_TITLE_MAX) continue; // 正文行一定超长，先排掉，省得数字开头的正文被误判
+    let title = null;
+    const num = EPISODE_NUM_MARKER.exec(line);
+    const head = EPISODE_HEAD_MARKER.exec(line);
+    if (num) title = num[1].trim();
+    else if (head) title = head[1].trim();
+    else if (lines[i + 1] && lines[i + 1].length >= EPISODE_BLOB_MIN) title = line;
+    if (title !== null) starts.push({ at: i, title });
+  }
+  if (!starts.length) {
+    const body = lines.join('\n');
+    return [{ index: 0, title: '（整份语料未切分）', body, chars: body.length, opening: body.slice(0, 400) }];
+  }
+
+  const eps = [];
+  for (let k = 0; k < starts.length; k++) {
+    const from = starts[k].at + 1;
+    const to = k + 1 < starts.length ? starts[k + 1].at : lines.length;
+    const body = lines.slice(from, to).join('\n');
+    if (!body) continue;
+    const title = starts[k].title || body.slice(0, 40);
+    eps.push({ index: eps.length, title, body, chars: body.length, opening: body.slice(0, 400) });
+  }
+  return eps;
+}
+
+// 语料期号目录。probe 是这一期独有的一小段原文，用它认期比用下标认期稳（语料重排也不会错位）。
+// genre='tutorial' 是教程体，'list' 是纯清单体（39 货源 / 月份表）——清单体只在工单提示为清单型时进池。
+// preferred=true 的四期是默认池：卖虚拟·状元笔记 / 考研资料 / 减肥监督 / AI 壁纸。
+export const QIAN17_EPISODE_CATALOG = [
+  { key: 'yanghao', label: '养号｜五分钟讲透闲鱼无货源怎么养号', genre: 'tutorial', probe: '芝麻信用分共分为五个等级' },
+  { key: 'xuanpin', label: '选品｜六做六不做', genre: 'tutorial', probe: '不做莆田货' },
+  { key: 'xuni-zhuangyuan', label: '卖虚拟·状元笔记', genre: 'tutorial', probe: '状元笔记', preferred: true },
+  { key: 'jianfei', label: '减肥监督', genre: 'tutorial', probe: '减肥监督', preferred: true },
+  { key: 'kaoyan', label: '考研资料', genre: 'tutorial', probe: '拆解的虚拟产品是考研资料', preferred: true },
+  { key: 'genzong', label: '选品跟踪｜别人的产品红到发紫', genre: 'tutorial', probe: '别人的产品红到发紫' },
+  { key: 'xuni-10qi', label: '虚拟资源·十期合集', genre: 'tutorial', probe: '超级好玩的副业10期' },
+  { key: 'huoyuan39', label: '39 个神仙货源（纯清单体）', genre: 'list', probe: '39个神仙货源' },
+  { key: 'yuefen', label: '月份选品表（纯清单体）', genre: 'list', probe: '月份选品表' },
+  { key: 'ai-bizhi', label: 'AI 壁纸', genre: 'tutorial', probe: '19999张4K壁纸', preferred: true },
+  { key: 'xiaoqinglv', label: '小情侣卖虚拟一年四五十万', genre: 'tutorial', probe: '一年四五十万' }
+];
+
+// 把切出来的期对上目录（认不出来的期不进池，避免拿一段来路不明的文本当范文）。
+// 一期只能对上一条目录（先到先得），免得切分出岔子时同一段文本被当成两期塞两遍。
+export function tagCorpusEpisodes(episodes, catalog = QIAN17_EPISODE_CATALOG) {
+  const out = [];
+  const taken = new Set();
+  catalog.forEach((entry, order) => {
+    const hit = episodes.find((e) => !taken.has(e.index) && e.body.includes(entry.probe));
+    if (!hit) return;
+    taken.add(hit.index);
+    out.push({ ...hit, ...entry, catalogOrder: order });
+  });
+  return out;
+}
+
+// 工单是不是「清单型」。命中即把纯清单体两期也放进候选池。
+const LIST_TYPE_HINTS = ['清单', '盘点', '榜单', '合集', '汇总', '大全', '目录', '一次性', '整理了', '列表', '表格', '排行', '一览'];
+export function isListTypeOrder(order = {}) {
+  const hay = [order.topic || '', ...(order.points || []), order.assetsHint || ''].join(' ');
+  if (LIST_TYPE_HINTS.some((h) => hay.includes(h))) return true;
+  return /\d+\s*(个|条|种|类|款|家)/.test(hay) && /(货源|渠道|工具|网站|方法|品类|平台|资源)/.test(hay);
+}
+
+// 词重合打分用的二字切片。中文没现成分词就用二元切片，够用且不引依赖（jieba 在 python 侧，这里不调）。
+const STOP_BIGRAM = new Set([
+  '我们', '大家', '这个', '那个', '可以', '就是', '什么', '怎么', '的话', '一个',
+  '没有', '不是', '如果', '然后', '所以', '一下', '这样', '这些', '知道', '很多'
+]);
+export function orderKeywordGrams(order = {}) {
+  const raw = [order.topic || '', ...(order.points || [])].join(' ');
+  const grams = new Set();
+  for (const tok of raw.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]+/g, ' ').split(/\s+/).filter(Boolean)) {
+    if (/^[a-zA-Z0-9]+$/.test(tok)) { if (tok.length >= 2) grams.add(tok.toLowerCase()); continue; }
+    for (let i = 0; i + 2 <= tok.length; i++) {
+      const g = tok.slice(i, i + 2);
+      if (!STOP_BIGRAM.has(g)) grams.add(g);
+    }
+  }
+  return grams;
+}
+
+// 选期：候选池 = 默认四期教程体（+ 清单型工单时再加两期清单体），按工单词与各期首段的重合数排序取前 N。
+// 打平时按目录顺序，保证同一工单每次选出来的是同几期（提示词要可复现）。
+export const DEFAULT_STYLE_EXAMPLE_COUNT = 3;
+export const MAX_STYLE_EXAMPLE_COUNT = 5;
+export function styleExampleCount(env = process.env) {
+  const n = Number.parseInt((env.STYLE_EXAMPLE_COUNT || '').trim(), 10);
+  if (!Number.isFinite(n) || n < 1) return DEFAULT_STYLE_EXAMPLE_COUNT;
+  return Math.min(n, MAX_STYLE_EXAMPLE_COUNT);
+}
+
+export function pickCorpusEpisodes(tagged, order = {}, opts = {}) {
+  const count = opts.count || styleExampleCount(opts.env || process.env);
+  const listType = opts.listType === undefined ? isListTypeOrder(order) : opts.listType;
+  let pool = tagged.filter((e) => e.preferred);
+  if (listType) pool = pool.concat(tagged.filter((e) => e.genre === 'list'));
+  if (!pool.length) pool = tagged.slice();
+  const grams = orderKeywordGrams(order);
+  const scored = pool.map((e) => {
+    let score = 0;
+    for (const g of grams) if (e.opening.includes(g)) score++;
+    return { ...e, score };
+  });
+  scored.sort((a, b) => (b.score - a.score) || (a.catalogOrder - b.catalogOrder));
+  return { picked: scored.slice(0, count), listType, count, poolSize: pool.length };
+}
+
+// 范文里的 Markdown 标题行会在系统提示里变成假的一级小节，把提纲搅乱（餐饮券短稿首行就是 # 标题）。
+// 只剥掉行首的 # 号，正文一个字不动。
+export function sanitizeExampleText(text) {
+  return String(text || '').replace(/^\s{0,3}#{1,6}\s+/gm, '');
+}
+
+// 读一份范文源；读不到就返回 null（调用方记一条中文说明后跳过）。绝不抛错。
+function readExampleFile(src, env) {
+  const raw = (src.env && env[src.env] && env[src.env].trim()) || src.path;
+  const abs = src.relative && !isAbsolute(raw) ? join(REPO_ROOT, raw) : raw;
+  try {
+    if (!existsSync(abs)) return { abs, text: null };
+    const text = readFileSync(abs, 'utf8');
+    return { abs, text: text.trim() ? text : null };
+  } catch {
+    return { abs, text: null };
+  }
+}
+
+// 组装本期要注入的范文清单。返回 { examples, notes, listType }；examples 为空时不注入范文段。
+export function loadStyleExamples(order = {}, ipName, opts = {}) {
+  const env = opts.env || process.env;
+  const sources = (opts.sources || STYLE_EXAMPLE_SOURCES)[ipName];
+  const notes = [];
+  const examples = [];
+  if (!sources) {
+    return { examples, notes: [`「${ipName}」没配范文源，本期不注入范文段（只有配了原文语料的 IP 才走范文优先）。`], listType: false };
+  }
+
+  let listType = false;
+  if (sources.corpus) {
+    const { abs, text } = readExampleFile(sources.corpus, env);
+    if (!text) {
+      notes.push(`语料读不到，已跳过同体裁原文：${abs}`);
+    } else {
+      const tagged = tagCorpusEpisodes(splitCorpusEpisodes(text), opts.catalog || QIAN17_EPISODE_CATALOG);
+      if (!tagged.length) {
+        notes.push('语料切分后一期都没对上目录，已跳过同体裁原文（切分口径或语料变了，去 splitCorpusEpisodes 的注释核对）。');
+      } else {
+        const r = pickCorpusEpisodes(tagged, order, opts);
+        listType = r.listType;
+        for (const e of r.picked) {
+          examples.push({ kind: 'corpus', key: e.key, label: e.label, title: e.title, chars: e.chars, score: e.score, text: e.body });
+        }
+      }
+    }
+  }
+
+  for (const src of sources.approved || []) {
+    const { abs, text } = readExampleFile(src, env);
+    if (!text) { notes.push(`参照稿读不到，已跳过：${abs}`); continue; }
+    const body = sanitizeExampleText(text).trim();
+    examples.push({ kind: 'approved', key: src.key, label: src.label, title: src.label, chars: body.length, note: src.note || '', text: body });
+  }
+
+  return { examples, notes, listType };
+}
+
+// 范文段正文。这一节的指令文字是本轮的核心产出，改它等于改路线，改前先看 DECISIONS.md 2026-09-04。
+export function buildStyleExampleSection(examples = [], notes = [], ipName = '') {
+  if (!examples.length) {
+    return '';
+  }
+  const corpus = examples.filter((e) => e.kind === 'corpus');
+  const approved = examples.filter((e) => e.kind === 'approved');
+  const block = (e, i) => `### 范文 ${i + 1}｜${e.label}（约 ${e.chars} 字）\n${e.note ? `\n> ${e.note}\n` : ''}\n${e.text}\n`;
+  const parts = [];
+
+  parts.push(`# 范文（先读这一节 · 这是本次唯一的语感来源）
+
+下面是${ipName ? `「${ipName}」` : '这个 IP'}**本人的整段原文**，以及我们自己写过、**用户读完点过头**的两篇稿。
+后面还有几十条「少做什么」的规则清单，那些是护栏；**这一节才是你要模仿的东西**。护栏管的是别写砸，范文管的是写得像。
+
+怎么用（三条，硬要求）：
+
+1. **动笔前从头到尾通读一遍范文。** 不是扫一眼标题，是真的读完，读到你脑子里有这个人说话的调子。
+2. **每写一块之前，回头再读一遍最像那一块的那一段。** 要写开场就回去读范文的开场，要写讲步骤就回去读范文讲步骤那几段，要写收口就回去读收口。凭记忆写会越写越像通用 AI，回读一次就拉回来一次。
+3. **学的是说话方式，不是句子。** 学他怎么起头、怎么把一件事一口气说完、怎么从这一块领到下一块、怎么把价钱算成一笔钱、怎么一边讲一边催、怎么把话说死。
+
+**红线：一句都不许抄。** 与范文**连续 12 个字以上雷同即为废稿**（这道门还在，没撤）。换几个名词、把语序倒一下再交，同样算抄。范文里的具体商品、具体价格、具体渠道、具体人名一律**不许搬进本期稿子**——本期的事实只能来自后面的事实卡。范文里的招牌原句（点赞收藏那几句）也在硬拦截名单里，形制可学、原句不许出现。
+
+范文里如果出现 Markdown 标题行、文件名、编号抬头，那些是文件格式，不是口播，不要学。`);
+
+  if (corpus.length) {
+    parts.push(`## 一、${ipName || '本人'}原文（同体裁，本期挑了 ${corpus.length} 期）\n\n这几期是按本期选题跟各期开头的词重合度挑的，最像本期要写的东西。**这是他本人的原话，不是我们整理过的版本。**\n\n${corpus.map(block).join('\n')}`);
+  }
+  if (approved.length) {
+    parts.push(`## 二、用户点过头的稿（我们自己写的，达标线在这里）\n\n这两篇不是原文，是我们写的、**用户读完明确说过还行**的稿子。它们证明了这个调子是够得着的。写不出上面原文那种劲头时，至少要写到这两篇的水平。\n\n${approved.map((e, i) => block(e, corpus.length + i)).join('\n')}`);
+  }
+  if (notes.length) {
+    parts.push(`## 范文加载说明\n\n${notes.map((n) => `- ${n}`).join('\n')}`);
+  }
+  parts.push(`**读完了再往下看。** 下面开始是规则与护栏；规则和范文冲突时，先按范文的说话方式写，再回头用规则检查有没有踩线。`);
+  return parts.join('\n\n');
 }
 
 // 新系列铁律（硬规则，与 §叙述者身份 同级）。来源：用户 2026-09-03 原话
@@ -410,9 +685,21 @@ export function buildSystemPrompt(order, opts = {}) {
   const sig = buildQian17SignatureSection(style.ip);
   const signatureSection = sig ? sig + '\n\n' : '';
 
+  // 范文段（2026-09-04 路线：范文优先）。位置在任务描述 + 叙述者身份之后、**所有规则清单之前**。
+  // 任何一份范文读不到都只跳过它并记一条中文说明（notes 进 stdout 日志），绝不因此拦稿。
+  const ex = opts.styleExamples || loadStyleExamples(order, style.ip, opts);
+  const exampleSection = buildStyleExampleSection(ex.examples, ex.notes, style.ip);
+  if (!opts.quiet) {
+    for (const e of ex.examples) console.log(`      范文注入：${e.label}（约 ${e.chars} 字）`);
+    for (const n of ex.notes) console.log(`      范文说明：${n}`);
+    if (!ex.examples.length) console.log('      范文注入：无（本期未注入范文段）');
+  }
+
   const system = `你是「文案工坊」的口播稿生成器，为「${style.name}」这个 IP 按其风格 DNA 出一篇画面驱动分段稿。你产出的永远是**草稿**，最终由用户终审。
 
-# 铁律（违反任一条即为废稿）
+讲述者永远是**${NARRATOR_NAME}**本人；你学的是「${style.name}」的说话方式，绝不自称「${style.name}」。完整的叙述者身份规则见下面「叙述者身份」一节。
+
+${exampleSection ? exampleSection + '\n\n' : ''}# 铁律（违反任一条即为废稿）
 
 1. **事实只来自事实卡。** 数字、同行数据、案例、渠道、结论一律引事实卡；事实卡里没有的事实，绝不自己编、不外部补。
 2. **推算必须带链条并标「推算」。** 任何估算（如单量=想要×三到五成）要把算式说给观众听，只给区间不给点估计，拿不准取下限。
@@ -492,6 +779,9 @@ ${points}
 
   return {
     system, factCard, factCardPath: fc.path, factCardSource: fc.source, factCardDraft: !!fc.draft, style,
-    usedDevices, historyNote, historyDocCount: Object.keys(history).length
+    usedDevices, historyNote, historyDocCount: Object.keys(history).length,
+    // 范文清单（只带标题与字数，绝不把原文再传出去——报告里也只记这两样）。
+    styleExamples: ex.examples.map((e) => ({ kind: e.kind, key: e.key, label: e.label, chars: e.chars })),
+    styleExampleNotes: ex.notes
   };
 }

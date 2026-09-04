@@ -4,10 +4,13 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { resolveLlmConfig, callModel, LlmError, DEFAULT_MODEL } from '../../cli/lib/llm.mjs';
 import { normalizeSpoken, splitToSentences } from '../../cli/lib/spoken.mjs';
-import { loadOrder, locateFactCard, resolveLengthPreset, loadHistoryPool, InputError } from '../../cli/lib/inputs.mjs';
+import { loadOrder, locateFactCard, resolveLengthPreset, loadHistoryPool, InputError, REPO_ROOT } from '../../cli/lib/inputs.mjs';
 import {
   buildLengthFormSection, buildRewriteBlock, buildWritingDiscipline,
-  buildNewSeriesSection, buildSpokenLexiconSection, buildDeviceRotationSection, loadWrittenWords
+  buildNewSeriesSection, buildSpokenLexiconSection, buildDeviceRotationSection, loadWrittenWords,
+  buildSystemPrompt, splitCorpusEpisodes, tagCorpusEpisodes, pickCorpusEpisodes,
+  isListTypeOrder, loadStyleExamples, buildStyleExampleSection, sanitizeExampleText,
+  styleExampleCount, DEFAULT_STYLE_EXAMPLE_COUNT, MAX_STYLE_EXAMPLE_COUNT
 } from '../../cli/lib/prompt.mjs';
 import {
   runCompliance, complianceFeedback, checkSelfIdentity, selfIdentityFeedback,
@@ -1100,4 +1103,215 @@ test('generation-report：新系列/装置轮换/书面词/篇章层/LLM二审 �
   assert.match(md, /动作指令句占比/);
   assert.match(md, /外来 IP 口头禅/);
   assert.match(md, /写进了别的 IP 的口头禅/, '这段测试文本里有「说白了」，报告必须点出来');
+});
+
+// ============================================================================
+// 2026-09-04 提示词改范文优先（DECISIONS.md 2026-09-04 第三条）
+// 范文段：同体裁原文 3–5 期 + 用户点过头的两篇参照稿，排在所有负面清单之前。
+// ============================================================================
+
+const CORPUS_ABS = join(
+  REPO_ROOT,
+  'research-runs/2026-07-27_codex代安装_refresh/style-application-20260730/qian17-authoritative-corpus.txt'
+);
+
+test('语料按篇切分：三条边界口径各自生效，切出 11 期且期期认得出', () => {
+  const eps = splitCorpusEpisodes(readFileSync(CORPUS_ABS, 'utf8'));
+  assert.equal(eps.length, 11, '语料是 11 期；切分数变了说明边界口径或语料动过，去 splitCorpusEpisodes 注释核对');
+  for (const e of eps) {
+    assert.ok(e.chars > 500, `第 ${e.index} 期只切到 ${e.chars} 字，边界切碎了`);
+    assert.ok(e.opening.length > 0);
+  }
+  const tagged = tagCorpusEpisodes(eps);
+  assert.equal(tagged.length, 11, '11 期应全部对上目录');
+  const keys = tagged.map((t) => t.key);
+  for (const k of ['xuni-zhuangyuan', 'kaoyan', 'jianfei', 'ai-bizhi']) {
+    assert.ok(keys.includes(k), `默认四期教程体缺「${k}」`);
+  }
+  // 一期只能对上一条目录，不许同一段文本被塞两遍
+  assert.equal(new Set(tagged.map((t) => t.body)).size, tagged.length, '同一段正文被当成两期了');
+});
+
+test('语料切分：三条边界的最小样例（编号行 / 钱十七- 抬头行 / 裸标题+整期一行）', () => {
+  const blob = '甲'.repeat(1500);
+  const text = [
+    '钱十七-抬头体',
+    '这是抬头体的第一段正文。',
+    '这是抬头体的第二段正文。',
+    '3.',
+    blob,
+    '这是一个裸标题行',
+    '乙'.repeat(1500)
+  ].join('\n');
+  const eps = splitCorpusEpisodes(text);
+  assert.equal(eps.length, 3);
+  assert.equal(eps[0].title, '抬头体');
+  assert.ok(eps[0].body.includes('第二段正文'));
+  assert.equal(eps[1].body, blob);           // 纯编号行「3.」的标题回退成正文开头
+  assert.equal(eps[2].title, '这是一个裸标题行');
+  // 一条边界都不命中 → 整份当一期，绝不返回空
+  const one = splitCorpusEpisodes('全是正文，没有任何边界标记。');
+  assert.equal(one.length, 1);
+  assert.match(one[0].title, /未切分/);
+});
+
+test('选期函数：默认池是四期教程体、按词重合取前 N、N 由 STYLE_EXAMPLE_COUNT 控制', () => {
+  const tagged = tagCorpusEpisodes(splitCorpusEpisodes(readFileSync(CORPUS_ABS, 'utf8')));
+
+  // 默认 N=3，且只从四期教程体里挑（清单体不进池）
+  const r3 = pickCorpusEpisodes(tagged, { topic: '京东家政券', points: ['家政券从哪来'] }, { env: {} });
+  assert.equal(r3.picked.length, 3);
+  assert.equal(r3.listType, false);
+  for (const p of r3.picked) assert.equal(p.genre, 'tutorial');
+  for (const p of r3.picked) assert.ok(p.preferred, `非默认期「${p.key}」不该进非清单型工单的池子`);
+
+  // N 由环境变量控制，上限 5
+  assert.equal(styleExampleCount({}), DEFAULT_STYLE_EXAMPLE_COUNT);
+  assert.equal(styleExampleCount({ STYLE_EXAMPLE_COUNT: '4' }), 4);
+  assert.equal(styleExampleCount({ STYLE_EXAMPLE_COUNT: '99' }), MAX_STYLE_EXAMPLE_COUNT);
+  assert.equal(styleExampleCount({ STYLE_EXAMPLE_COUNT: '不是数字' }), DEFAULT_STYLE_EXAMPLE_COUNT);
+  const r4 = pickCorpusEpisodes(tagged, { topic: '考研资料代找', points: [] }, { env: { STYLE_EXAMPLE_COUNT: '4' } });
+  assert.equal(r4.picked.length, 4);
+
+  // 词重合真的在起作用：选题点名哪一期，那一期就排第一
+  assert.equal(pickCorpusEpisodes(tagged, { topic: '考研资料代找', points: ['资料从哪来'] }, { env: {} }).picked[0].key, 'kaoyan');
+  assert.equal(pickCorpusEpisodes(tagged, { topic: 'AI 壁纸怎么卖', points: ['壁纸从哪来'] }, { env: {} }).picked[0].key, 'ai-bizhi');
+
+  // 打平时按目录顺序，同一工单每次选出来的是同几期（提示词要可复现）
+  const a = pickCorpusEpisodes(tagged, { topic: '京东家政券', points: [] }, { env: {} }).picked.map((p) => p.key);
+  const b = pickCorpusEpisodes(tagged, { topic: '京东家政券', points: [] }, { env: {} }).picked.map((p) => p.key);
+  assert.deepEqual(a, b);
+});
+
+test('选期函数：清单型工单才放纯清单体（39 货源 / 月份表）进池', () => {
+  const tagged = tagCorpusEpisodes(splitCorpusEpisodes(readFileSync(CORPUS_ABS, 'utf8')));
+  assert.equal(isListTypeOrder({ topic: '京东家政券', points: ['怎么定价'] }), false);
+  assert.equal(isListTypeOrder({ topic: '虚拟资源货源汇总', points: [] }), true);
+  assert.equal(isListTypeOrder({ topic: '闲鱼副业', points: ['一次性整理了 39 个货源渠道'] }), true);
+
+  const r = pickCorpusEpisodes(tagged, { topic: '虚拟资源货源汇总', points: ['整理了39个渠道'] }, { env: {} });
+  assert.equal(r.listType, true);
+  assert.equal(r.picked[0].key, 'huoyuan39', '清单型工单点名货源，39 货源那期该排第一');
+  assert.ok(r.poolSize > 4, '清单型工单的候选池要比默认四期大');
+});
+
+test('范文段：注入 3 期原文 + 两篇用户点过头的稿，指令文字齐全', () => {
+  const { examples, notes } = loadStyleExamples(
+    { topic: '京东家政券', points: ['家政券从哪来'] }, '钱十七', { env: {} }
+  );
+  assert.equal(notes.length, 0, `范文源应全部读到，实际有说明：${notes.join('；')}`);
+  assert.equal(examples.filter((e) => e.kind === 'corpus').length, 3);
+  const approved = examples.filter((e) => e.kind === 'approved').map((e) => e.key);
+  assert.deepEqual(approved, ['mac', 'canyinquan'], 'mac 参照稿与餐饮券短稿两篇都要在');
+
+  const sec = buildStyleExampleSection(examples, notes, '钱十七');
+  assert.match(sec, /^# 范文/);
+  assert.match(sec, /这是本次唯一的语感来源/);
+  assert.match(sec, /动笔前从头到尾通读一遍范文/);
+  assert.match(sec, /每写一块之前，回头再读一遍最像那一块的那一段/);
+  assert.match(sec, /学的是说话方式，不是句子/);
+  assert.match(sec, /连续 12 个字以上雷同即为废稿/);
+  assert.match(sec, /一句都不许抄/);
+  assert.match(sec, /还可以/);
+  assert.match(sec, /差不多了/);
+  // 原文真的整段进去了，不是摘要
+  assert.ok(sec.length > 8000, `范文段只有 ${sec.length} 字，原文没整段放进去`);
+  // 范文里的 Markdown 标题被剥掉，不许在系统提示里冒充小节
+  assert.equal(/\n# 在闲鱼卖餐饮券/.test(sec), false, '范文里的 # 标题行要剥成普通文字');
+  assert.equal(sanitizeExampleText('## 标题\n正文一个字不动 # 号'), '标题\n正文一个字不动 # 号');
+});
+
+test('范文段：文件缺失时优雅降级——记中文说明、跳过该篇、绝不抛错', () => {
+  const sources = {
+    钱十七: {
+      corpus: { label: '语料', env: 'X_CORPUS', relative: false, path: 'D:/绝不存在的目录/corpus.txt' },
+      approved: [
+        { key: 'mac', label: 'mac 参照稿', env: 'X_MAC', relative: false, path: 'D:/绝不存在的目录/script.txt' },
+        { key: 'canyinquan', label: '餐饮券短稿', env: 'X_CYQ', relative: true, path: 'ips/钱十七/outputs/闲鱼餐饮券-短视频版.md' }
+      ]
+    }
+  };
+  let r;
+  assert.doesNotThrow(() => { r = loadStyleExamples({ topic: 'x', points: [] }, '钱十七', { env: {}, sources }); });
+  assert.equal(r.examples.length, 1, '只有还在的那篇进得去');
+  assert.equal(r.examples[0].key, 'canyinquan');
+  assert.equal(r.notes.length, 2);
+  assert.ok(r.notes.some((n) => /语料读不到/.test(n)));
+  assert.ok(r.notes.some((n) => /参照稿读不到/.test(n)));
+  // 说明会进范文段，让人一眼看出这次少喂了什么
+  assert.match(buildStyleExampleSection(r.examples, r.notes, '钱十七'), /范文加载说明/);
+
+  // 一篇都读不到 → 整节不注入（空串），而不是注入一个空壳
+  const allGone = loadStyleExamples({ topic: 'x', points: [] }, '钱十七', {
+    env: {},
+    sources: { 钱十七: { corpus: sources.钱十七.corpus, approved: [sources.钱十七.approved[0]] } }
+  });
+  assert.equal(allGone.examples.length, 0);
+  assert.equal(buildStyleExampleSection(allGone.examples, allGone.notes, '钱十七'), '');
+
+  // 没配范文源的 IP：不注入、不抛错
+  const noIp = loadStyleExamples({ topic: 'x', points: [] }, '半佛', { env: {} });
+  assert.equal(noIp.examples.length, 0);
+  assert.match(noIp.notes[0], /没配范文源/);
+});
+
+test('范文段：环境变量能顶掉路径（换机 / 测试用）', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'style-ex-'));
+  const p = join(dir, 'fake-script.txt');
+  writeFileSync(p, '这是一篇顶替进来的参照稿。', 'utf8');
+  const sources = {
+    钱十七: { approved: [{ key: 'mac', label: 'mac 参照稿', env: 'X_MAC', relative: false, path: 'D:/绝不存在的/x.txt' }] }
+  };
+  const r = loadStyleExamples({ topic: 'x', points: [] }, '钱十七', { env: { X_MAC: p }, sources });
+  assert.equal(r.examples.length, 1);
+  assert.match(r.examples[0].text, /顶替进来/);
+});
+
+test('提示词：范文段排在所有负面清单/规则清单之前（这是本轮路线的全部要点）', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'style-order-'));
+  const cardPath = join(dir, 'fact-card.md');
+  writeFileSync(cardPath, '# 事实卡 · 测试〔终版候选〕\n\n- 想要数：八百二十九\n', 'utf8');
+  const orderPath = join(dir, 'order.json');
+  writeFileSync(orderPath, JSON.stringify({
+    filmId: 'style-example-order-test', styleId: 'qian17', topic: '京东家政券',
+    points: ['家政券从哪来', '封号风险'], audience: '起步期', mode: 'topic',
+    lengthPreset: 'long', factCardPath: cardPath
+  }), 'utf8');
+
+  const built = buildSystemPrompt(loadOrder(orderPath), { quiet: true });
+  const s = built.system;
+  const at = (h) => {
+    const i = s.indexOf(h);
+    assert.ok(i >= 0, `系统提示里找不到「${h}」`);
+    return i;
+  };
+  const example = at('# 范文（先读这一节');
+  // 范文段在所有规则清单之前
+  for (const h of [
+    '# 铁律（违反任一条即为废稿）',
+    '# 学结构不学词（硬规则）',
+    '# 去 AI 味 · 配额',
+    '# 去 AI 味规则（负面清单细则',
+    '# 信任配方（必须保留的十条硬规则）',
+    '# 写作规程（基准稿共同纪律',
+    '# 新系列铁律（硬规则',
+    '# 口播词域（硬规则',
+    '# 装置轮换（硬规则',
+    '# 钱十七风格标志（硬规则',
+    '# 本期事实卡'
+  ]) {
+    assert.ok(example < at(h), `范文段必须排在「${h}」之前，现在排在后面了`);
+  }
+  // 紧跟任务描述与叙述者身份，前面不许再插别的东西
+  assert.ok(example < 400, `范文段应紧跟任务描述（现在在第 ${example} 字处）`);
+  assert.match(s.slice(0, example), /讲述者永远是\*\*圣矾\*\*本人/, '范文之前要先钉死叙述者身份');
+  // 负面清单内容一个字没改（只是后置）
+  assert.match(s, /停用装置（一次都不许写，命中即打回）/);
+  assert.match(s, /空报幕全篇最多 1 句/);
+  // 返回值只带标题与字数，绝不把原文再传出去（报告只记这两样）
+  assert.equal(built.styleExamples.length, 5);
+  for (const e of built.styleExamples) {
+    assert.ok(e.label && e.chars > 0);
+    assert.equal(e.text, undefined, '范文原文不许出现在返回的元信息里');
+  }
 });
