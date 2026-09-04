@@ -22,7 +22,7 @@
 
 **排队中的实现（京东单稿验收后立刻做，按顺序）：**
 1. 提示词范文优先（写稿会话在做京东 v3 时顺手落地）。
-2. **强制知识包接入 CLI**：`cli/lib/inputs.mjs` 定位或现建知识包（调 `engine/knowledge/build_knowledge_pack.py`，退出码 1/2 硬停）、`cli/lib/prompt.mjs` 注入知识包条目、`generation-report.md` 增"知识包使用"小节、`--dry-run` 夹具补包、`docs/requirements.md` 与 `cli/README.md` 同步。派一个 worker，独立 worktree。
+2. ~~强制知识包接入 CLI~~ **已落地 2026-09-04（`816764a`）**：`cli/lib/knowledge.mjs` 定位→现建→校验，空包/零结果/知识库不可访问硬停；提示词范文段之后注入「背景知识」并声明其中数字案例不得进稿；报告增「知识包使用」小节；`npm test` 190→215。真跑构建器验证：京东家政券 4 条命中。原计划：`cli/lib/inputs.mjs` 定位或现建知识包（调 `engine/knowledge/build_knowledge_pack.py`，退出码 1/2 硬停）、`cli/lib/prompt.mjs` 注入知识包条目、`generation-report.md` 增"知识包使用"小节、`--dry-run` 夹具补包、`docs/requirements.md` 与 `cli/README.md` 同步。派一个 worker，独立 worktree。
 3. 京东稿作范文回填其余四篇。
 
 ---
