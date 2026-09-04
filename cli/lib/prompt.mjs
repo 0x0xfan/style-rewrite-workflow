@@ -51,6 +51,14 @@ export const STYLE_EXAMPLE_SOURCES = {
     },
     approved: [
       {
+        key: 'jingdong',
+        label: '京东家政长视频稿（用户 2026-09-04 定稿）',
+        env: 'STYLE_EXAMPLE_JINGDONG_SCRIPT',
+        relative: false,
+        path: 'D:/项目仓库/remotion视频制作/ips/xianyu-fanshen/films/jingdong-jiazheng/copy/qian17/script.txt',
+        note: '用户 2026-09-04 定稿（原话「算是可以吧」）：教程文体 + 六层 + 盲测四改 + 口语还原，钱按用户本人算法（单利约十块 × 店铺单量往下折）。这是长稿的达标线。'
+      },
+      {
         key: 'mac',
         label: 'mac 微信多开长视频稿（用户原话「还可以」）',
         env: 'STYLE_EXAMPLE_MAC_SCRIPT',
@@ -272,7 +280,7 @@ export function buildStyleExampleSection(examples = [], notes = [], ipName = '')
 
   parts.push(`# 范文（先读这一节 · 这是本次唯一的语感来源）
 
-下面是${ipName ? `「${ipName}」` : '这个 IP'}**本人的整段原文**，以及我们自己写过、**用户读完点过头**的两篇稿。
+下面是${ipName ? `「${ipName}」` : '这个 IP'}**本人的整段原文**，以及我们自己写过、**用户读完点过头**的几篇稿。
 后面还有几十条「少做什么」的规则清单，那些是护栏；**这一节才是你要模仿的东西**。护栏管的是别写砸，范文管的是写得像。
 
 怎么用（三条，硬要求）：
@@ -289,7 +297,7 @@ export function buildStyleExampleSection(examples = [], notes = [], ipName = '')
     parts.push(`## 一、${ipName || '本人'}原文（同体裁，本期挑了 ${corpus.length} 期）\n\n这几期是按本期选题跟各期开头的词重合度挑的，最像本期要写的东西。**这是他本人的原话，不是我们整理过的版本。**\n\n${corpus.map(block).join('\n')}`);
   }
   if (approved.length) {
-    parts.push(`## 二、用户点过头的稿（我们自己写的，达标线在这里）\n\n这两篇不是原文，是我们写的、**用户读完明确说过还行**的稿子。它们证明了这个调子是够得着的。写不出上面原文那种劲头时，至少要写到这两篇的水平。\n\n${approved.map((e, i) => block(e, corpus.length + i)).join('\n')}`);
+    parts.push(`## 二、用户点过头的稿（我们自己写的，达标线在这里）\n\n这几篇不是原文，是我们写的、**用户读完明确说过还行或定稿**的稿子。它们证明了这个调子是够得着的。写不出上面原文那种劲头时，至少要写到这几篇的水平。\n\n${approved.map((e, i) => block(e, corpus.length + i)).join('\n')}`);
   }
   if (notes.length) {
     parts.push(`## 范文加载说明\n\n${notes.map((n) => `- ${n}`).join('\n')}`);

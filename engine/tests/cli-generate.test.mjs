@@ -1202,7 +1202,7 @@ test('范文段：注入 3 期原文 + 两篇用户点过头的稿，指令文�
   assert.equal(notes.length, 0, `范文源应全部读到，实际有说明：${notes.join('；')}`);
   assert.equal(examples.filter((e) => e.kind === 'corpus').length, 3);
   const approved = examples.filter((e) => e.kind === 'approved').map((e) => e.key);
-  assert.deepEqual(approved, ['mac', 'canyinquan'], 'mac 参照稿与餐饮券短稿两篇都要在');
+  assert.deepEqual(approved, ['jingdong', 'mac', 'canyinquan'], '京东定稿、mac 参照稿与餐饮券短稿三篇都要在（京东 2026-09-04 用户定稿后登记）');
 
   const sec = buildStyleExampleSection(examples, notes, '钱十七');
   assert.match(sec, /^# 范文/);
@@ -1309,7 +1309,7 @@ test('提示词：范文段排在所有负面清单/规则清单之前（这是�
   assert.match(s, /停用装置（一次都不许写，命中即打回）/);
   assert.match(s, /空报幕全篇最多 1 句/);
   // 返回值只带标题与字数，绝不把原文再传出去（报告只记这两样）
-  assert.equal(built.styleExamples.length, 5);
+  assert.equal(built.styleExamples.length, 6);
   for (const e of built.styleExamples) {
     assert.ok(e.label && e.chars > 0);
     assert.equal(e.text, undefined, '范文原文不许出现在返回的元信息里');
