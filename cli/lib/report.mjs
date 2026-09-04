@@ -14,7 +14,8 @@ export function renderReport(ctx) {
   const {
     order, style, factCardPath, factCardSource, factCardDraft, mode,
     aiFlavor, styleFloor, lexicon, trust, overlong, retries, consistency, model, provider, stamp,
-    preset, compliance, series, deviceReuse, written, skeleton, review
+    preset, compliance, series, deviceReuse, written, skeleton, review,
+    knowledge, knowledgeInjected
   } = ctx;
 
   const lines = [];
@@ -47,6 +48,34 @@ export function renderReport(ctx) {
   lines.push(`- 命中方式：${factCardSource}`);
   lines.push(`- 事实卡成熟度：${factCardDraft ? '⚠️ 机器草稿（未经人工抽检，终审重点核数）' : '终版候选及以上'}`);
   lines.push('- 说明：本稿事实只应引自该事实卡；请终审时抽查数字与口径（尤其单品/店铺口径）。');
+  lines.push('');
+
+  // 知识包使用（2026-09-04 恢复强制知识包 · DECISIONS.md 同日条目）。
+  // 出稿三输入之三。知识包**只负责丰富解释与方法，不负责提供事实**——终审时按这一节回查：
+  // 稿子里出现的每个数字都该在事实卡里找得到，在知识包里找到的那个不算数。
+  lines.push('## 知识包使用（三输入之三 · 只负责讲透方法，不负责提供事实）');
+  if (!knowledge) {
+    lines.push('- （无结果记录）');
+  } else {
+    const d = knowledge.relationDistribution || {};
+    lines.push(`- 包路径：\`${knowledge.path}\``);
+    lines.push(`- 命中方式：${knowledge.source}${knowledge.built ? '（本次现建）' : ''}`);
+    lines.push(`- 条目数：${knowledge.resultCount}（可用 ${knowledge.usableCount}）｜schema ${knowledge.schemaVersion}`);
+    lines.push(`- relation 分布：support ${d.support || 0} / supplement ${d.supplement || 0} / counterevidence ${d.counterevidence || 0}`);
+    lines.push(`- primary_term_hits（真正命中主题/主关键词本身的条目）：${knowledge.primaryTermHits === null ? '（该版包未记录）' : knowledge.primaryTermHits}`);
+    if (knowledge.coverageWarning) {
+      lines.push(`- ⚠️ 覆盖度告警：${knowledge.coverageWarning}`);
+    }
+    const injected = knowledgeInjected || [];
+    lines.push(`- 提示词里注入的条目（${injected.length} 条）：`);
+    if (injected.length) {
+      for (const t of injected) lines.push(`  - ${t}`);
+    } else {
+      lines.push('  - （无）');
+    }
+    lines.push('- 终审要点：知识包里的数字、案例、收益、平台结论**一律不得出现在口播稿里**；');
+    lines.push('  稿中每个数字都要能在上面那张事实卡里查到。counterevidence 条目只用于讲风险，不得当成核心方法。');
+  }
   lines.push('');
 
   // 门禁：AI 味

@@ -89,6 +89,11 @@ export function loadOrder(orderPath) {
     mode: raw.mode || 'topic',
     sourcePath: raw.rewriteSourcePath ?? raw.sourcePath,
     factCardPath: raw.factCardPath,
+    // 可选：本期知识包路径（三输入之一，见 cli/lib/knowledge.mjs）。不给时按 filmId 找现成包，
+    // 再没有就现建（调 engine/knowledge/build_knowledge_pack.py）。相对路径按工单文件所在目录解析。
+    knowledgePackPath: raw.knowledgePackPath,
+    // 可选：现建知识包时用的检索关键词（数组或逗号分隔字符串）。不给时由 topic + points 拼。
+    knowledgeKeywords: raw.knowledgeKeywords,
     // 可选：装置轮换门禁的历史稿对比池目录（字符串或数组，指向存 script.txt 的目录）。
     // 不给时由 loadHistoryPool 按 STYLE_HISTORY_DIR / --out 落点反推，见该函数注释。
     historyDir: raw.historyDir,

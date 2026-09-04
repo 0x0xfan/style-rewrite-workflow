@@ -25,6 +25,83 @@
 //   · 开场有且只有一句「我是圣矾。」自我介绍 + 口号，结尾不再自称（视频方合同 §E）；
 //   · 收口不走「打开闲鱼→搜→数第一页→评论区」那个五拍序列。
 
+// --dry-run 内置知识包夹具（2026-09-04 恢复强制知识包）。
+//
+// 为什么写死在这儿：--dry-run 的契约是「不调模型、不依赖外部环境，走完整链路」。真实路径要起
+// python 子进程去检索闲鱼知识库，联调机器上多半没有 .venv 也没有知识库；所以 dry-run 用这份
+// 内置包顶上，**一律不调 python**。它的形状照 docs/知识包规范.md 的 2.0 版写，字段齐全，
+// 保证 cli/lib/knowledge.mjs 的校验、提示词注入、报告小节三段都能真跑一遍。
+//
+// 三条关系各有一条，counterevidence 那条是给「讲坑」那一段用的（提示词里会被单独标出来）。
+export function fixtureKnowledgePack() {
+  return {
+    schema_version: '2.0',
+    generated_at: '2026-09-04T00:00:00+00:00',
+    producer: { name: 'cli/lib/fixture.mjs（--dry-run 内置夹具，未检索真实知识库）' },
+    hard_rules: [
+      '知识包中的数字、案例、收益结论不得直接写入稿件，必须先进事实卡由人确认。',
+      '反证/冲突（counterevidence）条目只能用于约束风险，不能变成核心方法。',
+      '知识用于丰富解释与方法，不得改变事实卡的数据、单位、主体、时间范围、条件与步骤含义。',
+      '知识库零结果/不可访问/无法验证实际使用时停止生成，不得空包放行。'
+    ],
+    topic: 'dry-run 夹具选题',
+    query: {
+      topic: 'dry-run 夹具选题',
+      keywords: ['夹具'],
+      expanded_queries: ['dry-run 夹具选题', '夹具'],
+      retrieval_mode: 'fixture',
+      note: '--dry-run 内置夹具，未起 python、未检索真实知识库。'
+    },
+    retrieval: {
+      result_count: 3,
+      usable_source_count: 3,
+      minimum_used_sources: 1,
+      relation_distribution: { support: 1, supplement: 1, counterevidence: 1 },
+      primary_term_hits: 1,
+      coverage_warning: null
+    },
+    minimum_used_sources: 1,
+    sources: [
+      {
+        id: 'fixture-01',
+        title: '代订类目的渠道差价是怎么来的',
+        locator: 'fixture://knowledge/channel-price-gap',
+        source: 'dry-run 夹具',
+        excerpt: '差价来自渠道身份不同：协议价、会员价、积分房各自有准入条件，能不能拿到取决于你手上是哪一种身份，而不是谁会砍价。讲这一层时先把身份说清楚，再讲价钱从哪一段省下来。',
+        match_score: 20,
+        matched_in: ['title', 'content'],
+        matched_queries: ['dry-run 夹具选题'],
+        matched_primary_term: true,
+        relation: 'support'
+      },
+      {
+        id: 'fixture-02',
+        title: '小批量先试再放量的做法',
+        locator: 'fixture://knowledge/small-pilot',
+        source: 'dry-run 夹具',
+        excerpt: '新渠道先用很小的量跑一遍完整流程，把下单、确认、售后三段都亲手走一次，再决定要不要加量。试的目的是把流程里会卡住的地方提前撞出来。',
+        match_score: 9,
+        matched_in: ['content'],
+        matched_queries: ['夹具'],
+        matched_primary_term: false,
+        relation: 'supplement'
+      },
+      {
+        id: 'fixture-03',
+        title: '冒用身份走协议价被查的教训',
+        locator: 'fixture://knowledge/identity-misuse-risk',
+        source: 'dry-run 夹具',
+        excerpt: '协议价通常绑企业身份，入住时会核验。冒用身份被查出来的结果是订单作废、人到了住不进去，纠纷全落在中间人头上。这是这一行最常见的翻车方式。',
+        match_score: 14,
+        matched_in: ['title', 'content'],
+        matched_queries: ['夹具'],
+        matched_primary_term: false,
+        relation: 'counterevidence'
+      }
+    ]
+  };
+}
+
 export function fixtureRaw() {
   return `### ① 开场·价格反差（0:00–0:40）
 

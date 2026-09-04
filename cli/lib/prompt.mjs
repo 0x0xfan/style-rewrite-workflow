@@ -306,6 +306,64 @@ export function buildStyleExampleSection(examples = [], notes = [], ipName = '')
   return parts.join('\n\n');
 }
 
+// ============================================================================
+// 背景知识段（2026-09-04 恢复强制知识包 · DECISIONS.md 同日条目）
+//
+// 位置：**范文段之后、所有规则小节之前**。理由与范文段同一条——模型读得进去的是材料，
+// 不是清单；知识包是「把原理和方法讲透」用的材料，排在护栏前面才用得上。
+//
+// 红线（docs/知识包规范.md，开篇第一句就写死）：知识包**只负责丰富解释与方法，不负责提供事实**。
+// 包里的数字、案例、收益、平台结论一个都不许进口播稿——口播稿的事实只能来自事实卡。
+// counterevidence（反证/风险）条目单独标出来，只能用来讲「坑」，不能变成核心方法。
+//
+// 传入的是 cli/lib/knowledge.mjs 校验过的包（保证非空）；没传就返回空串、整节不注入。
+// ============================================================================
+const KNOWLEDGE_RELATION_LABEL = {
+  support: '直接支撑',
+  supplement: '背景补充',
+  counterevidence: '反证 / 风险警示'
+};
+// 一次最多往提示词里塞多少条（报告的「注入了哪几条」按同一口径取，别在两处写死两个数）。
+export const KNOWLEDGE_INJECT_MAX = 12;
+export function knowledgeInjectedTitles(pack, max = KNOWLEDGE_INJECT_MAX) {
+  if (!pack || !Array.isArray(pack.sources)) return [];
+  return pack.sources.slice(0, max).map((s) => s.title || '（无标题）');
+}
+export function buildKnowledgeSection(pack, opts = {}) {
+  if (!pack || !Array.isArray(pack.sources) || !pack.sources.length) return '';
+  const max = opts.max || KNOWLEDGE_INJECT_MAX;
+  const sources = pack.sources.slice(0, max);
+  const counter = sources.filter((s) => s.relation === 'counterevidence');
+  const others = sources.filter((s) => s.relation !== 'counterevidence');
+
+  const block = (s, i) => {
+    const rel = KNOWLEDGE_RELATION_LABEL[s.relation] || '背景补充';
+    const excerpt = String(s.excerpt || '').trim();
+    const head = `**${i + 1}. ${s.title || '（无标题）'}**（${rel}）`;
+    return excerpt ? `${head}\n${excerpt}` : head;
+  };
+
+  const parts = [];
+  parts.push(`# 背景知识（这一节只用来把原理和方法讲透，一个数字都不许搬进口播稿）
+
+**先把这条硬规则记死：下面这些材料里的任何数字、案例、收益、平台结论，都不得写进口播稿。口播稿的事实只能来自后面那张事实卡。**
+
+这一节是从我们自己的知识库里按本期选题检索出来的现有经验。它的用处只有一个——**让你把「为什么这么做、具体怎么做」讲透**，别在该讲原理的地方讲空话。它**不是事实来源**：
+- 里面的价格、单量、收益、时间、平台规则，一律**不许直接引用**；要用必须先进事实卡由人确认。
+- 里面的案例和人名，不许当成「我认识的人」「我见过的店」搬进稿子。
+- 它也不许改动事实卡的数据、单位、主体、时间范围、条件与步骤含义——两边冲突时**一律以事实卡为准**。
+- 可以学的是：方法怎么拆步骤、原理怎么用大白话解释、坑出在哪一环、判断依据是什么。`);
+
+  if (others.length) {
+    parts.push(`## 一、可用来讲方法与原理的条目\n\n${others.map(block).join('\n\n')}`);
+  }
+  if (counter.length) {
+    parts.push(`## 二、反证 / 风险条目（只能用来讲「坑」，不能变成核心方法）\n\n这几条是知识库里的翻车、封号、被罚、纠纷类经验。**讲风险那一段可以参考它们的教训，但不许把它们当成本期的做法主线**，也不许把里面的处罚金额、封号时长这类数字念出来。\n\n${counter.map((s, i) => block(s, others.length + i)).join('\n\n')}`);
+  }
+  parts.push('**这一节到此为止。下面开始是规则与护栏，再往后才是本期唯一的事实凭据——事实卡。**');
+  return parts.join('\n\n');
+}
+
 // 新系列铁律（硬规则，与 §叙述者身份 同级）。来源：用户 2026-09-03 原话
 // 「不要默认之前写过，你需要重新写，你引用的都不是一个系列的」。
 export function buildNewSeriesSection(rules = DEVICE_RULES) {
@@ -703,11 +761,15 @@ export function buildSystemPrompt(order, opts = {}) {
     if (!ex.examples.length) console.log('      范文注入：无（本期未注入范文段）');
   }
 
+  // 背景知识段（2026-09-04 恢复强制知识包）。包由 generate.mjs 经 cli/lib/knowledge.mjs 校验后传进来，
+  // 位置紧跟范文段、排在所有规则清单之前；没传包时整节不注入（单测直接调本函数时走这条）。
+  const knowledgeSection = buildKnowledgeSection(opts.knowledge);
+
   const system = `你是「文案工坊」的口播稿生成器，为「${style.name}」这个 IP 按其风格 DNA 出一篇画面驱动分段稿。你产出的永远是**草稿**，最终由用户终审。
 
 讲述者永远是**${NARRATOR_NAME}**本人；你学的是「${style.name}」的说话方式，绝不自称「${style.name}」。完整的叙述者身份规则见下面「叙述者身份」一节。
 
-${exampleSection ? exampleSection + '\n\n' : ''}# 铁律（违反任一条即为废稿）
+${exampleSection ? exampleSection + '\n\n' : ''}${knowledgeSection ? knowledgeSection + '\n\n' : ''}# 铁律（违反任一条即为废稿）
 
 1. **事实只来自事实卡。** 数字、同行数据、案例、渠道、结论一律引事实卡；事实卡里没有的事实，绝不自己编、不外部补。
 2. **推算必须带链条并标「推算」。** 任何估算（如单量=想要×三到五成）要把算式说给观众听，只给区间不给点估计，拿不准取下限。

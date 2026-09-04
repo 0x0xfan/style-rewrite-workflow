@@ -99,6 +99,18 @@ node engine\skills\style-copywriter\scripts\validate-generated-copy.mjs --help
 
 正式生成必须同时具备三类独立输入：项目事实 contract、非空且可回读的知识包、指定风格档案。缺任何一类都停止，不得降级为“事实 + 风格”。
 
+**这条已在出稿 CLI 里落地为硬停（2026-09-04「恢复强制知识包」）**：`node cli/generate.mjs` 每次出稿前都会定位或现建知识包并校验非空，**零结果、知识库不可访问、空包一律非 0 退出，且在落盘之前退出（不会留下半篇稿子）**。定位顺序、停止条件表、`KNOWLEDGE_PACK_PYTHON` 与 `--dry-run` 行为见 `cli/README.md` §知识包；包的字段与退出码见 `docs/知识包规范.md`。
+
+手工构建知识包（CLI 会自动调它，这里是单独跑的写法）：
+
+```powershell
+.venv\Scripts\python.exe -X utf8 engine\knowledge\build_knowledge_pack.py build `
+    --topic "京东家政券" --keywords "家政券,京东,家政" `
+    --out research-runs\2026-08-31_41_京东家政券_重制\knowledge-pack.json
+```
+
+退出码：`0` 已产出知识包 / `1` 零结果（或 `--strict-coverage` 未过）硬停不写包 / `2` 知识库不可访问。知识包**只负责丰富解释与方法，不负责提供事实**——包里的数字、案例、收益、平台结论必须先进事实卡由人确认，不得直接写进口播稿。
+
 来源泄漏扫描（查产出稿有没有从原始来源原样搬字；与跨稿重复是两层）：
 
 ```powershell

@@ -58,6 +58,15 @@ C:\Users\admin\Downloads\钱十七-闲鱼文案拆解.docx
 
 文案生成不得跳过知识检索。知识库不可访问、零结果或无法验证实际使用时停止生成；知识中的新数字、案例、收益和平台结论必须先进入事实 contract，不能直接写入观众稿。
 
+**这一条不是可选项，且已在出稿链路上强制执行**（用户 2026-09-04 裁定「恢复强制知识包」，见 `DECISIONS.md` 同日条目）。`cli/generate.mjs` 每篇出稿前先走 `cli/lib/knowledge.mjs`：
+
+- **定位顺序**：工单 `knowledgePackPath` → `filmId` 在 `cli/film-index.json` 映射目录下的 `knowledge-pack.json` → 都没有就**现建**（调 `engine/knowledge/build_knowledge_pack.py`，检索词取工单 `knowledgeKeywords`，没给就由 `topic` + `points` 拼）。
+- **停止条件（一律非 0 退出，且在落盘之前——不留半篇稿子）**：构建器退出 `1`（零结果 / 严格覆盖度未过）、退出 `2`（知识库不可访问）、`.venv` 里没有 python、读到的包 `retrieval.result_count` 或 `usable_source_count` < 1（空包）、工单显式指定的包不存在或不是合法 json。
+- **知识包只负责丰富解释与方法，不负责提供事实**：包内容以「背景知识」段注入提示词（排在范文之后、所有规则清单之前），段首写死红线——包里的数字、案例、收益、平台结论一个都不许进口播稿，口播稿的事实只能来自事实卡；`counterevidence` 条目单列，只能用来讲风险，不得变成核心方法。
+- **可回读**：`generation-report.md` 的「知识包使用」小节记录包路径、条目数、relation 分布、`primary_term_hits` 与提示词里实际注入的条目标题，供终审逐条回查。
+
+详细的定位/停止行为表见 `cli/README.md` §知识包；包的字段与退出码见 `docs/知识包规范.md`。
+
 ## Non-Goals
 
 - 不把任意飞书链接的读取结果当作已验证；必须真实读取并记录证据。

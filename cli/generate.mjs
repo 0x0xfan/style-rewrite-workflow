@@ -14,9 +14,10 @@
 import { mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import { join, isAbsolute, resolve as pathResolve } from 'node:path';
 import { loadOrder, resolveStyle, loadHistoryPool, InputError, CollectError, LENGTH_PRESETS, DEFAULT_LENGTH_PRESET } from './lib/inputs.mjs';
-import { buildSystemPrompt } from './lib/prompt.mjs';
+import { buildSystemPrompt, knowledgeInjectedTitles } from './lib/prompt.mjs';
 import { resolveLlmConfig, describeConfig, callModel, LlmError } from './lib/llm.mjs';
-import { fixtureRaw } from './lib/fixture.mjs';
+import { fixtureRaw, fixtureKnowledgePack } from './lib/fixture.mjs';
+import { resolveKnowledgePack, validateKnowledgePack, knowledgeLogLine, KnowledgeError } from './lib/knowledge.mjs';
 import {
   parseSegments, normalizeSpoken, splitToSentences,
   renderStoryboard, renderScript, verifyConsistency, overlongSentences, SpokenError
@@ -91,12 +92,47 @@ async function main() {
   const shortForm = preset.shortForm;
 
   // 2) 组装系统提示（内部完成 风格档案定位 + 事实卡定位；事实卡不存在会在此抛错 → 非0退出）
-  log(`[1/6] 读取工单与事实卡…（filmId=${order.filmId}, 风格=${styleId}, 模式=${order.mode}）`);
+  log(`[1/6] 读取工单、事实卡与知识包…（filmId=${order.filmId}, 风格=${styleId}, 模式=${order.mode}）`);
   // 落点先算出来：装置轮换门禁要靠它反推同风格的兄弟影片当历史对比池（见 loadHistoryPool 注释）。
   const outDir = isAbsolute(args.out) ? args.out : pathResolve(process.cwd(), args.out);
   const history = loadHistoryPool(order, { outDir, styleId });
   log(`      历史稿对比池：${history.count ? `${history.count} 篇（${history.source}）` : '空 —— ' + history.source}`);
-  const built = buildSystemPrompt(order, { history: history.docs, historyNote: history.count ? '' : history.source });
+
+  // 2.5) 知识包（三输入之三，2026-09-04 恢复强制 —— 见 DECISIONS.md 同日条目）。
+  // 硬停口径：零结果 / 知识库不可访问 / 空包，一律非 0 退出，且**在落盘之前**——这里还没写任何文件。
+  // --dry-run 走内置夹具包，绝不起 python（联调机器上多半没有 .venv、也没有知识库）。
+  let knowledge;
+  try {
+    if (args.dryRun && order.knowledgePackPath) {
+      // dry-run 但工单点名了包：照读照验（读本地文件不用起 python），别让 --dry-run 变成绕开校验的后门。
+      knowledge = resolveKnowledgePack(order, { log: (m) => log(`      ${m}`) });
+    } else if (args.dryRun) {
+      const pack = fixtureKnowledgePack();
+      knowledge = {
+        ...validateKnowledgePack(pack, '（--dry-run 内置夹具包）'),
+        path: '（--dry-run 内置夹具包，未检索真实知识库）',
+        source: 'dry-run 内置夹具',
+        built: false
+      };
+    } else {
+      knowledge = resolveKnowledgePack(order, { log: (m) => log(m.startsWith('  ') ? m : `      ${m}`) });
+    }
+  } catch (e) {
+    if (e instanceof KnowledgeError) {
+      err('✗ 知识包这一关没过，已停止生成（未落任何稿件文件）：\n' + e.message);
+      process.exit(1);
+    }
+    throw e;
+  }
+  log(`      ${knowledgeLogLine(knowledge)}`);
+  if (knowledge.coverageWarning) {
+    log(`      ⚠️ 知识包覆盖度告警：${knowledge.coverageWarning}`);
+  }
+  const knowledgeInjected = knowledgeInjectedTitles(knowledge.pack);
+
+  const built = buildSystemPrompt(order, {
+    history: history.docs, historyNote: history.count ? '' : history.source, knowledge: knowledge.pack
+  });
   if (built.usedDevices.length) {
     log(`      近期已用句式：${built.usedDevices.length} 条已注入提示词（本期禁止复用）。`);
   }
@@ -352,7 +388,8 @@ async function main() {
     factCardDraft: built.factCardDraft,
     mode: order.mode, aiFlavor, styleFloor, lexicon, trust, overlong, retries, consistency,
     model: modelLabel, provider: providerLabel, stamp: nowStamp,
-    preset, compliance, series, deviceReuse, written: writtenFinal, skeleton, review
+    preset, compliance, series, deviceReuse, written: writtenFinal, skeleton, review,
+    knowledge, knowledgeInjected
   });
   writeFileSync(join(outDir, 'generation-report.md'), report, 'utf8');
 

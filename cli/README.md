@@ -30,6 +30,8 @@ node cli/generate.mjs --style <styleId> --order <工单json路径> --out <输出
   "mode": "topic",                       // "topic" | "rewrite"
   "rewriteSourcePath": "…/原稿.md",      // mode=rewrite 时必填（过渡期兼容旧名 sourcePath）
   "factCardPath": "…/事实卡-终版.md",     // 可空 · 显式指定事实卡（优先级最高）
+  "knowledgePackPath": "…/knowledge-pack.json", // 可空 · 显式指定知识包（优先级最高）
+  "knowledgeKeywords": ["家政券", "京东"], // 可空 · 现建知识包时的检索词（数组或逗号串）
   "lengthPreset": "standard"             // 可空 · "short" | "standard" | "long"，缺省 standard
 }
 ```
@@ -67,6 +69,49 @@ node cli/generate.mjs --style <styleId> --order <工单json路径> --out <输出
 - `locateFactCard` 接受「终版候选」及以上，也接受**纯机器草稿卡**（卡头标「机器组装」/ 受众或结论仍为占位/缺口）。
 - 命中机器草稿卡时，`generation-report.md` **顶部加醒目警示**「⚠️ 事实卡为机器草稿，终审时请重点核对数字」，并在「事实卡来源」标注成熟度。
 - **无论哪种卡，报告都保留「待用户终审」铁律**——机器只保证不违规/不重复/不像 AI，数字与结论一律人工抽检。
+
+## 知识包（三输入之三 · 强制，2026-09-04 恢复）
+
+出稿的三输入是「**事实卡 + 知识包 + 风格档案**」，缺一不可。2026-09-04 用户裁定**恢复强制知识包**（DECISIONS.md 同日条目）：**每篇出稿前必须检索知识包；零结果或知识库不可访问就停止生成，不得空包放行。**
+
+知识包的职责边界（`docs/知识包规范.md` 开篇第一句）：**只负责「丰富解释与方法」，不负责提供事实。** 包里的数字、案例、收益、平台结论一个都不许写进口播稿——口播稿的事实只能来自事实卡。这条红线写进提示词的「背景知识」段，并写进 `generation-report.md` 的「知识包使用」小节供终审回查。
+
+### 定位顺序（`cli/lib/knowledge.mjs` 的 `resolveKnowledgePack`）
+
+1. 工单可选字段 `knowledgePackPath`（相对工单文件解析）。**指了但文件不在 → 直接硬停**，不会偷偷改去现建。
+2. 否则按 `filmId` 查 `cli/film-index.json` 映射目录下的 `research-runs/<映射目录>/knowledge-pack.json`；映射不在时，在 `research-runs/` 下模糊找目录名含 `filmId` 且已有 `knowledge-pack.json` 的目录。
+3. 都没有 → **现建**：调 `engine/knowledge/build_knowledge_pack.py`
+
+   ```
+   <python> -X utf8 engine/knowledge/build_knowledge_pack.py build \
+       --topic <工单 topic> --keywords <工单 knowledgeKeywords 或由 topic/points 拼> \
+       --out research-runs/<映射目录 或 workshop-<日期>_<filmId>>/knowledge-pack.json
+   ```
+
+### 停止条件（全部非 0 退出，且**在落盘之前**——不会留下半篇稿子）
+
+| 情形 | 判定来源 | stderr 给的人话 |
+| --- | --- | --- |
+| 检索零结果（或严格覆盖度未过） | 构建器退出码 `1` | 「知识库对选题「X」零结果，按规则停止生成」+ 让人加 `knowledgeKeywords` 或先补知识库 |
+| 知识库不可访问 | 构建器退出码 `2` | 「知识库不可访问，按规则停止生成」+ 怎么装 `.venv` / 怎么用 `KNOWLEDGE_PACK_PYTHON` |
+| `.venv` 里没有 python（非 dry-run） | 文件不存在 | 同上，附装 venv 的三步 |
+| 读到的包是空包（`result_count` / `usable_source_count` < 1，或 `sources` 为空） | 本地校验 | 「知识包是空包，不予放行」+ 补救办法 |
+| 工单 `knowledgePackPath` 指向的文件不存在 / 不是合法 json | 本地校验 | 直接点名那个路径 |
+| 构建器报成功（退出 0）却没写出文件 | 本地校验 | 记为程序问题，请贴日志给维护者 |
+
+### 环境变量与 `--dry-run`
+
+- `KNOWLEDGE_PACK_PYTHON`：覆盖跑构建器的 python 路径。缺省用仓库根 `.venv/Scripts/python.exe`。
+- `--dry-run`：**不调 python**，用 `cli/lib/fixture.mjs` 的内置夹具包走完全链路（三种 relation 各一条，含一条 counterevidence），报告里同样出现「知识包使用」小节。
+  **但工单显式给了 `knowledgePackPath` 时，dry-run 也照读照验**（读本地文件不用起 python）——别让 `--dry-run` 变成绕开空包校验的后门。
+
+### stdout 日志
+
+```
+      知识包：<路径>（N 条，support x / supplement y / counter z）
+```
+
+现建时会先打一行「知识包：未找到，正在检索知识库…」，再打上面那行。包带 `coverage_warning` 时额外打一行覆盖度告警（不拦稿，进报告）。
 
 ## 模型密钥与第三方 API 配置
 
@@ -113,7 +158,8 @@ STYLE_LLM_PROVIDER=claude-code
 
 ## 生成流程
 
-1. 组装系统提示：风格 DNA 全文 + 信任配方十条 + 去 AI 味规则 + 学结构不学词 + 受众锁 + 事实卡全文 + 工单 points/assetsHint，并写死红线（事实只用事实卡、推算带链条、无拿货价不出利润、亲测缺口不编、收入话术禁入、招牌话术硬拦截名单）。
+0. **先过知识包这一关**（见上面「知识包」一节）：定位或现建知识包并校验非空；零结果 / 知识库不可访问 / 空包一律非 0 退出，此时还没写过任何文件。
+1. 组装系统提示：范文段 + **背景知识段（知识包，排在所有规则清单之前）** + 风格 DNA 全文 + 信任配方十条 + 去 AI 味规则 + 学结构不学词 + 受众锁 + 事实卡全文 + 工单 points/assetsHint，并写死红线（事实只用事实卡、推算带链条、无拿货价不出利润、亲测缺口不编、收入话术禁入、招牌话术硬拦截名单）。
 2. 调模型产出**画面驱动分段稿**（`### 段名 / **画面** / **口播** / **目的**`）。
 3. 本地跑 `check-ai-flavor`（对纯口播）：`block>0` 把违规项反馈给模型重写，最多重试 3 次；仍 block 则非 0 退出并附报告。**`short` 档同一循环里再跑 `check-copy` 平台合规门禁**（收益承诺/推算/暴富/绝对化/导流/赚钱词密度），与 AI 味共享这 3 次上限；两道任一未过都反馈重写，连续 3 次仍不过非 0 退出。
 4. 跑 `check-lexicon` 存报告（warn 不拦）。
@@ -130,6 +176,7 @@ STYLE_LLM_PROVIDER=claude-code
 ## 质量铁律
 
 - **三输入缺一不可，但不裸生成**：事实卡不存在时不直接放弃，而是自动采集现造一张机器底稿（第二档）；采不出合格素材（无结果/登录失效/超时）才非 0 退出。绝不无事实凭据成稿。
+- **知识包同样是硬输入**：不存在时先现建（检索知识库）；**零结果或知识库不可访问就停止生成，不得空包放行**。知识包只讲方法与原理，一个数字都不许进口播稿。
 - **产出永远是草稿态**：报告头标「待用户终审」；六道门禁只保证「不违规/不重复/不像 AI」，「可不可信、成不成交、像不像本人」由用户按 `docs/信任配方-保留清单.md` 抽检终审。
 
 ## 自动采集档（第二档）
@@ -171,6 +218,7 @@ filmId 没有事实卡时，`locateFactCard` 在抛错前自动调 `cli/lib/coll
 
 ```bash
 node --test engine/tests/cli-generate.test.mjs   # 单元测试（provider 校验、拆句、无结果/登录失效报错、film-index 幂等、卡成熟度判定）
+node --test engine/tests/knowledge-pack.test.mjs # 知识包（显式路径/映射目录命中、空包被拒、构建器退出 1/2 硬停、dry-run 夹具、提示词与报告）
 npm run lint                                       # node --check 全部文件（含 collect.mjs / baidu-demand.mjs）
 node cli/generate.mjs --style qian17 --order <工单> --out <目录> --dry-run   # 全链路离线自测（--dry-run 也会真跑自动采集，仅不调模型）
 ```
