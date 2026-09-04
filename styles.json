@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "1.0",
+  "note": "风格注册表。单写者=风格仿写项目；P013 面板只读。仅 status=定版 的条目对员工可见。",
+  "styles": [
+    {
+      "id": "qian17",
+      "name": "钱十七",
+      "version": "v1",
+      "status": "定版",
+      "description": "闲鱼口播风格：利益驱动、编号推进、确定语气、边讲边催",
+      "requiresFactCard": true,
+      "updatedAt": "2026-08-28"
+    },
+    {
+      "id": "banfo",
+      "name": "半佛",
+      "version": "v1",
+      "status": "测试",
+      "description": "商业评论风格：局外人视角、吐槽、反常识、短句反问六段式（语料词表偏小，暂不开放员工使用）",
+      "requiresFactCard": true,
+      "updatedAt": "2026-08-28"
+    }
+  ]
+}

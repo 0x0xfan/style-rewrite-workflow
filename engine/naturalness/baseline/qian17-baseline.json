@@ -1,0 +1,264 @@
+{
+ "version": "1.0",
+ "updated": "2026-09-03",
+ "what": "钱十七（圣矾）真人口播语料的 AI 味指标基线。**只存统计数，不存原文**——语料本身是版权素材，不进本仓库。",
+ "source": {
+  "path": "research-runs/2026-07-27_codex代安装_refresh/style-application-20260730/qian17-authoritative-corpus.txt",
+  "note": "该文件是 Downloads 里那份「钱十七-闲鱼文案拆解.docx」抽出的正文，仓库里已有现成文本，本次未再解 docx。",
+  "docCount": 9,
+  "docs": [
+   {
+    "name": "ep1",
+    "chars": 2059,
+    "sentences": 48
+   },
+   {
+    "name": "ep2",
+    "chars": 1935,
+    "sentences": 43
+   },
+   {
+    "name": "ep3",
+    "chars": 1718,
+    "sentences": 21
+   },
+   {
+    "name": "ep5",
+    "chars": 3338,
+    "sentences": 61
+   },
+   {
+    "name": "ep6",
+    "chars": 2606,
+    "sentences": 40
+   },
+   {
+    "name": "ep7",
+    "chars": 2766,
+    "sentences": 53
+   },
+   {
+    "name": "ep8",
+    "chars": 1763,
+    "sentences": 33
+   },
+   {
+    "name": "ep9",
+    "chars": 2172,
+    "sentences": 49
+   },
+   {
+    "name": "ep10",
+    "chars": 4573,
+    "sentences": 131
+   }
+  ],
+  "howSplit": "按标题行/纯序号行切期，只保留去空白后 >=1200 字的整期，得 9 期。"
+ },
+ "measuredBy": "engine/naturalness/check-ai-flavor.mjs（ip=钱十七, lengthPreset=long），与门禁同一份口径。改指标口径后需重跑本文件。",
+ "caveats": [
+  "口播转写稿：转写者极少打句号，按句号切句会切出伪长句（均长 51.7 字、最长 218 字）。因此 sentenceMean / maxLen / shortSentenceRatio / longSentenceRatio / sentenceCv 这五项不能直接当阈值用，只作参考。",
+  "只有下界稳定为正的指标才配了下限：本轮只有 fillerPer1000（最低一期 1.38）与 dePer1000（最低一期 25.32）满足。summaryShell / colon / question 三项都有整期为 0 的真人样本，故维持单边上限。",
+  "计数类指标（announceCount / selfLabelCount / disclaimerCount 等）是每期计数，不是每千字，跨篇幅比较时要留意。"
+ ],
+ "agg": {
+  "chars": {
+   "min": 1718,
+   "p50": 2172,
+   "mean": 2547.7778,
+   "max": 4573
+  },
+  "sentences": {
+   "min": 21,
+   "p50": 48,
+   "mean": 53.2222,
+   "max": 131
+  },
+  "dashPer1000": {
+   "min": 0,
+   "p50": 0,
+   "mean": 0.3238,
+   "max": 2.914
+  },
+  "summaryShellPer1000": {
+   "min": 0,
+   "p50": 0.4373,
+   "mean": 0.4211,
+   "max": 1.8077
+  },
+  "colonPer1000": {
+   "min": 0,
+   "p50": 0,
+   "mean": 0.4964,
+   "max": 3.8854
+  },
+  "quotePer1000": {
+   "min": 0,
+   "p50": 0,
+   "mean": 0.3238,
+   "max": 2.914
+  },
+  "questionPer1000": {
+   "min": 0,
+   "p50": 0.5168,
+   "mean": 1.0718,
+   "max": 3.9769
+  },
+  "ellipsisPer1000": {
+   "min": 0,
+   "p50": 0,
+   "mean": 0,
+   "max": 0
+  },
+  "fillerPer1000": {
+   "min": 1.3812,
+   "p50": 4.221,
+   "mean": 4.4155,
+   "max": 7.5922
+  },
+  "dePer1000": {
+   "min": 25.3223,
+   "p50": 29.626,
+   "mean": 30.3813,
+   "max": 36.5148
+  },
+  "deHeavyRatio": {
+   "min": 0.0816,
+   "p50": 0.2623,
+   "mean": 0.2241,
+   "max": 0.3333
+  },
+  "sentenceCv": {
+   "min": 0.5314,
+   "p50": 0.6145,
+   "mean": 0.6281,
+   "max": 0.845
+  },
+  "sentenceMean": {
+   "min": 33.9237,
+   "p50": 51.1887,
+   "mean": 51.7286,
+   "max": 80.8571
+  },
+  "maxLen": {
+   "min": 100,
+   "p50": 140,
+   "mean": 148.7778,
+   "max": 218
+  },
+  "shortSentenceRatio": {
+   "min": 0.05,
+   "p50": 0.102,
+   "mean": 0.0994,
+   "max": 0.1515
+  },
+  "veryShortRatio": {
+   "min": 0,
+   "p50": 0.0625,
+   "mean": 0.0515,
+   "max": 0.0909
+  },
+  "longSentenceRatio": {
+   "min": 0.4122,
+   "p50": 0.6393,
+   "mean": 0.6003,
+   "max": 0.7
+  },
+  "notButShellCount": {
+   "min": 0,
+   "p50": 0,
+   "mean": 1.2222,
+   "max": 6
+  },
+  "danglingDeCount": {
+   "min": 0,
+   "p50": 0,
+   "mean": 0.1111,
+   "max": 1
+  },
+  "consecutiveQuestions": {
+   "min": 0,
+   "p50": 1,
+   "mean": 0.8889,
+   "max": 2
+  },
+  "announceCount": {
+   "min": 0,
+   "p50": 0,
+   "mean": 0.4444,
+   "max": 1
+  },
+  "selfLabelCount": {
+   "min": 0,
+   "p50": 0,
+   "mean": 0.8889,
+   "max": 3
+  },
+  "disclaimerCount": {
+   "min": 0,
+   "p50": 0,
+   "mean": 0,
+   "max": 0
+  },
+  "disclaimerRun": {
+   "min": 0,
+   "p50": 0,
+   "mean": 0,
+   "max": 0
+  },
+  "strawmanObjection": {
+   "min": 0,
+   "p50": 0,
+   "mean": 0,
+   "max": 0
+  },
+  "fakeInanimateSubject": {
+   "min": 0,
+   "p50": 0,
+   "mean": 0,
+   "max": 0
+  },
+  "fenceSitting": {
+   "min": 0,
+   "p50": 0,
+   "mean": 0,
+   "max": 0
+  },
+  "episodeBackrefPer1000": {
+   "min": 0,
+   "p50": 0,
+   "mean": 0,
+   "max": 0
+  },
+  "perParagraphOnceCount": {
+   "min": 0,
+   "p50": 0,
+   "mean": 0,
+   "max": 0
+  },
+  "blacklistCount": {
+   "min": 0,
+   "p50": 0,
+   "mean": 0,
+   "max": 0
+  },
+  "blacklistSoftCount": {
+   "min": 0,
+   "p50": 1,
+   "mean": 0.5556,
+   "max": 1
+  }
+ },
+ "readings": {
+  "disclaimerCount": "真人 9 期一次显式免责句都没有。「没核实 / 我不报 / 你自己判断」这套话术是本项目铁律诱发的，不是这个 IP 的说话方式。",
+  "strawmanObjection": "真人 9 期全 0。",
+  "fakeInanimateSubject": "真人 9 期全 0。",
+  "fenceSitting": "真人 9 期全 0。",
+  "episodeBackrefPer1000": "真人 9 期全 0（该语料本身不带期号回指）。",
+  "announceCount": "真人每期最多 1 次报幕句，故门禁上限取 1，误伤率 0。",
+  "selfLabelCount": "真人每期最多 3 次自贴重要性标签——「第三条最要紧」这类编号推进是本人签名，不能清零，故门禁上限取 3 而不是提示词侧的 2。",
+  "fillerPer1000": "真人口头禅密度 1.38–7.59/千字，中位 4.22。我们的稿子 1.33–4.05，偏干。",
+  "dePer1000": "真人「的」字密度 25.32–36.51/千字，中位 29.63。",
+  "blacklistCount": "真人 9 期里有 1 期命中「底层逻辑」——已因此把该词从 block 降到 soft。"
+ }
+}

@@ -1,0 +1,14 @@
+{
+  "note": "filmId → 采集运行目录名 的映射表。事实卡定位用：research-runs/<dir>/事实卡-终版.md。工单可用可选字段 factCardPath 直接指定，优先级更高，届时本表不参与。新选题在此登记一行即可。 值可为字符串（目录名）或对象 {dir, frozen, reason}——frozen=true 的选题禁止生成。",
+  "updated": "2026-09-03",
+  "map": {
+    "jiudian-daiding": {
+      "dir": "2026-08-28_酒店代订_采集",
+      "frozen": true,
+      "reason": "用户风险重评中（百度侧违法定性情报），重评前不进生成"
+    },
+    "mac-weixin-duokai": "2026-08-27_mac微信多开_净采4",
+    "jiakao-ziliao": "workshop-2026-08-29_jiakao-ziliao",
+    "jianli-muban-dingzhi": "workshop-2026-08-29_jianli-muban-dingzhi"
+  }
+}

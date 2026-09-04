@@ -18,12 +18,27 @@ test('破折号超标报 block', () => {
   assert.ok(r.findings.some((f) => f.metric === 'dashPer1000' && f.level === 'block'));
 });
 
-test('总结壳被计数并（超阈值时）报 block', () => {
+test('总结壳被计数并（超阈值时）报 block；「说白了」已改归口头禅不再算壳', () => {
   const r = checkAiFlavor('说白了这就是信息差。核心是你得先搞清楚。一句话别贪便宜。');
-  assert.equal(r.metrics.summaryShellPer1000.raw, 4, '应数出 说白了/这就是/核心是/一句话 共四处');
-  // 短文本里 4 个总结壳密度极高，必然超 0.6/千字
-  assert.ok(r.metrics.summaryShellPer1000.value > 0.6);
+  assert.equal(r.metrics.summaryShellPer1000.raw, 3, '应数出 这就是/核心是/一句话 共三处（「说白了」2026-09-03 已移出总结壳表）');
+  // 2026-09-03 二改（钱十七风格流失诊断 §1.4）：「说白了」是**圣矾**的口头禅，钱十七语料 0 次。
+  // 它已经从「全 IP 共用的 fillerWords」挪到 foreignFillerWordsByIp.钱十七（外来 IP 口头禅，
+  // 由 check-style-floor 的 foreignIpFillerCount 硬拦）。默认档（本例未指定 IP）的口头禅表
+  // 只剩 10 个通用赘词，所以这里不再计入 filler；它也确实不该再被算成总结壳。
+  assert.equal(r.filler.hits['说白了'], undefined, '「说白了」2026-09-03 已移出通用 fillerWords（它是另一个 IP 的口头禅）');
+  assert.ok(!r.metrics.summaryShellPer1000.hits['说白了'], '「说白了」也不该回到总结壳表');
+  // 短文本里 3 个总结壳密度极高，必然超 0.9/千字
+  assert.ok(r.metrics.summaryShellPer1000.value > 0.9);
   assert.ok(r.findings.some((f) => f.metric === 'summaryShellPer1000' && f.level === 'block'));
+});
+
+test('总结壳词表已扩到讲义腔路标词（U6），上限同步上调到 0.9', () => {
+  const r = checkAiFlavor('由此可见这条路走不通。综上所述别碰。值得注意的是他店龄才一年。更重要的是货源。');
+  const hits = r.metrics.summaryShellPer1000.hits;
+  for (const w of ['由此可见', '综上所述', '值得注意的是', '更重要的是']) {
+    assert.ok(hits[w], `扩表后应数出讲义腔路标词「${w}」`);
+  }
+  assert.equal(r.metrics.summaryShellPer1000.max, 0.9, '词表由 10 扩到 28，上限须同步由 0.6 上调到 0.9，否则等于变相收紧');
 });
 
 test('悬空"的"命中：只收说得清出处的。', () => {
@@ -100,12 +115,15 @@ test('半佛：句长 CV 过低门禁（block）', () => {
   assert.ok(r.findings.some((f) => f.metric === 'sentenceCvMin' && f.level === 'block'), '半佛低 CV 应报 block');
 });
 
-test('钱十七：句长不门禁（CV 低也不产生 finding）', () => {
+test('钱十七：句长 CV 只 warn 不 block（2026-09-03 由 info 升 warn）', () => {
   const even = '券要说清楚来路。渠道也要盯紧。号别乱操作。挂价随手定好。售后自己扛住。价格写在明面。买家问了就答。';
   const r = checkAiFlavor(even, { ip: '钱十七' });
-  assert.equal(r.metrics.sentenceCvMin.gated, false, '钱十七不门禁句长');
-  assert.ok(r.metrics.sentenceCvMin.value < 0.7, '前提：这段 CV 确实很低');
-  assert.equal(r.findings.some((f) => f.metric === 'sentenceCvMin'), false, '钱十七不应因句长 CV 产生 finding');
+  assert.equal(r.metrics.sentenceCvMin.gated, false, '钱十七不 block 句长（口播转写标点伪影，见 measurement.caveat_qian17_length）');
+  assert.ok(r.metrics.sentenceCvMin.value < 0.5, '前提：这段 CV 确实很低');
+  const f = r.findings.find((x) => x.metric === 'sentenceCvMin');
+  assert.ok(f, '「全篇句子太齐」是用户点名的硬伤，必须让终审看见');
+  assert.equal(f.level, 'warn', '只 warn，不 block');
+  assert.equal(r.blockCount, 0, '句长不该把钱十七的稿子拦下来');
 });
 
 test('连续反问：最长串长度与门禁', () => {

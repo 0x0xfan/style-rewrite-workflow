@@ -1,15 +1,17 @@
 {
-  "version": "1.0",
-  "updated": "2026-08-23",
-  "scope": "中文口播/口语稿的 AI 味量化预检。阈值取自 docs/research/ai-flavor-diagnosis-20260823.md 的真人基线（钱十七口播转写 10 段 + 半佛原创文章 10 篇）。",
+  "version": "2.0",
+  "updated": "2026-09-03",
+  "scope": "中文口播/口语稿的 AI 味量化预检。阈值取自 docs/research/ai-flavor-diagnosis-20260823.md 的真人基线（钱十七口播转写 10 段 + 半佛原创文章 10 篇），2026-09-03 按 docs/AI味治理-外部对照.md 第 4 节补齐词表、正则组与句长节奏，并用 baseline/qian17-baseline.json（真人语料实测）给部分指标补了下限。",
   "disclaimer": "这些是保守启发式，不是审美裁决。单次出现无罪，真正暴露 AI 味的是重复/空洞/跨稿撞骨架（见诊断第 4.3 节）。通过不代表读起来一定像人，未通过也可能是命中了该 IP 本人的签名手法——block 级要清零，warn 级要人工复核。",
   "measurement": {
     "body": "正文 = 去掉标题行(#)、HTML 注释(<!-- -->)、分隔线(---)后的文本。密度均按去空白后的正文字数折算每千字。",
     "sentenceSplit": "按 。！？!? 切句，段落换行也作句界；句长为去空白去句末标点后的字符数。",
-    "caveat_qian17_length": "诊断第 0 节：钱十七真人语料是口播转写稿，转写者极少用句号，按句号切句会切出伪长句（真人 A_mean 46.97 是标点伪影）。因此句长 CV 只对半佛（书面句读正常）和未指定 IP 作门禁，钱十七只报数不门禁。"
+    "paragraph": "段 = 按空行/换行切出的块；若全篇是「一句一行」（块数 ≥3 且平均每块 <2 句），段级指标改用 8 句滑动块，避免段级指标退化成句级（见 AI味治理-外部对照 §3.7）。",
+    "caveat_qian17_length": "诊断第 0 节：钱十七真人语料是口播转写稿，转写者极少用句号，按句号切句会切出伪长句（真人 A_mean 46.97 是标点伪影）。因此句长 CV 对钱十七只到 warn 级，不 block。"
   },
+  "baselineFile": "baseline/qian17-baseline.json",
+  "summaryShellsNote": "总结壳。2026-09-03：「说白了」已移出本表、改归 fillerWords——它是圣矾/钱十七本人换气用的口头禅，不是贴帽子（AI味治理-外部对照 §6 第 1 问，主线程裁定 (a)）。词表由 10 扩到 28（U6 讲义腔路标词），max 同步由 0.6 上调到 0.9，避免「扩表＝变相收紧」。",
   "summaryShells": [
-    "说白了",
     "说人话",
     "这就是",
     "一句话",
@@ -18,8 +20,28 @@
     "核心是",
     "本质上",
     "换句话说",
-    "归根结底"
+    "归根结底",
+    "值得注意的是",
+    "需要指出的是",
+    "综上所述",
+    "总而言之",
+    "不难发现",
+    "由此可见",
+    "与此同时",
+    "在此基础上",
+    "不仅如此",
+    "更重要的是",
+    "需要强调的是",
+    "不可否认",
+    "毋庸置疑",
+    "显而易见",
+    "不言而喻",
+    "如前所述",
+    "从某种意义上说",
+    "在一定程度上",
+    "总的来说"
   ],
+  "fillerWordsNote": "口语赘词/口头禅。**2026-09-03 二改（钱十七风格流失诊断 §4.a / §3.2）：词表按 IP 分档，不再共用一张表。** 根级这一张只剩 10 个通用赘词，是「没有专属词表的 IP」的回退值。原来挂在这里的后 9 个词（说白了/最起码/等等等等/轻轻松松/卖就完了/大错特错/没有之一/思路打开/我跟你讲）出自 docs/用户文案模式研究.md §7，那是**圣矾**的口头禅——实测在钱十七 20,199 字语料里**全部 0 次**，却被 fillerPer1000.min=1.3 当成下限逼稿子写进去。它们已挪到 foreignFillerWordsByIp.钱十七，并由 engine/naturalness/check-style-floor.mjs 的 foreignIpFillerCount 反向硬拦（=0，block）。各 IP 自己的表见 profiles[ip].fillerWords。",
   "fillerWords": [
     "其实",
     "就是",
@@ -32,60 +54,569 @@
     "呢",
     "吧"
   ],
+  "foreignFillerWordsByIpNote": "「别的 IP 的口头禅」名单：写进这个 IP 的稿子里就等于换了个人在说话。目前只有钱十七档配了（拦圣矾的九个词）。真正的门禁在 check-style-floor.mjs 的 foreignIpFillerCount（=0，block），本表在此登记来源，供报告与提示词共读。",
+  "foreignFillerWordsByIp": {
+    "钱十七": [
+      "说白了",
+      "最起码",
+      "等等等等",
+      "大错特错",
+      "卖就完了",
+      "我跟你讲",
+      "轻轻松松",
+      "没有之一",
+      "思路打开"
+    ]
+  },
+  "perParagraphOnceNote": "口头禅要有，但同一段里连甩两次就是机器在凑配额。每段最多一次，超了 warn。**2026-09-03 二改：本表也按 IP 分档**（profiles[ip].perParagraphOnce），根级这张是回退值。原来只收「说白了」——那是圣矾的词，钱十七语料 0 次，对钱十七档等于一条永远不会触发的空门。",
+  "perParagraphOnce": [
+    "说白了"
+  ],
   "notButShellPattern": "不是[^，。]{1,15}[，,]?(而)?是",
   "danglingDe": {
-    "endsWith": ["的。", "的！", "的？"],
+    "endsWith": [
+      "的。",
+      "的！",
+      "的？"
+    ],
     "nounSuffixWindow": 6,
-    "nounSuffixes": ["券", "人", "钱", "东西", "事", "货", "号", "店", "稿"],
+    "nounSuffixes": [
+      "券",
+      "人",
+      "钱",
+      "东西",
+      "事",
+      "货",
+      "号",
+      "店",
+      "稿"
+    ],
     "rationale": "句末以『的』收尾且『的』前 6 字内无常见中心词后缀（券/人/钱/东西/事/货/号/店/稿）时判为悬空『的』——宾语被吞的电报体，用户两个原始吐槽之一。真人全稿仅 3-4 处且多为完整『是…的』句，此处目标清零。豁免：是…的判断句、疑问代词收尾（听谁的/凭什么的/怎么说的）、说/来+点+形容词惯用语（说两句实在的、来点实际的）。"
+  },
+  "blacklistNote": "黑名单硬拦（U10 空副词 / U11 互联网黑话 / U12 模板句式 / citation 泄漏）。block 组命中即 0 容忍；soft 组只 warn，并与 check-lexicon 的 IP 词表联查。soft 组的取舍有实测依据：复盘/沉淀/赛道/链路/触达在电商语境有真实用法；「底层逻辑」2026-09-03 从 block 降到 soft——真人语料（baseline/qian17-baseline.json 的来源）里本人用了 3 次，硬拦会误伤。",
+  "blacklist": {
+    "emptyAdverbs": [
+      "深入地",
+      "全面地",
+      "系统性地",
+      "切实地",
+      "有效地",
+      "高效地",
+      "快速地",
+      "持续地",
+      "深刻地",
+      "广泛地",
+      "充分地",
+      "积极地",
+      "稳步地",
+      "逐步地",
+      "稳健地"
+    ],
+    "jargon": [
+      "赋能",
+      "闭环",
+      "抓手",
+      "心智",
+      "对齐",
+      "拉通",
+      "破圈",
+      "出圈",
+      "破局",
+      "弯道超车",
+      "降维打击",
+      "认知升级",
+      "高维视角",
+      "护城河",
+      "生态位",
+      "价值感",
+      "仪式感",
+      "松弛感",
+      "钝感力",
+      "长期主义",
+      "躬身入局",
+      "打通壁垒",
+      "深度融合",
+      "降本增效",
+      "提质增效",
+      "双向奔赴",
+      "全方位",
+      "多维度",
+      "立体化",
+      "彰显",
+      "凸显",
+      "焕发",
+      "加持",
+      "数字化转型",
+      "顶层设计",
+      "新质生产力"
+    ],
+    "templateSentences": [
+      "随着[^。！？]{0,20}的(不断)?发展",
+      "在[^。！？]{0,20}的背景下",
+      "在当今[^。！？]{0,12}时代",
+      "作为[^。！？]{0,20}的重要(组成部分|环节|手段)",
+      "对于[^。！？]{0,20}而言[，,][^。！？]{0,20}至关重要",
+      "这不仅[^。！？]{0,20}更是",
+      "从[^。！？]{0,12}角度(来看|来说|而言)",
+      "虽然[^。！？]{0,20}但是[^。！？]{0,20}同时",
+      "既有[^。！？]{0,12}也有[^。！？]{0,12}更有",
+      "不仅[^。！？]{0,16}而且[^。！？]{0,16}更"
+    ],
+    "citationLeak": [
+      "utm_source=chatgpt\\.com",
+      "contentReference\\[oaicite",
+      "turn[0-9]*search[0-9]*"
+    ],
+    "soft": [
+      "底层逻辑",
+      "复盘",
+      "沉淀",
+      "赛道",
+      "链路",
+      "触达"
+    ]
+  },
+  "regexGroupsNote": "正则组。每组给 pattern（不带 g，运行时加）、label（报告与反馈用的人话）、how（按句计数还是按次计数）。阈值在 metricDefaults / profiles.metrics 里，指标 id 与本表 key 同名。",
+  "regexGroups": {
+    "announceCount": {
+      "label": "报幕句（先宣布我要讲 X 了）",
+      "how": "sentence",
+      "pattern": "(这里(得|有个|我先|我)|我插一句|我(得|要)(单独|提醒)你?|(两|三|几)个词先(说清楚|解释|说清|讲清)|先解释一下|我先自己认|下面(我们)?(来)?说|接下来这段|再说一句|我这儿有两?个?数|还有(一层|一条|一点)我(得|要))",
+      "exemptPattern": "(分别是|一共(有|分|是)?[一二三四五六七八九十两0-9]|[一二三四五六七八九十两0-9](个|条|步|关|样|点|层|大|件|种|路)[^。！？]{0,6}(分别|是|：|:)|[一二三四五六七八九十]、|[，,：:][^。！？]*[一二三四五六七八九十0-9][^。！？]*[，,、][^。！？]*[一二三四五六七八九十0-9])",
+      "exemptNote": "**空报幕 vs 带清单报幕**（诊断 §4.c 四-1）：被禁的是「这里得讲清楚一件事」「我插一句」——报了幕却没交付新结构；允许的是报幕的同一句里就把清单交出来（「我给你总结了四条，分别是：一、二、三、四」）。真人语料 10 处预告式报幕全是后者。命中 exemptPattern 的句子不计入本指标。",
+      "fix": "删掉**空**报幕句，直接上内容。「两个词先说清楚。TF 就是 TestFlight」→「TF 就是 TestFlight，苹果给测试版用的那条通道」。要报幕就在同一句里把清单交出来（分别是：一、二、三）。"
+    },
+    "selfLabelCount": {
+      "label": "自贴重要性标签（这段最值钱/最要紧/这才是）",
+      "how": "sentence",
+      "pattern": "(最(要紧|值钱|关键|重要)的?(是|一)?|这才是|最卡的|全篇最长|这段最(长|值钱|容易)|重点听)",
+      "exemptPattern": "(最(要紧|值钱|关键|重要)的?(是|地方就是|一关是|一步是|就是|就在)[^。！？]{8,}|(因为|所以|在于)[^。！？]{4,})",
+      "exemptNote": "**空标签 vs 标签+立刻交付**（诊断 §4.c 四-2）：被禁的是「这段最值钱」「重点听」——标了重要却没跟着给内容；允许的是「最关键的是 X，因为 Y，所以你得 Z」。真人语料 23 处自标全是后者。命中 exemptPattern 的句子不计入本指标。正则只能抓「标签后面还有没有内容」，语义上到底交没交付要靠 LLM 二审（cli/lib/review.mjs）。",
+      "fix": "删**空**标签，让内容自己重。「这段最值钱」「重点听」删掉；要标就标完立刻交付：「最关键的是第三关，因为它决定你敢不敢真做，所以先把这一关的三个数记下来。」"
+    },
+    "disclaimerCount": {
+      "label": "显式免责句（没核实/我不报/你自己判断）",
+      "how": "sentence",
+      "pattern": "(没核实|我没.{0,4}核|你自己再?核|自己去核|我不(给|算|报|编|替你)|不装懂|我答不上|我查不到|我没拿到|你自己(判断|定|去查)|不(下|给)结论)",
+      "fix": "缺口要交代，但集中在一处说完；其余位置改用真人的词级保守口径（最起码 / 按最保守的算 / 就算按……算），不要每段挂一个免责尾巴。"
+    },
+    "strawmanObjection": {
+      "label": "自己替观众提问再自己答",
+      "how": "sentence",
+      "pattern": "(有人(会想|问)|你肯定想问|你可能(觉得|会说)|到这儿你.{0,4}想问)",
+      "fix": "真有这个疑问就直接答，不用先替观众提问。"
+    },
+    "fakeInanimateSubject": {
+      "label": "假无生命主语（数据表明/按经验/业内认为）",
+      "how": "sentence",
+      "pattern": "(数据(表明|显示)|研究表明|网上(给的|的说法)|按经验|经验上|业内(认为|普遍)|市场(选择|证明)|现实(告诉|说明)|实践(发现|证明))",
+      "fix": "找到那个人，让他出现在句子里。「按经验，三成到五成」→「我前面几次都是按三到五成折的」。"
+    },
+    "fenceSitting": {
+      "label": "骑墙不表态（你自己判断/我不替你下结论）",
+      "how": "sentence",
+      "pattern": "(你自己(判断|定|去(查|核))|我不替你|不(下|给)结论|见仁见智|各有利弊|你信哪句)",
+      "fix": "保留「数字保守」，但把判断说出来。「是机会也可能是坑，我不能替你说」→「我觉得这一档是空着的，但我没试过，你要试就小批量试」。"
+    },
+    "episodeBackrefPer1000": {
+      "label": "第 X 期/第 X 计 回指",
+      "how": "match",
+      "pattern": "第[一二三四五六七八九十百零0-9]{1,4}(期|计)",
+      "fix": "回指集中在一处交代，后面直接讲新内容。（本项目另有「新系列铁律」硬阻断，见 engine/variation/device-rules.json）"
+    }
+  },
+  "metricDefaultsNote": "新增指标的默认阈值。profiles[].metrics 里同名 key 可覆盖。kind: max=只有上限；min=只有下限；range=两头都卡。minAppliesTo 限定下限只在哪些篇幅档生效（短稿自然会为 0，不该罚）。",
+  "metricDefaults": {
+    "announceCount": {
+      "max": 1,
+      "level": "block",
+      "kind": "max",
+      "rationale": "报幕句全篇 ≤1（block）。真人 9 期实测最高 1 次（baseline 的 announceCount.max=1），误伤率 0；五篇样本实测 0.7–2.0/千字，dianyingpiao 2 次即命中。真人口播是直接讲。"
+    },
+    "selfLabelCount": {
+      "max": 3,
+      "level": "block",
+      "kind": "max",
+      "rationale": "自贴重要性 ≤3（block）。提示词侧要求 ≤2（B2-7），门禁按真人基线放到 3：钱十七真人 9 期里最高一期就是 3 次（「最重要的地方就是账号」「最关键的是这种账号可以无限复制」这类是本人编号推进的签名），卡在 2 会有 11% 的真人误伤率，超过调研定的 FPR ≤10% 硬指标。见 baseline/qian17-baseline.json 的 selfLabelCount.max。"
+    },
+    "disclaimerRun": {
+      "max": 2,
+      "level": "block",
+      "kind": "max",
+      "rationale": "硬规则：不许连着三句免责。最长连续免责句串 ≤2，串到 3 句即 block（N1 hedge-stack）。主线程 2026-09-03 裁定。"
+    },
+    "disclaimerCount": {
+      "max": 2,
+      "level": "warn",
+      "kind": "max",
+      "byLengthPreset": {
+        "long": 3,
+        "standard": 2,
+        "short": 2
+      },
+      "rationale": "全篇显式免责句 ≤3（long）/≤2（standard、short）。只 warn 不 fail——信任配方规则 2/3/4 本就要求交代缺口，密度上限等回归集校准后再考虑升级。主线程 2026-09-03 裁定。"
+    },
+    "strawmanObjection": {
+      "max": 1,
+      "level": "warn",
+      "kind": "max",
+      "rationale": "每篇 ≤1。真人也用互动手法，不能清零。"
+    },
+    "fakeInanimateSubject": {
+      "max": 1,
+      "level": "warn",
+      "kind": "max",
+      "rationale": "每篇 ≤1。"
+    },
+    "fenceSitting": {
+      "max": 2,
+      "level": "warn",
+      "kind": "max",
+      "rationale": "每篇 ≤2。整篇有没有立场靠 LLM 二审（cli/lib/review.mjs），正则只抓壳。"
+    },
+    "episodeBackrefPer1000": {
+      "max": 1.5,
+      "level": "warn",
+      "kind": "max",
+      "rationale": "≤1.5/千字。实测 jiakao 9 次、dianyingpiao 6 次。"
+    },
+    "blacklistCount": {
+      "max": 0,
+      "level": "block",
+      "kind": "max",
+      "rationale": "空副词 / 互联网黑话 / 模板句式 / citation 泄漏，命中即 0 容忍。误伤近零。"
+    },
+    "blacklistSoftCount": {
+      "max": 0,
+      "level": "warn",
+      "kind": "max",
+      "rationale": "复盘/沉淀/赛道/链路/触达在电商语境可能是真实用词，只报不拦。"
+    },
+    "perParagraphOnceCount": {
+      "max": 0,
+      "level": "warn",
+      "kind": "max",
+      "rationale": "同一段里同一个口头禅出现 ≥2 次的段数。口头禅要有，但不能一段甩两次。"
+    },
+    "shortSentenceRatio": {
+      "min": 0.25,
+      "level": "warn",
+      "kind": "min",
+      "rationale": "句长 ≤15 字的句子占比下限 25%，与提示词「5–15 字短句占比 ≥25%」同口径，只 warn。**这条下限不是从真人基线算出来的**：真人语料是口播转写稿，转写者极少打句号，实测短句占比只有 0.10（baseline 的 shortSentenceRatio.p50），是标点伪影不可直接比（measurement.caveat_qian17_length）。故它是生成层配额的镜像检查，只入报告不 fail。"
+    },
+    "dePer1000": {
+      "min": 0,
+      "max": 0,
+      "level": "warn",
+      "kind": "range",
+      "rationale": "「的」字密度。中文特有指标，外部 11 个来源都没做。阈值按真人基线 ±（见各 profile 覆盖），只 warn。"
+    }
   },
   "profiles": {
     "default": {
       "label": "未指定 IP，通用档",
       "gateSentenceCV": true,
       "metrics": {
-        "dashPer1000": { "max": 0.8, "level": "block", "rationale": "破折号——：两真人 0.21-0.30/千字，我们 3.86（13-18×），最强最通用的 AI tell。上限 0.8≈真人 2.5-4×，超了基本是拿它抖包袱/接补充。" },
-        "summaryShellPer1000": { "max": 0.6, "level": "block", "rationale": "总结壳：两真人 0.37-0.43/千字，我们 1.38（3.2-3.7×）。上限 0.6≈真人 1.5×，禁把观点装壳再端出来。" },
-        "danglingDeCount": { "max": 0, "level": "block", "rationale": "悬空『的』：低频高毒，必须清零。" },
-        "consecutiveQuestions": { "max": 3, "level": "block", "rationale": "连续反问：最长连续以？收尾的句串。默认 ≤3，超过即机械轰炸（压测半佛短稿曾 6 连问）。" },
-        "notButShellCount": { "max": 1, "level": "warn", "rationale": "『不是X是Y』每篇 ≤1。真人半佛 2.30/千字属签名，但通用稿默认收紧。" },
-        "colonPer1000": { "max": 1.0, "level": "warn", "rationale": "冒号：钱十七真人仅 0.42，半佛 2.70。默认取严 1.0，防冒号金句列点腔。" },
-        "quotePer1000": { "max": 1.0, "level": "warn", "rationale": "引号：钱十七真人仅 0.30，半佛 3.48。默认取严 1.0，防吓人引号框金句。" },
-        "questionPer1000": { "max": 8.0, "level": "warn", "rationale": "问号：钱十七 0.97、半佛 5.03。默认放到 8（≈半佛 1.6×），只拦极端密集。" },
-        "ellipsisPer1000": { "max": 1.0, "level": "warn", "rationale": "省略号：三方语料全 0。给个小上限 1.0 兜底。" },
-        "sentenceCvMin": { "min": 0.7, "level": "block", "rationale": "句长变异系数下限：半佛真人 0.80（长铺陈+短猛砸交替），我们 0.53-0.62 太匀。未指定 IP 时按书面稿标准门禁 0.7。" }
+        "dashPer1000": {
+          "max": 0.8,
+          "level": "block",
+          "kind": "max",
+          "rationale": "破折号——：两真人 0.21-0.30/千字，我们 3.86（13-18×），最强最通用的 AI tell。上限 0.8≈真人 2.5-4×，超了基本是拿它抖包袱/接补充。不设下限：破折号进 TTS 是噪声，保持 0 是对的。"
+        },
+        "summaryShellPer1000": {
+          "max": 0.9,
+          "level": "block",
+          "kind": "max",
+          "rationale": "总结壳：两真人 0.37-0.43/千字，我们 1.38。词表 2026-09-03 由 10 扩到 28，上限同步 0.6→0.9。通用档不设下限（未知 IP 的口头禅表未知）。"
+        },
+        "danglingDeCount": {
+          "max": 0,
+          "level": "block",
+          "kind": "max",
+          "rationale": "悬空『的』：低频高毒，必须清零。"
+        },
+        "consecutiveQuestions": {
+          "max": 3,
+          "level": "block",
+          "kind": "max",
+          "rationale": "连续反问：最长连续以？收尾的句串。默认 ≤3，超过即机械轰炸（压测半佛短稿曾 6 连问）。"
+        },
+        "notButShellCount": {
+          "max": 1,
+          "level": "warn",
+          "kind": "max",
+          "rationale": "『不是X是Y』每篇 ≤1。真人半佛 2.30/千字属签名，但通用稿默认收紧。"
+        },
+        "colonPer1000": {
+          "max": 1.0,
+          "level": "warn",
+          "kind": "max",
+          "rationale": "冒号：钱十七真人仅 0.42，半佛 2.70。默认取严 1.0，防冒号金句列点腔。"
+        },
+        "quotePer1000": {
+          "max": 1.0,
+          "level": "warn",
+          "kind": "max",
+          "rationale": "引号：钱十七真人仅 0.30，半佛 3.48。默认取严 1.0，防吓人引号框金句。不设下限：引号是书面标记。"
+        },
+        "questionPer1000": {
+          "max": 8.0,
+          "level": "warn",
+          "kind": "max",
+          "rationale": "问号：钱十七 0.97、半佛 5.03。默认放到 8（≈半佛 1.6×），只拦极端密集。"
+        },
+        "ellipsisPer1000": {
+          "max": 1.0,
+          "level": "warn",
+          "kind": "max",
+          "rationale": "省略号：三方语料全 0。给个小上限 1.0 兜底。"
+        },
+        "fillerPer1000": {
+          "min": 0,
+          "max": 0,
+          "level": "info",
+          "kind": "range",
+          "rationale": "通用档没有 IP 口头禅基线，只报不门禁。"
+        },
+        "sentenceCvMin": {
+          "min": 0.7,
+          "level": "block",
+          "kind": "min",
+          "rationale": "句长变异系数下限：半佛真人 0.80（长铺陈+短猛砸交替），我们 0.53-0.62 太匀。未指定 IP 时按书面稿标准门禁 0.7。"
+        },
+        "dePer1000": {
+          "min": 0,
+          "max": 0,
+          "level": "info",
+          "kind": "range",
+          "rationale": "通用档无基线，只报不门禁。"
+        }
       }
     },
     "钱十七": {
       "label": "口播转写基线",
       "gateSentenceCV": false,
+      "fillerWordsNote": "**钱十七本人**的口头禅表（2026-09-03 换表，诊断 §1.4 / §4.a）。20 个词全部是从 20,199 字真人语料里实测数出来的：我们 69 次、大家 63 次、就是 56 次、这里 47 次、给大家 34 次、比如 31 次、建议 26 次、一定要 21 次、然后 19 次、接下来 16 次、咱们 15 次、其实 9 次、很简单 9 次、非常简单 4 次、对吧 3 次、吧 6 次、呢 3 次、讲透 3 次、讲通 2 次、嘛 1 次。换表前这里配的是圣矾的九个词（钱十七语料全 0 次），等于拿下限门逼稿子写进另一个人的口音。",
+      "fillerWords": [
+        "其实",
+        "就是",
+        "然后",
+        "对吧",
+        "嘛",
+        "呢",
+        "吧",
+        "给大家",
+        "一定要",
+        "我们",
+        "大家",
+        "咱们",
+        "比如",
+        "建议",
+        "很简单",
+        "非常简单",
+        "讲透",
+        "讲通",
+        "接下来",
+        "这里"
+      ],
+      "perParagraphOnceNote": "换表后这三个是钱十七密度最高又最容易被机械堆的签名词。真人 9 期实测「一段两甩」命中数见下方 calibration。",
+      "perParagraphOnce": [
+        "给大家",
+        "一定要",
+        "很简单"
+      ],
       "metrics": {
-        "dashPer1000": { "max": 0.8, "level": "block", "rationale": "真人 0.30/千字。上限 0.8≈2.6×。" },
-        "summaryShellPer1000": { "max": 0.6, "level": "block", "rationale": "真人 0.43/千字。上限 0.6≈1.4×。" },
-        "danglingDeCount": { "max": 0, "level": "block", "rationale": "钱十七仿写与压测稿是悬空『的』重灾区（『只收说得清出处的』），清零。" },
-        "consecutiveQuestions": { "max": 3, "level": "block", "rationale": "真人问号密度极低（0.97/千字），不靠连续反问推进。" },
-        "notButShellCount": { "max": 1, "level": "warn", "rationale": "真人 0.40/千字，很少用否定对照壳。每篇 ≤1。" },
-        "colonPer1000": { "max": 1.0, "level": "warn", "rationale": "真人 0.42/千字，我们 8×。真人口播是连着说，不加『规矩：xxx』冒号列点。上限 1.0≈2.4×。" },
-        "quotePer1000": { "max": 1.0, "level": "warn", "rationale": "真人 0.30/千字，我们 18×。上限 1.0≈3×，防引号框金句。" },
-        "questionPer1000": { "max": 2.0, "level": "warn", "rationale": "真人 0.97/千字。上限 2.0≈2×，钱十七不靠反问。" },
-        "ellipsisPer1000": { "max": 1.0, "level": "warn", "rationale": "真人 0。给小上限兜底。" },
-        "sentenceCvMin": { "min": 0.6, "level": "info", "rationale": "只报不门禁：口播转写标点伪影使句长不可直接比（诊断第 0 节）。真人参考 CV 0.60。" }
+        "dashPer1000": {
+          "max": 0.8,
+          "level": "block",
+          "kind": "max",
+          "rationale": "真人 0.30/千字。上限 0.8≈2.6×。"
+        },
+        "summaryShellPer1000": {
+          "max": 0.9,
+          "level": "block",
+          "kind": "max",
+          "rationale": "上限 block：词表 2026-09-03 扩到 28 后由 0.6 上调到 0.9（真人 0.42/千字）。**不补下限**：真人 9 期里有整期一个总结壳都不用（baseline 的 summaryShellPer1000.min=0），任何正下限都会误伤。"
+        },
+        "danglingDeCount": {
+          "max": 0,
+          "level": "block",
+          "kind": "max",
+          "rationale": "钱十七仿写与压测稿是悬空『的』重灾区（『只收说得清出处的』），清零。"
+        },
+        "consecutiveQuestions": {
+          "max": 3,
+          "level": "block",
+          "kind": "max",
+          "rationale": "真人问号密度极低（0.97/千字），不靠连续反问推进。"
+        },
+        "notButShellCount": {
+          "max": 1,
+          "level": "warn",
+          "kind": "max",
+          "rationale": "真人 0.40/千字，很少用否定对照壳。每篇 ≤1。"
+        },
+        "colonPer1000": {
+          "max": 1.0,
+          "level": "warn",
+          "kind": "max",
+          "rationale": "真人 0.50/千字但中位数是 0（半数期一个冒号都没有），故只保留上限 1.0，不补下限。"
+        },
+        "quotePer1000": {
+          "max": 1.0,
+          "level": "warn",
+          "kind": "max",
+          "rationale": "真人 0.30/千字，我们 18×。上限 1.0≈3×，防引号框金句。不设下限。"
+        },
+        "questionPer1000": {
+          "max": 2.0,
+          "level": "warn",
+          "kind": "max",
+          "rationale": "真人 1.07/千字，但有整期为 0（baseline 的 questionPer1000.min=0），故只保留上限，不补下限。"
+        },
+        "ellipsisPer1000": {
+          "max": 1.0,
+          "level": "warn",
+          "kind": "max",
+          "rationale": "真人 0。给小上限兜底。"
+        },
+        "fillerPer1000": {
+          "min": 4.0,
+          "max": 55.0,
+          "level": "warn",
+          "kind": "range",
+          "rationale": "**2026-09-03 换表后重算**（诊断 §4.a）。旧值 min=1.3 / max=15 配的是圣矾词表，作废。新表（钱十七本人 20 词）实测：真人 9 期 8.29–27.68/千字（中位 19.95），mac 参照稿 4.88，人工校准通过稿 9.33；五篇新稿 1.17–3.12。下限取 4.0——低于全部 11 份已认可文本（含最低的 mac 参照稿 4.88），误伤率 0，五篇新稿全部报出，拦「一个口头禅都不用比真人还干净」。上限 55 ≈ 真人最高 27.68 的 2×，拦机械堆口头禅凑配额。"
+        },
+        "sentenceCvMin": {
+          "min": 0.6,
+          "level": "warn",
+          "kind": "min",
+          "rationale": "2026-09-03 由 0.5 提到 0.6（诊断 §4.a）：真人 CV 中位 0.6145、均值 0.6281，0.5 太松——五篇新稿全都能过。仍只 warn 不 block：口播转写标点伪影使句长不可直接比（measurement.caveat_qian17_length），但「全篇整齐句」是用户点名的硬伤，必须让终审看见。"
+        },
+        "longSentenceRatio": {
+          "min": 0.3,
+          "level": "warn",
+          "kind": "min",
+          "rationale": "**2026-09-03 新增**（诊断 §4.a / §2 第 4 名）。>35 字长句占比 ≥30%。原来只卡短句下限、长句那半没有任何检测，模型只优化被测的那一半，五篇新稿长句占比 12.6%（语料 60.7%、mac 参照 50.7%，按 ≥30 字口径），全篇 15–20 字平推——这是「听着不像他」最直接的一层。**和 shortSentenceRatio 同性质**：这个 0.30 是生成层配额的镜像检查，不是从干净基线算出来的（转写标点伪影），故只 warn 不 fail，也不参与「误伤率 0」的承诺；真正带误伤校准的长句下限在 engine/naturalness/style-floor-rules.json 的 longSentenceRatio。"
+        },
+        "shortSentenceRatio": {
+          "min": 0.25,
+          "level": "warn",
+          "kind": "min",
+          "rationale": "≤15 字短句占比 ≥25%，与提示词配额同口径。真人基线（0.10）是转写标点伪影，不能直接当下限，故此值来自生成层配额，只 warn 不 fail。"
+        },
+        "dePer1000": {
+          "min": 18.0,
+          "max": 45.0,
+          "level": "warn",
+          "kind": "range",
+          "rationale": "「的」字密度区间，中文特有指标（外部 11 个来源都没做）。真人 9 期实测 25.32–36.51/千字，取 18–45 留约 ±25% 余量，误伤率 0。上限拦欧化定语堆叠，下限拦刻意躲「的」躲成电报体。只 warn。"
+        },
+        "announceCount": {
+          "max": 4,
+          "level": "warn",
+          "kind": "max",
+          "rationale": "**2026-09-03 由 1/block 放到 4/warn**（诊断 §3 R1 判定「误杀（重度）」）。旧阈值是拿**只匹配我们自己 AI 腔的正则**在语料上量出来的（0.50 次/2500 字，确实 ≤1）；但用**钱十七真实的预告报幕形**跑同一份语料是 1.24 次/2500 字、共 10 处、单期最高 4 处，包括他最标志性的开场（「我会用三个视频给大家讲清楚怎么起步、怎么提升选品、怎么处理售后」「这里给大家总结了四大核心维度，分别是：一、芝麻信用……」）。五篇新稿因此全 0。正则不动（它抓的确实是 AI 腔），改的是两件事：上限放到 4 且降为 warn；**带清单/带数字的报幕由 exemptPattern 豁免不计**（空报幕 vs 带清单报幕，见 regexGroups.announceCount.exemptNote）。default 档仍是 1/block。"
+        },
+        "selfLabelCount": {
+          "max": 6,
+          "level": "block",
+          "kind": "max",
+          "rationale": "**2026-09-03 由 3 放到 6**（诊断 §3 R2 判定「误杀（重度）」）。门禁正则在语料上 0.99 次/2500 字，但**钱十七的真实自标形**（最重要/最关键/核心/要点/重点提醒/一定要注意/注意听/非常重要）是 2.85 次/2500 字、共 23 处、单期最高 9 处、中位 3 处。旧的 ≤3 加上提示词侧的 ≤2，联合效果是把稿子逼到 0（五篇新稿全 0）。取 6 是保守值（要零误伤得取 9）。仍维持 block：它同时是一个真实 AI tell（「这段最值钱」）——**空标签 vs 标签+立刻交付**的切法见 regexGroups.selfLabelCount.exemptNote，语义上到底交没交付要靠 LLM 二审。下限侧由 check-style-floor 的 signatureFrameCount 接管。"
+        }
       }
     },
     "半佛": {
       "label": "书面文章基线",
       "gateSentenceCV": true,
+      "fillerWordsNote": "**未校准。** 2026-09-03 词表按 IP 分档时，半佛档没有实测语料支撑，暂用根级那 10 个通用赘词。诊断 §6.2 明写这是本轮未做的事：那张共用表对半佛是不是也配错了，本轮没验。半佛档的 fillerPer1000 是 info 级（只报不门禁），所以这张未校准的表目前不会拦任何稿；要给半佛配下限，必须先按他的真人语料重测。",
+      "fillerWords": [
+        "其实",
+        "就是",
+        "然后",
+        "怎么说呢",
+        "对吧",
+        "诶",
+        "啊",
+        "嘛",
+        "呢",
+        "吧"
+      ],
       "metrics": {
-        "dashPer1000": { "max": 0.8, "level": "block", "rationale": "真人 0.21/千字，全稿几乎不用破折号。上限 0.8≈3.8×。" },
-        "summaryShellPer1000": { "max": 0.6, "level": "block", "rationale": "真人 0.37/千字。上限 0.6≈1.6×。" },
-        "danglingDeCount": { "max": 0, "level": "block", "rationale": "悬空『的』清零。" },
-        "consecutiveQuestions": { "max": 4, "level": "block", "rationale": "半佛靠反问推进（真人 5.03/千字），会连问但夹陈述喘气。上限 4，拦 6 连问式轰炸。" },
-        "notButShellCount": { "max": 2, "level": "warn", "rationale": "『不是X是Y』是半佛签名（真人 2.30/千字），放宽到每篇 ≤2，只拦滥用。" },
-        "colonPer1000": { "max": 3.5, "level": "warn", "rationale": "真人 2.70/千字，本就用冒号。上限 3.5≈1.3×。" },
-        "quotePer1000": { "max": 4.5, "level": "warn", "rationale": "真人 3.48/千字，内心独白偶用引号。上限 4.5≈1.3×。" },
-        "questionPer1000": { "max": 8.0, "level": "warn", "rationale": "真人 5.03/千字。上限 8≈1.6×，半佛短稿曾到 19.65（4×）。" },
-        "ellipsisPer1000": { "max": 1.0, "level": "warn", "rationale": "真人 0。给小上限兜底。" },
-        "sentenceCvMin": { "min": 0.7, "level": "block", "rationale": "真人 CV 0.80、均长 28 字，长短句剧烈交错；我们摊平成清一色中短句（CV 0.53-0.62）。门禁下限 0.7——这是用户投诉『句子太齐』的量化根源。" }
+        "dashPer1000": {
+          "max": 0.8,
+          "level": "block",
+          "kind": "max",
+          "rationale": "真人 0.21/千字，全稿几乎不用破折号。上限 0.8≈3.8×。"
+        },
+        "summaryShellPer1000": {
+          "max": 0.9,
+          "level": "block",
+          "kind": "max",
+          "rationale": "真人 0.37/千字。词表扩到 28 后上限由 0.6 上调到 0.9。"
+        },
+        "danglingDeCount": {
+          "max": 0,
+          "level": "block",
+          "kind": "max",
+          "rationale": "悬空『的』清零。"
+        },
+        "consecutiveQuestions": {
+          "max": 4,
+          "level": "block",
+          "kind": "max",
+          "rationale": "半佛靠反问推进（真人 5.03/千字），会连问但夹陈述喘气。上限 4，拦 6 连问式轰炸。"
+        },
+        "notButShellCount": {
+          "max": 2,
+          "level": "warn",
+          "kind": "max",
+          "rationale": "『不是X是Y』是半佛签名（真人 2.30/千字），放宽到每篇 ≤2，只拦滥用。"
+        },
+        "colonPer1000": {
+          "max": 3.5,
+          "level": "warn",
+          "kind": "max",
+          "rationale": "真人 2.70/千字，本就用冒号。上限 3.5≈1.3×。"
+        },
+        "quotePer1000": {
+          "max": 4.5,
+          "level": "warn",
+          "kind": "max",
+          "rationale": "真人 3.48/千字，内心独白偶用引号。上限 4.5≈1.3×。"
+        },
+        "questionPer1000": {
+          "max": 8.0,
+          "level": "warn",
+          "kind": "max",
+          "rationale": "真人 5.03/千字。上限 8≈1.6×，半佛短稿曾到 19.65（4×）。"
+        },
+        "ellipsisPer1000": {
+          "max": 1.0,
+          "level": "warn",
+          "kind": "max",
+          "rationale": "真人 0。给小上限兜底。"
+        },
+        "fillerPer1000": {
+          "min": 0,
+          "max": 0,
+          "level": "info",
+          "kind": "range",
+          "rationale": "半佛是书面稿，口头禅基线未测，只报不门禁。"
+        },
+        "sentenceCvMin": {
+          "min": 0.7,
+          "level": "block",
+          "kind": "min",
+          "rationale": "真人 CV 0.80、均长 28 字，长短句剧烈交错；我们摊平成清一色中短句（CV 0.53-0.62）。门禁下限 0.7——这是用户投诉『句子太齐』的量化根源。"
+        },
+        "dePer1000": {
+          "min": 0,
+          "max": 0,
+          "level": "info",
+          "kind": "range",
+          "rationale": "半佛无「的」字基线，只报不门禁。"
+        }
       }
     }
   }
