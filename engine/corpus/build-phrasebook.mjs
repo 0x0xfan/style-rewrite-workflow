@@ -3,26 +3,35 @@
  * build-phrasebook.mjs — mechanical recurring-phrase extractor for an IP corpus.
  *
  * DATA TOOL ONLY. Not wired into npm scripts, tests or gates. Run by hand:
- *   node engine/corpus/build-phrasebook.mjs
- *   DUMP=1 node engine/corpus/build-phrasebook.mjs      # print candidate grams, write nothing
+ *   node engine/corpus/build-phrasebook.mjs                  # 钱十七 (default)
+ *   node engine/corpus/build-phrasebook.mjs --ip=半佛         # ips/半佛/corpus/phrasebook.config.json
+ *   node engine/corpus/build-phrasebook.mjs --config=<path>   # any config file
+ *   DUMP=1 node engine/corpus/build-phrasebook.mjs --ip=半佛  # print candidate grams, write nothing
+ *
+ * Every IP-specific knob lives in `ips/<ip>/corpus/phrasebook.config.json`
+ * (corpus source, unit boundaries, self-reference masks, keyword tables,
+ * thresholds, comparison rows, output paths). The default with no arguments is
+ * `--ip=钱十七`, which reproduces the pre-config behaviour byte for byte.
  *
  * What it does (see METHOD below for the exact knobs):
- *   1. slices the corpus into episodes by 1-indexed line ranges
- *   2. masks self-reference / brand spans (SELF_REF) so no phrase can span them
+ *   1. slices the corpus into units — by 1-indexed line ranges (`source.mode:
+ *      "line_ranges"`) or one file per unit with header/footer stripping and
+ *      PDF line-wrap re-joining (`source.mode: "files"`)
+ *   2. masks self-reference / brand spans (self_ref) so no phrase can span them
  *   3. takes character n-grams n=2..8 over Chinese-only runs
- *   4. keeps grams covering >= MIN_EPISODES distinct episodes (catchphrase-shaped
- *      grams get a lower bar; bigrams need BIGRAM_MIN_EPISODES + the allow list)
- *   5. grows each survivor left/right while its episode coverage holds, so a
+ *   4. keeps grams covering >= min_episodes distinct units (catchphrase-shaped
+ *      grams get a lower bar; bigrams need bigram_min_episodes + the allow list)
+ *   5. grows each survivor left/right while its unit coverage holds, so a
  *      sliding window of overlapping grams folds into the one repeated line
  *   6. collapses a gram into any longer kept gram that contains it with the
- *      same-or-higher episode coverage
+ *      same-or-higher unit coverage
  *   7. tags each survivor with position(s) and a tier, from occurrence
- *      statistics + the keyword tables below
+ *      statistics + the config's keyword tables
  *   8. writes phrasebook.json + phrasebook.md, plus a density table and a
  *      separate list of the self-reference lines that were masked out
  *
- * To run it for another IP: change IP / CORPUS / EPISODE_RANGES / SELF_REF /
- * DUPLICATE_PAIR / COMPARISON, and re-tune the keyword tables.
+ * To run it for another IP: copy a config, point it at the corpus, and re-tune
+ * the keyword tables. No code change should be needed.
  */
 
 import fs from 'node:fs';
@@ -36,150 +45,86 @@ const DUMP = !!process.env.DUMP;
 // configuration
 // ---------------------------------------------------------------------------
 
-const IP = '钱十七';
+const DEFAULT_IP = '钱十七';
 
-const CORPUS = 'research-runs/2026-07-27_codex代安装_refresh/style-application-20260730/qian17-authoritative-corpus.txt';
+function parseArgs(argv) {
+  const out = {};
+  for (const a of argv) {
+    const m = /^--([a-zA-Z_][\w-]*)=(.*)$/.exec(a);
+    if (m) out[m[1]] = m[2];
+    else if (a.startsWith('--')) out[a.slice(2)] = true;
+  }
+  return out;
+}
+const ARGS = parseArgs(process.argv.slice(2));
+const CONFIG_PATH = ARGS.config || `ips/${ARGS.ip || DEFAULT_IP}/corpus/phrasebook.config.json`;
 
-/** 1-indexed inclusive line ranges of the body text of each episode. */
-const EPISODE_RANGES = [
-  [2, 21],   // 1  闲鱼无货源怎么养号
-  [22, 42],  // 2  闲鱼无货源怎么选品
-  [44, 59],  // 3  闲鱼卖虚拟
-  [61, 61],  // 4  粉丝投稿
-  [63, 63],  // 5
-  [65, 65],  // 6
-  [67, 67],  // 7  (shares its opening with episode 3)
-  [69, 69],  // 8
-  [71, 71],  // 9  按季节选品
-  [73, 73],  // 10 AI 壁纸
-  [75, 75],  // 11 小情侣卖虚拟产品
-];
+const readAbs = (rel) => fs.readFileSync(path.join(ROOT, rel), 'utf8').replace(/\r\n?/g, '\n');
+const CFG = JSON.parse(readAbs(CONFIG_PATH));
 
-/**
- * Episodes 3 and 7 (1-indexed, i.e. corpus lines 44-59 and line 67) are NOT
- * merely a shared opening paragraph: measured on the punctuation-free
- * projection they overlap ~97% at a 12-character bar and ~87% at a 30-character
- * bar, i.e. they are two transcripts of essentially the same script. Coverage is
- * still counted per distinct episode, but a phrase whose >=3-episode coverage
- * disappears once the overlap is removed gets flagged.
- */
-const DUPLICATE_PAIR = [3, 7];
-const DUPLICATE_MIN_SHARED_CHARS = 12;
-const DUPLICATE_MAX_SHARED_CHARS = 400;
+const IP = CFG.ip;
+const UNIT_WORD = CFG.unit_label || '集';
+const OUT_DIR = CFG.out_dir || `ips/${IP}/corpus`;
+const SOURCE = CFG.source;
+const CORPUS = SOURCE.mode === 'line_ranges' ? SOURCE.file : SOURCE.dir;
 
-const COMPARISON = {
-  label: '口播稿-钱十七-v7-20260904（我方仿写稿，对照行）',
-  file: 'research-runs/2026-08-31_41_京东家政券_重制/口播稿-钱十七-v7-20260904.txt',
-};
+const TH = CFG.thresholds || {};
+const MIN_N = TH.min_n ?? 2;
+const MAX_N = TH.max_n ?? 8;
+const MIN_EPISODES = TH.min_episodes ?? 3;
+const BIGRAM_MIN_EPISODES = TH.bigram_min_episodes ?? 6;
+const CATCHPHRASE_MIN_EPISODES = TH.catchphrase_min_episodes ?? 2;
+const MAX_EXAMPLES = TH.max_examples ?? 3;
+const EXAMPLE_MAX_CHARS = TH.example_max_chars ?? 120;
+const SELF_REF_MIN_EPISODES = TH.self_ref_min_episodes ?? 2;
+const MAX_EXPANDED_CHARS = TH.max_expanded_chars ?? 40;
 
-const OUT_DIR = `ips/${IP}/corpus`;
-
-const MIN_N = 2;
-const MAX_N = 8;
-const MIN_EPISODES = 3;
-const BIGRAM_MIN_EPISODES = 6;
-const CATCHPHRASE_MIN_EPISODES = 2;
-const MAX_EXAMPLES = 3;
-const EXAMPLE_MAX_CHARS = 120;
-
-const SELF_REF_MIN_EPISODES = 2;
+const COMPARISON = CFG.comparison;
+const EXTRA_COMPARISONS = CFG.extra_comparisons || [];
 
 /**
- * Bigrams are only kept when they clear BIGRAM_MIN_EPISODES *and* appear on this
- * allow list. Everything else at that bar was one of: a grammar particle pair
- * (的是 / 就是 / 可以 / 我们 …), a bare topic noun of the niche (闲鱼 / 商品 /
- * 账号 / 流量 …), or a fragment of a longer phrase (到这 / 是我 / 的小 …); see
- * BIGRAM_DROPPED_SAMPLE for what was thrown away.
+ * Bigrams are only kept when they clear BIGRAM_MIN_EPISODES *and* appear on the
+ * allow list. Everything else at that bar was one of: a grammar particle pair,
+ * a bare topic noun of the niche, or a fragment of a longer phrase; see
+ * bigram_dropped_sample in the config for what was thrown away.
  */
-const BIGRAM_ALLOWLIST = [
-  '我是', '分享', '比如', '直接', '一定', '注意', '建议', '推荐', '关键', '核心',
-  '重要', '简单', '容易', '免费', '有用', '更多', '今天', '每天', '一天', '一期',
-  '总结', '首先', '然后', '最后', '第一', '第二', '第三', '只要', '只需', '想要',
-  '通过', '准备', '教你', '帮你', '打开', '点击', '搜索', '复制', '找到', '喜欢',
-  '新手', '别人', '赚钱', '成本', '价格', '收藏', '事项', '先点', '选择', '流程',
-  '逻辑', '方法',
-];
-
-/** Recorded for the method block: representative bigrams dropped at that bar. */
-const BIGRAM_DROPPED_SAMPLE = {
-  语法虚词与代词: [
-    '一个', '我们', '他们', '这个', '那个', '这些', '这里', '就是', '可以', '如果',
-    '需要', '非常', '很多', '什么', '怎么', '因为', '而且', '还有', '那么', '不是',
-    '不会', '不能', '没有', '知道', '看到', '觉得', '自己', '你的', '这种', '两个',
-    '三个', '时间', '东西', '问题', '可能', '出来', '在这', '这是', '都是', '都能',
-    '一下', '一点', '以及', '所有', '开始', '只有', '其他', '他的', '一样',
-  ],
-  更长短语的碎片: [
-    '们下', '们可', '们的', '到这', '到的', '到你', '到一', '要的', '要在', '要注',
-    '是我', '是一', '是你', '有一', '有个', '了一', '的一', '的是', '的时', '的人',
-    '的小', '的方', '的点', '的流', '用的', '品的', '品就', '品都', '号的', '大的',
-    '上的', '来的', '给你', '得有', '卖的', '单的', '多人', '个人', '个月', '就有',
-    '就能', '不到', '家好', '每一', '每个', '一位', '博主', '目的', '多多', '这一',
-  ],
-  品类名词非风格词: [
-    '闲鱼', '咸鱼', '商品', '账号', '流量', '平台', '用户', '电商', '图片', '手机',
-    '渠道', '工具', '项目', '资料', '视频', '回复', '上架', '发布', '发货', '出单',
-    '引流', '成交', '购买', '自动', '一个月', '价格', '成本',
-  ],
-};
+const BIGRAM_ALLOWLIST = CFG.bigram_allowlist || [];
+const BIGRAM_DROPPED_SAMPLE = CFG.bigram_dropped_sample || {};
 
 /** Anything matching these is our narrator-unusable self-reference / brand. */
-const SELF_REF = [
-  '公众号', '前十期', '钱十七', '钱17', '17', '十七', '谈钱不伤感情', '学员',
-  '一键领取', '选品表',
-];
+const SELF_REF = CFG.self_ref || [];
 
 /** tier rules, checked top to bottom; first hit wins. */
-const CATCHPHRASE_PATTERNS = [
-  '醒醒', '不香', '巨坑', '信息差', '懂的都懂', '毫无保留', '俗话说得好', '躺赚',
-  '妥妥', '韭菜', '干货', '保姆级', '秘诀', '套路', '红到发紫', '鸡贼',
-  '一片红海', '闷声', '不夸张', '暴利', '玩法', '路子', '亲测', '手把手',
-  '不吹不黑', '注意看', '这个男人', '兰州拉面', '牛排', '养家糊口', '闭眼',
-  '真香', '白菜价', '小白', '大佬', '同行', '爆款', '蓝海', '红海', '风口',
-  '空手套白狼', '海底捞', '踩坑', '爆单', '零成本', '副业', '内卷', '现金流',
-  '轻资产', '神器', '巨量',
-];
-
-const ENUMERATOR_PATTERNS = [
-  '第一', '第二', '第三', '第四', '第五', '第六', '第七', '最后', '首先', '其次',
-  '再来', '接下来', '下面', '一种方法', '第一步', '第二步', '第三步', '第一点',
-  '最后一点', '这里有个重点', '先说', '再说', '说完', '刚说', '总结',
-];
-
-const FIXED_LINE_PATTERNS = [
-  '点赞', '收藏', '关注', '三连', '动动', '发财', '小手指', '评论区', '私信',
-  '主页', '回复', '领取', '整理了', '分享给大家', '毫无保留', '注意事项',
-  '回复话术', '货源渠道', '保姆级', '下个视频见', '看到这里', '觉得有用',
-  '别忘了', '不要忘记', '有需要的', '免费', '无偿', '点个赞', '个赞', '本期视频',
-  '下个视频', '这些资料', '有需要', '分享给', '到这里', '这期视频', '希望这个视频',
-  '帮到你', '更新的动力', '省时又省力', '一份', '给大家准备',
-];
+const CATCHPHRASE_PATTERNS = CFG.catchphrase_patterns || [];
+const ENUMERATOR_PATTERNS = CFG.enumerator_patterns || [];
+const FIXED_LINE_PATTERNS = CFG.fixed_line_patterns || [];
+const FIXED_MIN_CHARS = TH.fixed_line_min_chars ?? 6;
 
 /** position rules: content keywords (regex source strings) -> position tag. */
-const POSITION_RULES = [
-  ['催动作(点赞收藏关注)', /点赞|个赞|收藏|关注|三连|动动|发财|小手|一键|支持一下|更新的动力/],
-  ['资料钩子', /资料|表格|文档|整理了|分享给|领取|评论区|私信|主页|回复|免费|无偿|素材/],
-  ['自我介绍', /我是|自由职业|全职|做了.{0,3}年|七年|五年|一名|一位|博主|我的粉丝/],
-  ['路线图', /个视频|这一期|这期|下期|下一期|下个视频|系列|分成|讲清楚怎么|会讲|接下来会|全部讲/],
-  ['指图读屏', /图中|如图|看图|画面|屏幕|大家看|注意看|截图|这张|图上|上图|图片|页面|界面|首页|榜单|销量图|可以看到|你会看到/],
-  ['算账', /利润|成本|收入|赚|客单|价格|售价|进价|差价|块钱|毛利|月入|日入|营业额|流水/],
-  ['步骤讲解', /第一步|第二步|第三步|步骤|操作|设置|点击|搜索|上架|发布|复制|下载|注册|授权|绑定|工具/],
-  ['坑与警告', /坑|不要|不建议|不做|不选|禁|风险|违规|封号|亏|警惕|别|避免|问题|失败/],
-  ['贴士强调', /一定要|注意|重点|切记|记住|建议|千万|关键|核心|秘诀|技巧|小技巧/],
-  ['转场枚举', /第一|第二|第三|第四|第五|第六|最后|首先|其次|接下来|下面|再来|说完/],
-];
+const POSITION_RULES = (CFG.position_rules || []).map(([tag, src]) => [tag, new RegExp(src)]);
+const POSITION_ORDER = CFG.position_order || [];
+const TIER_ORDER = CFG.tier_order || ['招牌口头禅', '固定话术', '结构信号词', '口水连接词'];
+const FALLBACK_POSITION = CFG.fallback_position || '铺垫引导';
+const OPENING_TAG = CFG.opening_tag || '开场';
+const CLOSING_TAG = CFG.closing_tag || '收尾';
 
-const POSITION_ORDER = [
-  '开场', '自我介绍', '路线图', '铺垫引导', '转场枚举', '指图读屏', '算账',
-  '步骤讲解', '贴士强调', '坑与警告', '催动作(点赞收藏关注)', '资料钩子', '收尾',
-];
-const TIER_ORDER = ['招牌口头禅', '固定话术', '结构信号词', '口水连接词'];
+const PT = CFG.position_thresholds || {};
+const OPENING_SHARE = PT.opening_share ?? 0.5;   // >= this share of hits in the first 10% => 开场
+const CLOSING_SHARE = PT.closing_share ?? 0.5;   // >= this share of hits in the last 10%  => 收尾
+const DECILE = PT.decile ?? 0.1;
+const CONTEXT_STRONG_SHARE = PT.context_strong_share ?? 0.7; // a context rule this dominant is tagged outright
+const CONTEXT_MIN_SHARE = PT.context_min_share ?? 0.35;      // otherwise the single leading context rule, if it clears this
 
-const OPENING_SHARE = 0.5;   // >= this share of hits in the first 10% => 开场
-const CLOSING_SHARE = 0.5;   // >= this share of hits in the last 10%  => 收尾
-const DECILE = 0.1;
-const CONTEXT_STRONG_SHARE = 0.7; // a context rule this dominant is tagged outright
-const CONTEXT_MIN_SHARE = 0.35;   // otherwise the single leading context rule, if it clears this
+/**
+ * Optional: two units that are two transcripts of the same script rather than
+ * two distinct pieces. Coverage is still counted per distinct unit, but a
+ * phrase whose >= MIN_EPISODES coverage disappears once the overlap is removed
+ * gets flagged with `duplicate_paragraph_dependent`.
+ */
+const DUP = CFG.duplicate_pair || null;
+const DUPLICATE_PAIR = DUP ? DUP.units : null;
+const DUPLICATE_MIN_SHARED_CHARS = DUP?.min_shared_chars ?? 12;
+const DUPLICATE_MAX_SHARED_CHARS = DUP?.max_shared_chars ?? 400;
 
 // ---------------------------------------------------------------------------
 // helpers
@@ -187,7 +132,7 @@ const CONTEXT_MIN_SHARE = 0.35;   // otherwise the single leading context rule, 
 
 const NON_CJK_RUN = /[^一-鿿]+/;
 
-const read = (rel) => fs.readFileSync(path.join(ROOT, rel), 'utf8').replace(/\r\n?/g, '\n');
+const read = readAbs;
 const cjkOnly = (s) => (s.match(/[一-鿿]/g) || []).join('');
 
 function splitSentences(text) {
@@ -222,31 +167,109 @@ function maskSelfRef(text) {
 }
 
 // ---------------------------------------------------------------------------
-// load episodes
+// load units
 // ---------------------------------------------------------------------------
 
-const corpusLines = read(CORPUS).split('\n');
-const episodes = EPISODE_RANGES.map(([a, b], i) => {
-  const raw = corpusLines.slice(a - 1, b).join('\n');
-  const text = maskSelfRef(raw);
-  const sentencesRaw = splitSentences(raw);
-  const sentences = sentencesRaw.map(maskSelfRef);
+/**
+ * `source.mode: "files"` preprocessing — one plain-text file per unit, as
+ * produced by a PDF text extractor:
+ *   1. cut everything from `stop_at_line` onwards (the account footer)
+ *   2. cut everything up to and including `drop_leading_lines_through` (the
+ *      title / byline header)
+ *   3. drop lines matching `drop_lines` (section numbers, page artefacts, blanks)
+ *   4. re-join PDF line wraps: a line at least `min_wrap_chars` long that does
+ *      not end in one of `line_end_terminators` is glued to the next line
+ *
+ * The header/footer cut in steps 1-2 is NOT discarded: it comes back as
+ * `plumbing` and is fed to the self-reference pass only, so the account
+ * boilerplate still lands in `excluded_selfref` without polluting extraction.
+ */
+function preprocessFile(text, p = {}) {
+  let lines = text.split('\n').map((l) => l.replace(/ /g, ' ').trim());
+  const plumbing = [];
+  if (p.stop_at_line) {
+    const re = new RegExp(p.stop_at_line);
+    const i = lines.findIndex((l) => re.test(l));
+    if (i >= 0) {
+      plumbing.push(...lines.slice(i));
+      lines = lines.slice(0, i);
+    }
+  }
+  if (p.drop_leading_lines_through) {
+    const re = new RegExp(p.drop_leading_lines_through);
+    const i = lines.findIndex((l) => re.test(l));
+    if (i >= 0) {
+      plumbing.unshift(...lines.slice(0, i + 1));
+      lines = lines.slice(i + 1);
+    }
+  }
+  const dropRes = (p.drop_lines || []).map((s) => new RegExp(s));
+  lines = lines.filter((l) => l && !dropRes.some((re) => re.test(l)));
+  if (p.join_wrapped_lines) {
+    const term = p.line_end_terminators || '。！？!?…”';
+    const minWrap = p.min_wrap_chars ?? 40;
+    const out = [];
+    for (const l of lines) {
+      const prev = out[out.length - 1];
+      const wrapped =
+        prev !== undefined &&
+        [...prev].length >= minWrap &&
+        !term.includes(prev.slice(-1));
+      if (wrapped) out[out.length - 1] = prev + l;
+      else out.push(l);
+    }
+    lines = out;
+  }
+  return { body: lines.join('\n'), plumbing: plumbing.filter(Boolean).join('\n') };
+}
+
+function loadUnits() {
+  if (SOURCE.mode === 'line_ranges') {
+    const corpusLines = read(SOURCE.file).split('\n');
+    return SOURCE.ranges.map(([a, b], i) => ({
+      index: i + 1,
+      lines: [a, b],
+      label: `${a}-${b}`,
+      title: (SOURCE.titles || [])[i] || '',
+      raw: corpusLines.slice(a - 1, b).join('\n'),
+      plumbing: '',
+    }));
+  }
+  if (SOURCE.mode === 'files') {
+    return SOURCE.files.map((entry, i) => {
+      const file = typeof entry === 'string' ? entry : entry.file;
+      const rel = path.posix.join(SOURCE.dir, file);
+      const { body, plumbing } = preprocessFile(read(rel), SOURCE.preprocess);
+      return {
+        index: i + 1,
+        file: rel,
+        label: typeof entry === 'string' ? file : entry.unit_id || file,
+        title: typeof entry === 'string' ? file.replace(/\.txt$/, '') : entry.title || '',
+        content_type: typeof entry === 'string' ? '' : entry.content_type || '',
+        raw: body,
+        plumbing,
+      };
+    });
+  }
+  throw new Error(`unknown source.mode: ${SOURCE.mode}`);
+}
+
+const episodes = loadUnits().map((u) => {
+  const text = maskSelfRef(u.raw);
+  const sentencesRaw = splitSentences(u.raw);
   return {
-    index: i + 1,
-    lines: [a, b],
-    raw,
+    ...u,
     text,
     chars: cjkOnly(text).length,
     sentencesRaw,
-    sentences,
+    sentences: sentencesRaw.map(maskSelfRef),
   };
 });
 
 // ---- shared opening paragraph between the duplicate pair ----
 // Punctuation differs between the two copies, so the overlap is found on the
 // punctuation-free projection: any run of >= DUPLICATE_MIN_SHARED_CHARS
-// characters present in both episodes marks those offsets as duplicated.
-const [dupA, dupB] = DUPLICATE_PAIR;
+// characters present in both units marks those offsets as duplicated.
 function sharedRanges(a, b) {
   const ranges = [];
   let i = 0;
@@ -266,25 +289,34 @@ function sharedRanges(a, b) {
   }
   return ranges;
 }
-const projA = cjkOnly(episodes[dupA - 1].text);
-const projB = cjkOnly(episodes[dupB - 1].text);
-const dupRanges = new Map([
-  [dupA, sharedRanges(projA, projB)],
-  [dupB, sharedRanges(projB, projA)],
-]);
-const longestSpans = (proj, ranges) =>
-  ranges
-    .map(([x, y]) => proj.slice(x, y))
-    .sort((a, b) => b.length - a.length)
-    .slice(0, 5);
-const duplicateSpans = {
-  [`episode_${dupA}_longest_spans`]: longestSpans(projA, dupRanges.get(dupA)),
-  [`episode_${dupB}_longest_spans`]: longestSpans(projB, dupRanges.get(dupB)),
-};
-const duplicateCoveredChars = {
-  [`episode_${dupA}`]: dupRanges.get(dupA).reduce((n, [x, y]) => n + (y - x), 0),
-  [`episode_${dupB}`]: dupRanges.get(dupB).reduce((n, [x, y]) => n + (y - x), 0),
-};
+
+let dupA = null;
+let dupB = null;
+let dupRanges = new Map();
+let duplicateSpans = null;
+let duplicateCoveredChars = null;
+if (DUPLICATE_PAIR) {
+  [dupA, dupB] = DUPLICATE_PAIR;
+  const projA = cjkOnly(episodes[dupA - 1].text);
+  const projB = cjkOnly(episodes[dupB - 1].text);
+  dupRanges = new Map([
+    [dupA, sharedRanges(projA, projB)],
+    [dupB, sharedRanges(projB, projA)],
+  ]);
+  const longestSpans = (proj, ranges) =>
+    ranges
+      .map(([x, y]) => proj.slice(x, y))
+      .sort((a, b) => b.length - a.length)
+      .slice(0, 5);
+  duplicateSpans = {
+    [`episode_${dupA}_longest_spans`]: longestSpans(projA, dupRanges.get(dupA)),
+    [`episode_${dupB}_longest_spans`]: longestSpans(projB, dupRanges.get(dupB)),
+  };
+  duplicateCoveredChars = {
+    [`episode_${dupA}`]: dupRanges.get(dupA).reduce((n, [x, y]) => n + (y - x), 0),
+    [`episode_${dupB}`]: dupRanges.get(dupB).reduce((n, [x, y]) => n + (y - x), 0),
+  };
+}
 const inDuplicate = (epIndex, offset) =>
   (dupRanges.get(epIndex) || []).some(([a, b]) => offset >= a && offset < b);
 
@@ -293,20 +325,27 @@ const inDuplicate = (epIndex, offset) =>
 // ---------------------------------------------------------------------------
 
 /**
- * Per episode we walk the Chinese-only projection of the text so that offsets
+ * Per unit we walk the Chinese-only projection of the text so that offsets
  * line up with the density measurement; n-grams may not cross a non-CJK run,
  * so runs are tracked separately.
  */
-/** episode index -> array of Chinese-only runs of that episode's text */
+/** unit index -> array of Chinese-only runs of that unit's text */
 const runsOf = (list) => list.map((ep) => ep.text.split(NON_CJK_RUN).filter(Boolean));
 const episodeRuns = runsOf(episodes);
-const rawRuns = episodes.map((ep) => ep.raw.split(NON_CJK_RUN).filter(Boolean));
+/**
+ * The self-reference pass runs over the unmasked body PLUS the header/footer
+ * plumbing that was cut during preprocessing (empty for `line_ranges` corpora),
+ * so the account boilerplate is catalogued in excluded_selfref even though it
+ * never reaches the phrase extraction.
+ */
+const rawRuns = episodes.map((ep) =>
+  `${ep.raw}\n${ep.plumbing || ''}`.split(NON_CJK_RUN).filter(Boolean));
 
 function countGrams(runsPerEpisode) {
   const map = new Map(); // phrase -> { total, eps:Map(ep->count), offsets:[{ep,off}] }
   runsPerEpisode.forEach((runs, epIdx) => {
     const epNo = epIdx + 1;
-    let cursor = 0; // offset into the Chinese-only projection of this episode
+    let cursor = 0; // offset into the Chinese-only projection of this unit
     for (const run of runs) {
       for (let n = MIN_N; n <= MAX_N; n++) {
         for (let i = 0; i + n <= run.length; i++) {
@@ -351,11 +390,10 @@ function measure(phrase, runsPerEpisode) {
   return { total, eps, offsets };
 }
 
-const MAX_EXPANDED_CHARS = 40;
 /**
  * Maximal extension: grow a gram one character left/right (choosing the most
  * frequent neighbour) as long as the extended string still covers the same
- * number of distinct episodes. This folds the sliding window of overlapping
+ * number of distinct units. This folds the sliding window of overlapping
  * MAX_N grams over a long repeated line into that one line.
  */
 function expand(phrase, rec, runsPerEpisode) {
@@ -423,7 +461,7 @@ for (const [g, rec] of expanded) {
   kept.set(g, rec);
 }
 
-// collapse: drop g when a longer kept gram contains it with >= episode coverage
+// collapse: drop g when a longer kept gram contains it with >= unit coverage
 const byLength = [...kept.keys()].sort((a, b) => b.length - a.length);
 const dropped = new Set();
 for (const short of kept.keys()) {
@@ -468,7 +506,7 @@ excludedKept.sort((a, b) => b.episodes - a.episodes || b.total - a.total);
 function tierOf(phrase) {
   if (isCatchphrase(phrase)) return '招牌口头禅';
   if (anyHit(phrase, ENUMERATOR_PATTERNS)) return '结构信号词';
-  if (anyHit(phrase, FIXED_LINE_PATTERNS) || phrase.length >= 6) return '固定话术';
+  if (anyHit(phrase, FIXED_LINE_PATTERNS) || phrase.length >= FIXED_MIN_CHARS) return '固定话术';
   return '口水连接词';
 }
 
@@ -496,8 +534,8 @@ function positionsOf(phrase, rec) {
   const closeShare = rel.filter((r) => r > 1 - DECILE).length / rel.length;
 
   const tags = new Set();
-  if (openShare >= OPENING_SHARE) tags.add('开场');
-  if (closeShare >= CLOSING_SHARE) tags.add('收尾');
+  if (openShare >= OPENING_SHARE) tags.add(OPENING_TAG);
+  if (closeShare >= CLOSING_SHARE) tags.add(CLOSING_TAG);
 
   // (a) rules matching the phrase itself — strongest signal
   const direct = POSITION_RULES.filter(([, re]) => re.test(phrase)).map(([t]) => t);
@@ -519,7 +557,7 @@ function positionsOf(phrase, rec) {
     else if (ranked.length && ranked[0][1] >= CONTEXT_MIN_SHARE) content = [ranked[0][0]];
   }
   for (const t of content) tags.add(t);
-  if (tags.size === 0) tags.add('铺垫引导');
+  if (tags.size === 0) tags.add(FALLBACK_POSITION);
   return {
     tags: POSITION_ORDER.filter((p) => tags.has(p)),
     mean_position: Number(mean.toFixed(3)),
@@ -554,11 +592,8 @@ const trim = (s) => {
 
 const entries = [...kept.entries()].map(([phrase, rec]) => {
   const epList = [...rec.eps.keys()].sort((a, b) => a - b);
-  const epsOutsideDup = new Set(
-    rec.offsets.filter((o) => !inDuplicate(o.ep, o.off)).map((o) => o.ep),
-  );
   const pos = positionsOf(phrase, rec);
-  return {
+  const entry = {
     phrase,
     episodes: epList.length,
     episode_list: epList,
@@ -568,10 +603,16 @@ const entries = [...kept.entries()].map(([phrase, rec]) => {
     mean_position: pos.mean_position,
     opening_share: pos.opening_share,
     closing_share: pos.closing_share,
-    duplicate_paragraph_dependent:
-      epList.length >= MIN_EPISODES && epsOutsideDup.size < MIN_EPISODES,
-    examples: examplesOf(phrase),
   };
+  if (DUPLICATE_PAIR) {
+    const epsOutsideDup = new Set(
+      rec.offsets.filter((o) => !inDuplicate(o.ep, o.off)).map((o) => o.ep),
+    );
+    entry.duplicate_paragraph_dependent =
+      epList.length >= MIN_EPISODES && epsOutsideDup.size < MIN_EPISODES;
+  }
+  entry.examples = examplesOf(phrase);
+  return entry;
 });
 
 entries.sort((a, b) => b.episodes - a.episodes || b.total - a.total || b.phrase.length - a.phrase.length);
@@ -587,8 +628,6 @@ if (DUMP) {
 // ---------------------------------------------------------------------------
 // density
 // ---------------------------------------------------------------------------
-
-const phraseSet = entries.map((e) => e.phrase).sort((a, b) => b.length - a.length);
 
 function density(text) {
   const runs = text.split(NON_CJK_RUN).filter(Boolean);
@@ -618,7 +657,8 @@ function density(text) {
 
 const densityRows = episodes.map((ep) => ({
   source: `episode ${ep.index}`,
-  lines: `${ep.lines[0]}-${ep.lines[1]}`,
+  lines: SOURCE.mode === 'line_ranges' ? `${ep.lines[0]}-${ep.lines[1]}` : ep.file,
+  ...(SOURCE.mode === 'line_ranges' ? {} : { title: ep.title, content_type: ep.content_type }),
   ...density(ep.text),
 }));
 const median = (xs) => {
@@ -626,24 +666,71 @@ const median = (xs) => {
   const m = s.length >> 1;
   return s.length % 2 ? s[m] : Number(((s[m - 1] + s[m]) / 2).toFixed(1));
 };
-const comparisonRow = {
-  source: COMPARISON.label,
-  lines: COMPARISON.file,
-  ...density(read(COMPARISON.file)),
-};
+
+/** markdown scaffolding stripper for comparison rows that point at a .md draft */
+function stripMarkdown(text, opts = {}) {
+  let t = text.replace(/<!--[\s\S]*?-->/g, '\n');
+  const lines = t.split('\n').filter((l) => {
+    const s = l.trim();
+    if (/^#{1,6}\s/.test(s)) return false;          // ATX headers
+    if (/^>/.test(s)) return false;                 // blockquotes
+    if (/^[-*_]{3,}$/.test(s)) return false;        // horizontal rules
+    if (/^\|/.test(s)) return false;                // table rows
+    if (/^!\[/.test(s)) return false;               // images
+    if (/^```/.test(s)) return false;               // fences
+    return true;
+  });
+  let out = lines.join('\n').replace(/\*\*/g, '').replace(/`/g, '');
+  if (opts.keep_blocks) {
+    const { start, end } = opts.keep_blocks;
+    const startRe = new RegExp(start);
+    const endRe = new RegExp(end);
+    const kept = [];
+    let on = false;
+    for (const l of out.split('\n')) {
+      if (!on && startRe.test(l.trim())) { on = true; continue; }
+      if (on && endRe.test(l.trim())) { on = false; continue; }
+      if (on) kept.push(l);
+    }
+    out = kept.join('\n');
+  }
+  return out;
+}
+
+function comparisonRowOf(c) {
+  let text = read(c.file);
+  if (c.strip_markdown) text = stripMarkdown(text, c);
+  return { source: c.label, lines: c.file, ...density(text) };
+}
+const comparisonRow = comparisonRowOf(COMPARISON);
+const extraComparisonRows = EXTRA_COMPARISONS.map(comparisonRowOf);
 
 // ---------------------------------------------------------------------------
 // write
 // ---------------------------------------------------------------------------
 
+const methodSource = SOURCE.mode === 'line_ranges'
+  ? { corpus: CORPUS, episode_ranges_1indexed: SOURCE.ranges }
+  : {
+      corpus: CORPUS,
+      corpus_note: SOURCE.note || '',
+      unit_sources: episodes.map((ep) => ({
+        index: ep.index,
+        unit_id: ep.label,
+        title: ep.title,
+        content_type: ep.content_type,
+        file: ep.file,
+        chars: ep.chars,
+      })),
+      preprocess: SOURCE.preprocess,
+    };
 
 const json = {
   ip: IP,
   generated_by: 'engine/corpus/build-phrasebook.mjs',
   generated_at_note: '数据文件，由脚本机械生成；不含解读性文字。',
   method: {
-    corpus: CORPUS,
-    episode_ranges_1indexed: EPISODE_RANGES,
+    ...methodSource,
     episode_count: episodes.length,
     ngram: { min_n: MIN_N, max_n: MAX_N, unit: '字符（仅 CJK 连续段，遇非中文字符断开）' },
     thresholds: {
@@ -657,32 +744,37 @@ const json = {
     bigram_allowlist: BIGRAM_ALLOWLIST,
     bigram_dropped_sample: BIGRAM_DROPPED_SAMPLE,
     self_ref_filters: SELF_REF,
-    duplicate_paragraph: {
-      episodes: DUPLICATE_PAIR,
-      min_shared_chars: DUPLICATE_MIN_SHARED_CHARS,
-      shared_spans: duplicateSpans,
-      shared_chars: duplicateCoveredChars,
-      flag_field: 'duplicate_paragraph_dependent',
-      overlap_ratio: {
-        [`episode_${dupA}`]: Number((duplicateCoveredChars[`episode_${dupA}`] / (episodes[dupA - 1].chars || 1)).toFixed(3)),
-        [`episode_${dupB}`]: Number((duplicateCoveredChars[`episode_${dupB}`] / (episodes[dupB - 1].chars || 1)).toFixed(3)),
+    ...(DUPLICATE_PAIR ? {
+      duplicate_paragraph: {
+        episodes: DUPLICATE_PAIR,
+        min_shared_chars: DUPLICATE_MIN_SHARED_CHARS,
+        shared_spans: duplicateSpans,
+        shared_chars: duplicateCoveredChars,
+        flag_field: 'duplicate_paragraph_dependent',
+        overlap_ratio: {
+          [`episode_${dupA}`]: Number((duplicateCoveredChars[`episode_${dupA}`] / (episodes[dupA - 1].chars || 1)).toFixed(3)),
+          [`episode_${dupB}`]: Number((duplicateCoveredChars[`episode_${dupB}`] / (episodes[dupB - 1].chars || 1)).toFixed(3)),
+        },
+        note: DUP.note,
       },
-      note: '第3集（行44-59）与第7集（行67）并非只共用开场段，而是同一稿的两份转写：12字为界重合约97%，30字为界约87%。覆盖集数仍按不同集计，但去掉重合部分后覆盖不足3集的条目已打标 duplicate_paragraph_dependent。',
-    },
+    } : {}),
     position_tagging: {
       positional: `首尾各 ${DECILE * 100}% 字符位置；开场阈值 ${OPENING_SHARE}，收尾阈值 ${CLOSING_SHARE}（按出现次数占比）`,
       content_rules: POSITION_RULES.map(([tag, re]) => ({ tag, regex: re.source })),
       selection: `短语自身命中的规则优先（最多 2 条）；否则用该短语所有出现处的句子投票，占比 >= ${CONTEXT_STRONG_SHARE} 的取前 2 条，再否则取占比 >= ${CONTEXT_MIN_SHARE} 的第一名`,
-      fallback: '无命中则记为 铺垫引导',
+      fallback: `无命中则记为 ${FALLBACK_POSITION}`,
     },
     tier_rules: {
       招牌口头禅: CATCHPHRASE_PATTERNS,
       结构信号词: ENUMERATOR_PATTERNS,
-      固定话术: `命中固定话术词表，或长度 >= 6 字：${FIXED_LINE_PATTERNS.join('、')}`,
+      固定话术: `命中固定话术词表，或长度 >= ${FIXED_MIN_CHARS} 字：${FIXED_LINE_PATTERNS.join('、')}`,
       口水连接词: '以上皆不命中',
       order: '招牌口头禅 > 结构信号词 > 固定话术 > 口水连接词，先命中先归类',
     },
     density_rule: '在中文连续段上做最长优先、不重叠的贪心匹配，hits/1000 中文字符',
+    config: CONFIG_PATH,
+    // free-form, per-IP: anything the config wants recorded alongside the knobs
+    ...(CFG.extra_method || {}),
   },
   density: {
     episodes: densityRows,
@@ -690,12 +782,15 @@ const json = {
       per_1000_chars: median(densityRows.map((r) => r.per_1000_chars)),
       distinct_phrases: median(densityRows.map((r) => r.distinct_phrases)),
     },
-    episode_median_excluding_duplicate_twin: {
-      note: `去掉第${dupB}集（与第${dupA}集近乎同稿）后的中位数`,
-      per_1000_chars: median(densityRows.filter((_, i) => i + 1 !== dupB).map((r) => r.per_1000_chars)),
-      distinct_phrases: median(densityRows.filter((_, i) => i + 1 !== dupB).map((r) => r.distinct_phrases)),
-    },
+    ...(DUPLICATE_PAIR ? {
+      episode_median_excluding_duplicate_twin: {
+        note: `去掉第${dupB}集（与第${dupA}集近乎同稿）后的中位数`,
+        per_1000_chars: median(densityRows.filter((_, i) => i + 1 !== dupB).map((r) => r.per_1000_chars)),
+        distinct_phrases: median(densityRows.filter((_, i) => i + 1 !== dupB).map((r) => r.distinct_phrases)),
+      },
+    } : {}),
     comparison: comparisonRow,
+    ...(extraComparisonRows.length ? { extra_comparisons: extraComparisonRows } : {}),
   },
   totals: {
     kept_phrases: entries.length,
@@ -706,7 +801,9 @@ const json = {
     by_position: Object.fromEntries(
       POSITION_ORDER.map((p) => [p, entries.filter((e) => e.position.includes(p)).length]),
     ),
-    duplicate_paragraph_dependent: entries.filter((e) => e.duplicate_paragraph_dependent).length,
+    ...(DUPLICATE_PAIR ? {
+      duplicate_paragraph_dependent: entries.filter((e) => e.duplicate_paragraph_dependent).length,
+    } : {}),
   },
   phrases: entries,
   excluded_selfref: excludedKept,
@@ -724,22 +821,45 @@ const md = [];
 md.push(`# ${IP} 口头语料表（phrase book）`);
 md.push('');
 md.push('机械提取的复现短语表，按“出现位置 / 层级”分组。只做提取、计数、举例，不含解读。');
-md.push(`生成脚本：\`engine/corpus/build-phrasebook.mjs\`；语料：\`${CORPUS}\`（${episodes.length} 集）。`);
+md.push(`生成脚本：\`engine/corpus/build-phrasebook.mjs\`；语料：\`${CORPUS}\`（${episodes.length} ${UNIT_WORD}）。`);
+if (CFG.md?.invocation) md.push(`重跑命令：\`${CFG.md.invocation}\`（配置：\`${CONFIG_PATH}\`）。`);
+if (CFG.md?.intro_note) md.push(CFG.md.intro_note);
 md.push('');
 md.push('## 密度基线');
 md.push('');
-md.push('| 来源 | 中文字数 | 命中次数 | 每千字命中 | 不同短语数 |');
-md.push('| --- | ---: | ---: | ---: | ---: |');
-for (const r of densityRows) {
-  md.push(`| 第${r.source.replace('episode ', '')}集（行 ${r.lines}） | ${r.chars} | ${r.hits} | ${r.per_1000_chars} | ${r.distinct_phrases} |`);
+if (SOURCE.mode === 'line_ranges') {
+  md.push('| 来源 | 中文字数 | 命中次数 | 每千字命中 | 不同短语数 |');
+  md.push('| --- | ---: | ---: | ---: | ---: |');
+  for (const r of densityRows) {
+    md.push(`| 第${r.source.replace('episode ', '')}${UNIT_WORD}（行 ${r.lines}） | ${r.chars} | ${r.hits} | ${r.per_1000_chars} | ${r.distinct_phrases} |`);
+  }
+} else {
+  md.push('| 来源 | 体裁 | 中文字数 | 命中次数 | 每千字命中 | 不同短语数 |');
+  md.push('| --- | --- | ---: | ---: | ---: | ---: |');
+  for (const r of densityRows) {
+    md.push(`| 第${r.source.replace('episode ', '')}${UNIT_WORD}《${r.title}》 | ${r.content_type} | ${r.chars} | ${r.hits} | ${r.per_1000_chars} | ${r.distinct_phrases} |`);
+  }
 }
-md.push(`| **本人语料中位数** | | | **${json.density.episode_median.per_1000_chars}** | **${json.density.episode_median.distinct_phrases}** |`);
-md.push(`| **去掉第${dupB}集后的中位数** | | | **${json.density.episode_median_excluding_duplicate_twin.per_1000_chars}** | **${json.density.episode_median_excluding_duplicate_twin.distinct_phrases}** |`);
-md.push(`| ${comparisonRow.source} | ${comparisonRow.chars} | ${comparisonRow.hits} | **${comparisonRow.per_1000_chars}** | **${comparisonRow.distinct_phrases}** |`);
+const spacer = SOURCE.mode === 'line_ranges' ? '' : ' |';
+md.push(`| **本人语料中位数** |${spacer} | | **${json.density.episode_median.per_1000_chars}** | **${json.density.episode_median.distinct_phrases}** |`);
+if (DUPLICATE_PAIR) {
+  md.push(`| **去掉第${dupB}${UNIT_WORD}后的中位数** | | | **${json.density.episode_median_excluding_duplicate_twin.per_1000_chars}** | **${json.density.episode_median_excluding_duplicate_twin.distinct_phrases}** |`);
+}
+const cmpRow = (r) => (SOURCE.mode === 'line_ranges'
+  ? `| ${r.source} | ${r.chars} | ${r.hits} | **${r.per_1000_chars}** | **${r.distinct_phrases}** |`
+  : `| ${r.source} | — | ${r.chars} | ${r.hits} | **${r.per_1000_chars}** | **${r.distinct_phrases}** |`);
+md.push(cmpRow(comparisonRow));
+for (const r of extraComparisonRows) md.push(cmpRow(r));
 md.push('');
-md.push(`注：第${dupA}集与第${dupB}集是同一稿的两份转写（12字为界重合约97%，30字为界约87%），两行密度都偏高。`);
-md.push('');
-md.push(`共保留 ${entries.length} 条短语；自称/品牌类另列 ${excludedKept.length} 条于文末。标 ⚠ 者去掉第${dupA}/${dupB}集的重合部分后覆盖不足 ${MIN_EPISODES} 集，请当作 2 集证据看待。`);
+if (DUPLICATE_PAIR) {
+  md.push(`注：第${dupA}${UNIT_WORD}与第${dupB}${UNIT_WORD}是同一稿的两份转写（12字为界重合约97%，30字为界约87%），两行密度都偏高。`);
+  md.push('');
+}
+if (CFG.md?.density_note) {
+  md.push(CFG.md.density_note);
+  md.push('');
+}
+md.push(`共保留 ${entries.length} 条短语；自称/品牌类另列 ${excludedKept.length} 条于文末。${DUPLICATE_PAIR ? `标 ⚠ 者去掉第${dupA}/${dupB}${UNIT_WORD}的重合部分后覆盖不足 ${MIN_EPISODES} ${UNIT_WORD}，请当作 2 ${UNIT_WORD}证据看待。` : ''}`);
 md.push('');
 
 for (const pos of POSITION_ORDER) {
@@ -755,23 +875,26 @@ for (const pos of POSITION_ORDER) {
     for (const e of list) {
       const flag = e.duplicate_paragraph_dependent ? ' ⚠' : '';
       const ex = [...e.examples].sort((a, b) => a.sentence.length - b.sentence.length)[0];
-      md.push(`- **${e.phrase}**（${e.episodes}集/${e.total}次）${flag}`);
-      if (ex) md.push(`  - 例（第${ex.episode}集）：${ex.sentence}`);
+      md.push(`- **${e.phrase}**（${e.episodes}${UNIT_WORD}/${e.total}次）${flag}`);
+      if (ex) md.push(`  - 例（第${ex.episode}${UNIT_WORD}）：${ex.sentence}`);
     }
     md.push('');
   }
 }
 
-md.push('## 排除：自称/品牌类（圣矾不可直接使用，仅作“他的签名句”参考）');
+md.push(CFG.md?.excluded_heading || '## 排除：自称/品牌类（不可直接使用，仅作“他的签名句”参考）');
 md.push('');
 for (const e of excludedKept) {
-  md.push(`- ${e.phrase}（${e.episodes}集/${e.total}次）`);
+  md.push(`- ${e.phrase}（${e.episodes}${UNIT_WORD}/${e.total}次）`);
 }
 md.push('');
 
 fs.writeFileSync(path.join(ROOT, OUT_DIR, 'phrasebook.md'), `${md.join('\n')}\n`, 'utf8');
 
-console.log(`kept ${entries.length} phrases, excluded ${excludedKept.length} self-ref entries`);
-console.log(`episode median: ${json.density.episode_median.per_1000_chars}/1000 chars, ${json.density.episode_median.distinct_phrases} distinct`);
-console.log(`comparison    : ${comparisonRow.per_1000_chars}/1000 chars, ${comparisonRow.distinct_phrases} distinct`);
+console.log(`[${IP}] kept ${entries.length} phrases, excluded ${excludedKept.length} self-ref entries`);
+console.log(`unit median  : ${json.density.episode_median.per_1000_chars}/1000 chars, ${json.density.episode_median.distinct_phrases} distinct`);
+console.log(`comparison   : ${comparisonRow.per_1000_chars}/1000 chars, ${comparisonRow.distinct_phrases} distinct`);
+for (const r of extraComparisonRows) {
+  console.log(`  extra      : ${r.source} → ${r.per_1000_chars}/1000 chars, ${r.distinct_phrases} distinct`);
+}
 console.log(`wrote ${OUT_DIR}/phrasebook.json and ${OUT_DIR}/phrasebook.md`);

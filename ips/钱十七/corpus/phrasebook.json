@@ -429,7 +429,8 @@
       "口水连接词": "以上皆不命中",
       "order": "招牌口头禅 > 结构信号词 > 固定话术 > 口水连接词，先命中先归类"
     },
-    "density_rule": "在中文连续段上做最长优先、不重叠的贪心匹配，hits/1000 中文字符"
+    "density_rule": "在中文连续段上做最长优先、不重叠的贪心匹配，hits/1000 中文字符",
+    "config": "ips/钱十七/corpus/phrasebook.config.json"
   },
   "density": {
     "episodes": [
