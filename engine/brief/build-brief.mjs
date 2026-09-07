@@ -1,0 +1,480 @@
+#!/usr/bin/env node
+// build-brief.mjs —— 配料包生成器
+//
+// 把写一篇口播稿要用的"配料"从各个大文件里按编号抽出来，拼成一份配料包给写手，
+// 代替让写手自己读二十万字。
+//
+// 用法见 docs/配料包规范.md。
+//
+// 规矩：
+//   - 缺参数 → 跳过那一节，在末尾"缺项"里列出（不报错）
+//   - 编号找不到 → 报错退出 1（不许静默漏）
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+// ───────────────────────── 基础工具 ─────────────────────────
+
+// 本文件在 <repo>/engine/brief/ 下，往上两级就是仓库根
+const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+
+function die(msg) {
+  process.stderr.write(`\n[build-brief] 错误：${msg}\n\n`);
+  process.exit(1);
+}
+
+/** 相对仓库根或绝对路径 → 绝对路径 */
+function resolvePath(p) {
+  return path.isAbsolute(p) ? p : path.resolve(REPO_ROOT, p);
+}
+
+function readFileOrDie(p, label) {
+  const abs = resolvePath(p);
+  if (!fs.existsSync(abs)) die(`${label} 文件不存在：${abs}`);
+  let text;
+  try {
+    text = fs.readFileSync(abs, 'utf8');
+  } catch (e) {
+    die(`${label} 文件读不出来：${abs}（${e.message}）`);
+  }
+  return { abs, text, lines: text.replace(/\r\n/g, '\n').split('\n') };
+}
+
+/** 逗号分隔编号 → 去空去重数组 */
+function splitIds(raw) {
+  return [...new Set(String(raw).split(/[,，]/).map((s) => s.trim()).filter(Boolean))];
+}
+
+function countHanzi(s) {
+  const m = s.match(/[一-鿿]/g);
+  return m ? m.length : 0;
+}
+
+// ───────────────────────── markdown 解析 ─────────────────────────
+
+/**
+ * 抽一整节：从命中 headingRe 的那行起，到下一个同级或更高级 ## 标题为止。
+ * 返回 null 表示没找到。
+ */
+function extractSection(lines, headingRe) {
+  const start = lines.findIndex((l) => headingRe.test(l));
+  if (start === -1) return null;
+  const startLevel = (lines[start].match(/^#+/) || ['##'])[0].length;
+  let end = lines.length;
+  for (let i = start + 1; i < lines.length; i++) {
+    const m = lines[i].match(/^(#+)\s/);
+    if (m && m[1].length <= startLevel) { end = i; break; }
+  }
+  // 去掉尾部的空行和分隔线
+  let out = lines.slice(start, end);
+  while (out.length && (out[out.length - 1].trim() === '' || out[out.length - 1].trim() === '---')) out.pop();
+  return out.join('\n');
+}
+
+/** 抽角度小节：从 `## 角度 X ·` 起，到下一条独占一行的 `---` 为止（不含）。 */
+function extractAngle(lines, letter) {
+  const re = new RegExp(`^##\\s*角度\\s*${letter}\\s*[·・\\.]`);
+  const start = lines.findIndex((l) => re.test(l));
+  if (start === -1) return null;
+  let end = lines.length;
+  for (let i = start + 1; i < lines.length; i++) {
+    if (lines[i].trim() === '---') { end = i; break; }
+    const m = lines[i].match(/^(#+)\s/);
+    if (m && m[1].length <= 2) { end = i; break; }
+  }
+  let out = lines.slice(start, end);
+  while (out.length && out[out.length - 1].trim() === '') out.pop();
+  return out.join('\n');
+}
+
+const SEP_RE = /^\|\s*:?-{2,}/;
+
+/** 从表格行往上找它所属表的「表头行 + 分隔行」；找不到返回 null。 */
+function findTableHeader(lines, rowIdx) {
+  for (let i = rowIdx - 1; i >= 0 && i >= rowIdx - 200; i--) {
+    const l = lines[i];
+    if (SEP_RE.test(l)) {
+      const head = lines[i - 1];
+      if (head && head.trim().startsWith('|')) return { header: head, sep: l, headerIdx: i - 1 };
+      return null;
+    }
+    if (!l.trim().startsWith('|') && l.trim() !== '') return null; // 走出这张表了
+  }
+  return null;
+}
+
+/** 从表格行往上找最近的 ## / ### 标题文字 */
+function findNearestHeading(lines, rowIdx) {
+  for (let i = rowIdx - 1; i >= 0; i--) {
+    const m = lines[i].match(/^#{2,3}\s+(.*)$/);
+    if (m) return m[1].trim();
+  }
+  return '';
+}
+
+/**
+ * 按编号抽表格整行。matchFirstCell(cellText) → 命中的编号（字符串）或 null。
+ * 返回 { hits: Map<id, [{line, idx}]>, blocks: [{heading, header, sep, rows}] }
+ */
+function pickTableRows(lines, wantedIds, matchFirstCell) {
+  const hits = new Map();
+  const picked = []; // {idx, line, id}
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i];
+    if (!l.trim().startsWith('|')) continue;
+    if (SEP_RE.test(l)) continue;
+    const cells = l.split('|');
+    if (cells.length < 3) continue;
+    const first = cells[1].trim();
+    const id = matchFirstCell(first);
+    if (id === null || id === undefined) continue;
+    if (!wantedIds.includes(id)) continue;
+    if (!hits.has(id)) hits.set(id, []);
+    hits.get(id).push(i);
+    picked.push({ idx: i, line: l, id });
+  }
+  // 按表头分组，保持文档顺序
+  const blocks = [];
+  for (const p of picked) {
+    const h = findTableHeader(lines, p.idx);
+    const key = h ? h.headerIdx : -1;
+    let b = blocks.find((x) => x.key === key);
+    if (!b) {
+      b = {
+        key,
+        heading: findNearestHeading(lines, p.idx),
+        header: h ? h.header : null,
+        sep: h ? h.sep : null,
+        rows: [],
+      };
+      blocks.push(b);
+    }
+    b.rows.push(p.line);
+  }
+  return { hits, blocks };
+}
+
+function renderBlocks(blocks) {
+  return blocks
+    .map((b) => {
+      const head = b.header ? `${b.header}\n${b.sep}\n` : '';
+      const title = b.heading ? `*（出自：${b.heading}）*\n\n` : '';
+      return `${title}${head}${b.rows.join('\n')}`;
+    })
+    .join('\n\n');
+}
+
+function assertAllFound(hits, wanted, what, file) {
+  const missing = wanted.filter((id) => !hits.has(id) || hits.get(id).length === 0);
+  if (missing.length) {
+    die(`${what} 里找不到这些编号：${missing.join('、')}\n        文件：${file}\n        （不允许静默漏配料，请核对编号后重跑）`);
+  }
+}
+
+// ───────────────────────── 命令行 ─────────────────────────
+
+const KNOWN = new Set([
+  'style', 'factcard', 'facts', 'chain', 'links', 'angles', 'angle',
+  'stories', 'story-ids', 'experiences', 'exp-ids', 'topic', 'out', 'help',
+]);
+
+function parseArgs(argv) {
+  const a = {};
+  for (let i = 0; i < argv.length; i++) {
+    const t = argv[i];
+    if (!t.startsWith('--')) die(`看不懂的参数：${t}`);
+    const key = t.slice(2);
+    if (!KNOWN.has(key)) die(`不认识的参数：--${key}\n        可用参数：${[...KNOWN].map((k) => '--' + k).join(' ')}`);
+    if (key === 'help') { a.help = true; continue; }
+    const val = argv[i + 1];
+    if (val === undefined || val.startsWith('--')) die(`--${key} 后面缺值`);
+    a[key] = val;
+    i++;
+  }
+  return a;
+}
+
+const USAGE = `
+用法：
+  node engine/brief/build-brief.mjs \\
+    --style docs/人设说明书-钱十七.md \\
+    --factcard <事实卡.md> --facts A2,A5,B1,B3 \\
+    --chain <事实链.md> --links 2,3,4 \\
+    --angles docs/开头角度清单-xxx.md --angle C \\
+    --stories docs/圣矾真实经历清单.md --story-ids 91,65 \\
+    --experiences docs/闲鱼经验库/总表.json --exp-ids X-风控-014,X-心态-002 \\
+    --topic "闲鱼卖京东家政券" --out <输出.md>
+
+路径相对仓库根或绝对皆可。缺哪个参数就跳过那一节，并在配料包末尾"缺项"里列出。
+编号找不到会报错退出 1。
+`;
+
+// ───────────────────────── 主流程 ─────────────────────────
+
+const args = parseArgs(process.argv.slice(2));
+if (args.help) { process.stdout.write(USAGE); process.exit(0); }
+
+const missing = [];   // 缺项说明
+const stats = [];     // 给报告用的条数统计
+const parts = [];     // 输出的各节
+
+const topic = args.topic || '（未给 --topic）';
+const today = new Date().toISOString().slice(0, 10);
+
+// ── 1. 抬头 ──────────────────────────────────────────────
+parts.push(`# 配料包 · ${topic}
+
+> 生成时间：${today}　·　生成器：\`engine/brief/build-brief.mjs\`
+> **这份文件就是你写这篇稿要用的全部配料。不要再去翻别的大文件，也不要自己补配料。**
+
+**写稿公式**
+
+\`\`\`
+一篇口播稿 = 项目事实（固定，第四节）+ 故事（第五节）+ 一批闲鱼经验（第六节）
+风格固定（第二节说明书），开头角度按第三节走。
+\`\`\`
+
+**落盘要求**
+
+- 口播五分钟，一千三到一千五百个汉字。
+- 一句一行。
+- 单句不超过五十字。
+- 全部用汉字数字，不出现阿拉伯数字、百分号、英文字母；零头取整加"多"（如"九千八百多件"）。
+- 交稿前先自己过一遍第七节那张机器查表，命中即打回。
+`);
+
+// ── 2. 风格说明书 ────────────────────────────────────────
+let styleDoc = null;
+if (args.style) {
+  styleDoc = readFileOrDie(args.style, '风格说明书（--style）');
+  parts.push(`---
+
+# 二、风格说明书（原样全文，照着写）
+
+<!-- 来源：${args.style} -->
+
+${styleDoc.text.trim()}`);
+  stats.push(['风格说明书', `全文嵌入，${countHanzi(styleDoc.text)} 汉字`]);
+} else {
+  missing.push('**风格说明书**：没给 `--style`，第二节和第七节都空着。写手拿不到风格标准，等于白写。');
+}
+
+// ── 3. 开头 ──────────────────────────────────────────────
+if (args.angles && args.angle) {
+  const doc = readFileOrDie(args.angles, '开头角度清单（--angles）');
+  const sec = extractAngle(doc.lines, args.angle.trim());
+  if (!sec) {
+    die(`开头角度清单里找不到「角度 ${args.angle}」这一节\n        文件：${doc.abs}\n        （标题格式应为 "## 角度 X · ..."）`);
+  }
+  parts.push(`---
+
+# 三、开头（本篇用角度 ${args.angle.trim()}）
+
+<!-- 来源：${args.angles} -->
+
+> 开头示意是"可直接听"的示范，不是逐字稿。可以改词，但钩子类型、前三句要说清的三件事（卖什么、赚谁的钱、一单多少）、合同句、三块框架的顺序不许动。
+
+${sec}`);
+  stats.push(['开头角度', `角度 ${args.angle.trim()}，一节`]);
+} else if (args.angles && !args.angle) {
+  missing.push('**开头**：给了 `--angles` 但没给 `--angle`，不知道用哪个角度，第三节空着。');
+} else if (!args.angles && args.angle) {
+  missing.push('**开头**：给了 `--angle` 但没给 `--angles`，没有角度清单文件，第三节空着。');
+} else {
+  missing.push('**开头**：没给 `--angles` / `--angle`，第三节空着。开头得自己定角度。');
+}
+
+// ── 4. 项目事实 ──────────────────────────────────────────
+const factParts = [];
+
+// 4a/4b/4d/4e：事实链
+if (args.chain) {
+  const doc = readFileOrDie(args.chain, '事实链（--chain）');
+
+  const sec2 = extractSection(doc.lines, /^##\s*二、/);
+  if (!sec2) die(`事实链里找不到第二节（"## 二、..."）\n        文件：${doc.abs}`);
+  factParts.push(`## 4.1　生意句三个数（原样）\n\n${sec2.replace(/^##\s*/, '### ')}`);
+  stats.push(['事实链第二节', '生意句三个数，一节']);
+
+  if (args.links) {
+    const wanted = splitIds(args.links);
+    const sec3Full = extractSection(doc.lines, /^##\s*三、/);
+    if (!sec3Full) die(`事实链里找不到第三节链条环节表（"## 三、..."）\n        文件：${doc.abs}`);
+    const sec3Lines = sec3Full.split('\n');
+    const { hits, blocks } = pickTableRows(sec3Lines, wanted, (cell) => {
+      const m = cell.match(/^\*\*(\d+)\./);
+      return m ? m[1] : null;
+    });
+    assertAllFound(hits, wanted, `事实链第三节链条环节表（--links）`, doc.abs);
+    const rendered = blocks
+      .map((b) => `${b.header}\n${b.sep}\n${b.rows.join('\n')}`)
+      .join('\n\n');
+    factParts.push(`## 4.2　本篇要讲的链条环节（第 ${wanted.join('、')} 环）
+
+> 规则：每条事实只挂一个环节。引某条事实，就只能用它在本表里这一格的用途。第四列"常见的写错"逐条对照。
+
+${rendered}`);
+    stats.push(['事实链环节', `${wanted.length} 环（${wanted.join('、')}）`]);
+  } else {
+    missing.push('**链条环节**：没给 `--links`，第 4.2 小节空着（不知道本篇讲哪几环）。');
+  }
+} else {
+  missing.push('**事实链**：没给 `--chain`，缺"生意句三个数"、链条环节表、"不许入稿"、"一跳规则"四样。这是最硬的四样，别裸写。');
+}
+
+// 4c：事实卡
+if (args.factcard && args.facts) {
+  const doc = readFileOrDie(args.factcard, '事实卡（--factcard）');
+  const wanted = splitIds(args.facts);
+  const { hits, blocks } = pickTableRows(doc.lines, wanted, (cell) => {
+    const m = cell.replace(/\*/g, '').match(/^([AB]\d+)$/);
+    return m ? m[1] : null;
+  });
+  assertAllFound(hits, wanted, '事实卡（--facts）', doc.abs);
+  factParts.push(`## 4.3　本篇能用的事实（${wanted.length} 条）
+
+<!-- 来源：${args.factcard} -->
+
+> A 段 = 2026-09-02 实采，可直接引用，价格必须标采集日期；B 段 = 用户第41期口播/抽帧，历史经验，引用须标"第41期"。
+> **只能用这里列出的这几条。** 事实卡里别的编号本篇不给，就是不许写。
+
+${renderBlocks(blocks)}`);
+  stats.push(['事实卡', `${wanted.length} 条（${wanted.join('、')}）`]);
+} else if (args.factcard && !args.facts) {
+  missing.push('**事实卡**：给了 `--factcard` 但没给 `--facts`，第 4.3 小节空着。');
+} else if (!args.factcard && args.facts) {
+  missing.push('**事实卡**：给了 `--facts` 但没给 `--factcard`，没有事实卡文件，第 4.3 小节空着。');
+} else {
+  missing.push('**事实卡**：没给 `--factcard` / `--facts`，第 4.3 小节空着，稿里不该出现任何具体数字。');
+}
+
+// 4d/4e：不许入稿 + 一跳规则
+if (args.chain) {
+  const doc = readFileOrDie(args.chain, '事实链（--chain）');
+  const sec4 = extractSection(doc.lines, /^##\s*四、/);
+  if (!sec4) die(`事实链里找不到第四节"不许入稿"（"## 四、..."）\n        文件：${doc.abs}`);
+  const sec5 = extractSection(doc.lines, /^##\s*五、/);
+  if (!sec5) die(`事实链里找不到第五节"允许的推理跳数"（"## 五、..."）\n        文件：${doc.abs}`);
+  factParts.push(`## 4.4　不许入稿（原样，逐条对）\n\n${sec4.replace(/^##\s*/, '### ')}`);
+  factParts.push(`## 4.5　允许的推理跳数（原样，写完自己走一遍）\n\n${sec5.replace(/^##\s*/, '### ')}`);
+  stats.push(['事实链第四/五节', '不许入稿 + 一跳规则，各一节']);
+}
+
+parts.push(`---
+
+# 四、项目事实（固定部分，每篇都一样）
+
+${factParts.length ? factParts.join('\n\n') : '（这一节整个空着，见第八节缺项。）'}`);
+
+// ── 5. 故事 ──────────────────────────────────────────────
+if (args.stories && args['story-ids']) {
+  const doc = readFileOrDie(args.stories, '经历清单（--stories）');
+  const wanted = splitIds(args['story-ids']);
+  const { hits, blocks } = pickTableRows(doc.lines, wanted, (cell) => {
+    const m = cell.replace(/\*/g, '').match(/^(\d+)$/);
+    return m ? m[1] : null;
+  });
+  assertAllFound(hits, wanted, '经历清单（--story-ids）', doc.abs);
+  const dupNote = wanted
+    .filter((id) => hits.get(id).length > 1)
+    .map((id) => `${id}（${hits.get(id).length} 处）`);
+  parts.push(`---
+
+# 五、故事（本篇用 ${wanted.length} 条）
+
+<!-- 来源：${args.stories} -->
+
+> **本人经历，写成"我"，只用原话的意思，不加工、不演绎成"我以为"。**
+> 不给它加心理活动、不给它补前因后果、不把它写得比原话更惨或更好。末列写 ⚠️ 的按末列说明剥掉数字再用。
+${dupNote.length ? `>\n> （编号在原文件里出现多处，下面都列出来了：${dupNote.join('、')}）\n` : ''}
+${renderBlocks(blocks)}`);
+  stats.push(['故事', `${wanted.length} 个编号（${wanted.join('、')}），命中 ${[...hits.values()].reduce((a, b) => a + b.length, 0)} 行`]);
+} else if (args.stories || args['story-ids']) {
+  missing.push('**故事**：`--stories` 和 `--story-ids` 要一起给，只给了一半，第五节空着。');
+} else {
+  missing.push('**故事**：没给 `--stories` / `--story-ids`，第五节空着。没有故事就只剩干条，稿会很硬。');
+}
+
+// ── 6. 闲鱼经验 ──────────────────────────────────────────
+if (args.experiences && args['exp-ids']) {
+  const p = resolvePath(args.experiences);
+  if (!fs.existsSync(p)) die(`闲鱼经验总表（--experiences）文件不存在：${p}`);
+  let db;
+  try {
+    db = JSON.parse(fs.readFileSync(p, 'utf8'));
+  } catch (e) {
+    die(`闲鱼经验总表不是合法 JSON：${p}（${e.message}）`);
+  }
+  if (!Array.isArray(db)) die(`闲鱼经验总表顶层应该是数组：${p}`);
+  const wanted = splitIds(args['exp-ids']);
+  const byId = new Map(db.map((x) => [String(x.id), x]));
+  const notFound = wanted.filter((id) => !byId.has(id));
+  if (notFound.length) {
+    die(`闲鱼经验总表里找不到这些编号：${notFound.join('、')}\n        文件：${p}\n        （不允许静默漏配料，请核对编号后重跑）`);
+  }
+  const rows = wanted.map((id) => {
+    const e = byId.get(id);
+    const bei = (e.备注 || '').trim();
+    return `| ${e.id} | ${(e.经验 || '').trim()} | ${e.环节 || ''} · ${e.类型 || ''} | ${e.支持数 ?? ''} | ${e.标记 || ''} | ${bei || '—'} |`;
+  });
+  const flagged = wanted.filter((id) => /⚠️|🚫/.test(byId.get(id).标记 || ''));
+  parts.push(`---
+
+# 六、闲鱼经验（本篇用 ${wanted.length} 条）
+
+<!-- 来源：${args.experiences} -->
+
+> **同行经验，只能写成"有人这么做 / 行业里一般这么看 / 做闲鱼的都知道"，不写成亲历，不带收入数字。**
+> ⚠️ 的按"备注"那一列剥掉数字再用；🚫 的不用。
+> "支持数"是多少份原始资料撑着这条，数越大越敢往稿里写。
+
+| 编号 | 经验 | 环节 · 类型 | 支持数 | 标记 | 备注（怎么剥） |
+| --- | --- | --- | --- | --- | --- |
+${rows.join('\n')}${flagged.length ? `\n\n**要剥的**：${flagged.join('、')}——按上表"备注"列处理，别原样搬。` : ''}`);
+  stats.push(['闲鱼经验', `${wanted.length} 条（${wanted.join('、')}），其中带标记 ${flagged.length} 条`]);
+} else if (args.experiences || args['exp-ids']) {
+  missing.push('**闲鱼经验**：`--experiences` 和 `--exp-ids` 要一起给，只给了一半，第六节空着。');
+} else {
+  missing.push('**闲鱼经验**：没给 `--experiences` / `--exp-ids`，第六节空着。没有同行经验，正文会薄。');
+}
+
+// ── 7. 交稿前机器查 ──────────────────────────────────────
+if (styleDoc) {
+  const sec = extractSection(styleDoc.lines, /^##\s*十八、/);
+  if (!sec) die(`风格说明书里找不到"交稿前机器查一遍"那一节（"## 十八、..."）\n        文件：${styleDoc.abs}`);
+  parts.push(`---
+
+# 七、交稿前机器查一遍（重复列一次，写手最容易漏这节）
+
+${sec.replace(/^##\s*/, '## ')}
+
+> 这一节上面第二节里已经有一份，这里再列一次是因为写手总漏。**交稿前用程序跑，命中即打回，自己勾的不算。**`);
+  stats.push(['机器查表', '一节（说明书 §十八）']);
+}
+
+// ── 8. 缺项 ──────────────────────────────────────────────
+parts.push(`---
+
+# 八、缺项
+
+${missing.length
+    ? missing.map((m) => `- ${m}`).join('\n')
+    : '（无。这份配料包是齐的：风格、开头、事实、故事、经验、机器查表六样都在。）'}`);
+
+// ───────────────────────── 落盘 ─────────────────────────
+
+const output = parts.join('\n\n') + '\n';
+
+if (args.out) {
+  const outAbs = resolvePath(args.out);
+  fs.mkdirSync(path.dirname(outAbs), { recursive: true });
+  fs.writeFileSync(outAbs, output, 'utf8');
+  const hanzi = countHanzi(output);
+  process.stdout.write(`[build-brief] 已写出：${outAbs}\n`);
+  process.stdout.write(`[build-brief] 汉字数：${hanzi}　总字符：${output.length}\n`);
+  for (const [k, v] of stats) process.stdout.write(`[build-brief]   ${k}：${v}\n`);
+  process.stdout.write(`[build-brief] 缺项：${missing.length ? missing.length + ' 条（见配料包第八节）' : '无'}\n`);
+} else {
+  process.stdout.write(output);
+}
