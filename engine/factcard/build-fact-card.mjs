@@ -222,40 +222,42 @@ function buildMarkdown(cap, args) {
   L.push('');
 
   // ---------- 3. 事实清单 ----------
-  L.push('## 3. 事实清单（来源 + 核实状态）');
+  L.push('## 3. 事实清单（来源 + 核实状态 + 稿里怎么说）');
   L.push('');
-  L.push('| # | 事实 | 来源 | 核实状态 |');
-  L.push('| --- | --- | --- | --- |');
+  L.push('| # | 事实 | 来源 | 核实状态 | 稿里怎么说 |');
+  L.push('| --- | --- | --- | --- | --- |');
   let fi = 0;
   const topWantsDesc = wants.top.length
     ? wants.top.map((p) => `${p.wants}`).slice(0, 3).join('/')
     : '—';
-  L.push(`| ${++fi} | 「${query}」搜索第1页采集 ${products.length} 条，其中 ${wants.count} 条显示"人想要"，Top想要 ${topWantsDesc}（呈长尾） | 闲鱼搜索页实采 | ${OK_REAL} |`);
+  L.push(`| ${++fi} | 「${query}」搜索第1页采集 ${products.length} 条，其中 ${wants.count} 条显示"人想要"，Top想要 ${topWantsDesc}（呈长尾） | 闲鱼搜索页实采 | ${OK_REAL} |  |`);
   const bucketStr = buckets.map((b) => `${b.label} ${b.n}条${priced ? `（${Math.round(b.n / priced * 100)}%）` : ''}`).join('；');
-  L.push(`| ${++fi} | 价格分层（按 ${priced} 条有标价商品）：${bucketStr} | 30条标价 | ${OK_REAL} |`);
+  L.push(`| ${++fi} | 价格分层（按 ${priced} 条有标价商品）：${bucketStr} | 30条标价 | ${OK_REAL} |  |`);
   // Top 明细逐条入事实清单（单品口径 + 店铺口径分列，绝不混淆）
   for (const e of topEntries) {
     const priceTxt = e.price_range ? `¥${e.price_range}` : (e.price != null ? `¥${e.price}` : '价格未取到');
     const item = `Top${e.rank}「${e.name}」单品：想要 ${e.wants ?? '未显示'}、浏览 ${e.views ?? '未显示'}、${priceTxt}`;
-    L.push(`| ${++fi} | ${item} | Top${e.rank} 详情页（单品口径） | ${OK_REAL} |`);
+    L.push(`| ${++fi} | ${item} | Top${e.rank} 详情页（单品口径） | ${OK_REAL} |  |`);
     if (e.shop_sold != null || e.shop_rating != null || e.shop_age != null) {
       const shop = `Top${e.rank}「${e.name}」店铺：${e.shop_age ?? '店龄未显示'}、累计已售 ${e.shop_sold ?? '未显示'} 件、好评率 ${e.shop_rating ?? '未显示'}`;
-      L.push(`| ${++fi} | ${shop} | Top${e.rank} 详情页（**店铺口径，非本单销量**） | ${OK_REAL} |`);
+      L.push(`| ${++fi} | ${shop} | Top${e.rank} 详情页（**店铺口径，非本单销量**） | ${OK_REAL} |  |`);
     }
   }
   // 缺口项
   if (args.cost) {
-    L.push(`| ${++fi} | 拿货价线索：${args.cost} | 命令行 --cost（用户提供） | ⚠️待核实（线索，非实采） |`);
+    L.push(`| ${++fi} | 拿货价线索：${args.cost} | 命令行 --cost（用户提供） | ⚠️待核实（线索，非实采） |  |`);
     pending.push('核实拿货价/成本（当前仅为用户线索，未核实）→ 才能推算利润');
   } else {
-    L.push(`| ${++fi} | 各产品的官方拿货价 / 成本 | — | ${GAP} |`);
+    L.push(`| ${++fi} | 各产品的官方拿货价 / 成本 | — | ${GAP} |  |`);
     pending.push('核实拿货价/成本 → 才能推算利润');
   }
   if (args.supply) {
-    L.push(`| ${++fi} | 供应路径线索：${args.supply} | 命令行 --supply（用户提供） | ⚠️待溯源核实 |`);
+    L.push(`| ${++fi} | 供应路径线索：${args.supply} | 命令行 --supply（用户提供） | ⚠️待溯源核实 |  |`);
   } else {
-    L.push(`| ${++fi} | 合规可复制的供应路径（来源是否可持续、是否违反平台条款） | — | ${GAP}（未做资源溯源） |`);
+    L.push(`| ${++fi} | 合规可复制的供应路径（来源是否可持续、是否违反平台条款） | — | ${GAP}（未做资源溯源） |  |`);
   }
+  L.push('');
+  L.push('> "稿里怎么说"一列机器不填，人补：每条给一句口播能直接念的话（不带内部词、不带阿拉伯数字、取整加"多"、不带负面评价；不能念的写"不入稿（原因）"）。写手只念这一列（见 docs/事实卡规范.md §3.2–3.3）。');
   L.push('');
 
   // ---------- 4. 同行数据 ----------
