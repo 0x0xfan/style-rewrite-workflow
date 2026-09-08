@@ -98,6 +98,14 @@ const STRUCTURE = {
     return re.test(b[0].text) ? [hit(b[0].line, `第一句：${b[0].text}`)] : [];
   },
 
+  // 某个词一篇里最多出现几次（妥妥的 ≤1）
+  maxCount(lines, p) {
+    const b = bodyLines(lines);
+    const w = p.词; const cap = p.上限 ?? 1;
+    const where = b.filter((x) => x.text.includes(w));
+    return where.length > cap ? where.slice(cap).map((x) => hit(x.line, `「${w}」第 ${where.indexOf(x) + 1} 次（一篇最多 ${cap} 次）：${x.text.slice(0, 40)}`)) : [];
+  },
+
   businessInFirst3(lines, p) {
     const b = bodyLines(lines).slice(0, p.句数 || 3);
     const joined = b.map((x) => x.text).join('');
