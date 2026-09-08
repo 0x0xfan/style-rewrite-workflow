@@ -16,6 +16,7 @@
     "check:ai-flavor": "node engine/naturalness/check-ai-flavor.mjs",
     "check:style-floor": "node engine/naturalness/check-style-floor.mjs",
     "check:lexicon": "node engine/naturalness/check-lexicon.mjs",
+    "check:draft": "node engine/brief/check-all.mjs",
     "ledger": "node engine/variation/check-repetition.mjs --ledger"
   },
   "engines": {
