@@ -101,7 +101,8 @@ const STRUCTURE = {
   businessInFirst3(lines, p) {
     const b = bodyLines(lines).slice(0, p.句数 || 3);
     const joined = b.map((x) => x.text).join('');
-    const money = new RegExp(`一单[^，。]{0,8}${HANZI_NUM}|${HANZI_NUM}(块|元|毛)`).test(joined);
+    // 「几块到十几块」这类模糊量词也算钱数（用户授权口径里就这么说）
+    const money = new RegExp(`一单[^，。]{0,8}(${HANZI_NUM}|几)|(${HANZI_NUM}|几)(块|元|毛)`).test(joined);
     const verb = (p.动作词 || ['卖', '收', '挂']).some((w) => joined.includes(w));
     const miss = [];
     if (!money) miss.push('没有「一单多少」的数');
