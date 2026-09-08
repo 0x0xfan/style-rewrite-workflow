@@ -71,7 +71,9 @@ export function snippet(line, start, end, span = 14) {
 }
 
 export function sourceLabel(e) {
-  return e.录入 === '用户点名' ? `用户 ${e.日期} 点名` : `主线程 ${e.日期} 预防性`;
+  if (e.录入 === '用户点名') return `用户 ${e.日期} 点名`;
+  if (e.录入 === '员工修改') return `员工 ${e.日期} 改稿`;
+  return `主线程 ${e.日期} 预防性`;
 }
 
 /** 读稿件为行数组（去 BOM，统一换行）。 */
@@ -207,9 +209,10 @@ if (invokedDirectly) {
 
   const c = countBySource(table.entries);
   const userHits = hits.filter((h) => h.entry.录入 === '用户点名').length;
-  const preHits = hits.length - userHits;
+  const staffHits = hits.filter((h) => h.entry.录入 === '员工修改').length;
+  const preHits = hits.length - userHits - staffHits;
   const total = hits.length + structural.length;
-  out.push(`词表 ${c.total} 条（用户点名 ${c.users} / 预防性 ${c.preventive}），命中 ${hits.length} 处（用户点名 ${userHits} / 预防性 ${preHits}），结构检查命中 ${structural.length} 处${reminders.length ? `，提醒 ${reminders.length} 处` : ''}`);
+  out.push(`词表 ${c.total} 条（用户点名 ${c.users} / 员工修改 ${c.staff} / 预防性 ${c.preventive}），命中 ${hits.length} 处（用户点名 ${userHits} / 员工修改 ${staffHits} / 预防性 ${preHits}），结构检查命中 ${structural.length} 处${reminders.length ? `，提醒 ${reminders.length} 处` : ''}`);
   out.push(total ? '结论：有命中，打回改。' : '结论：没命中。');
 
   process.stdout.write(out.join('\n') + '\n');

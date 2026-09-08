@@ -143,7 +143,9 @@ const STRUCTURE = {
 
   roadmap(lines, p) {
     const b = bodyLines(lines);
-    const i2 = b.findIndex((x) => x.text === '做闲鱼，找圣矾。');
+    // 口号句从 R003 参数读（用户 2026-09-08 裁定 A 改为「学闲鱼，找圣矾。」）；读不到就两种口号都认
+    const slogans = rules.find((r) => r.参数?.check === 'contract')?.参数?.句?.slice(1) || [];
+    const i2 = b.findIndex((x) => slogans.includes(x.text) || /^[学做]闲鱼，找圣矾。$/.test(x.text));
     const start = i2 >= 0 ? i2 + 1 : 0;
     const win = b.slice(start, start + (p.合同句后几句内 || 4));
     const re = new RegExp(p.正则);
@@ -298,6 +300,8 @@ const notRun = [];   // 退回级没跑的
 // ── words：跑一遍，按类型认领 ──
 const wordRules = rules.filter((r) => r.查法 === 'words');
 const claimers = rules.filter((r) => Array.isArray(r.参数?.词表类型));
+// 参数.词条 = ["U151", …] 的行按词条 id 认领，优先于按类型认领（R052 只管两个词，不把整类降级）
+const idClaimers = rules.filter((r) => Array.isArray(r.参数?.词条));
 const catchAll = wordRules.find((r) => !Array.isArray(r.参数?.词表类型));
 let table = null;
 try { table = loadTable(args.words); } catch (e) { die(e.message); }
@@ -305,7 +309,7 @@ try { table = loadTable(args.words); } catch (e) { die(e.message); }
   const active = activeEntries(table.entries, args.topicType, args.topic);
   const { hits, reminders } = scanDraft(lines, active);
   for (const h of hits) {
-    const owner = claimers.find((r) => r.参数.词表类型.includes(h.entry.类型)) || catchAll;
+    const owner = idClaimers.find((r) => r.参数.词条.includes(h.entry.id)) || claimers.find((r) => r.参数.词表类型.includes(h.entry.类型)) || catchAll;
     if (!owner) continue;
     R(owner.id).hits.push(hit(h.line, `「${h.term}」→ ${h.entry.换}　［${h.entry.类型}］${sourceLabel(h.entry)}（${h.entry.id}）　${snippet(lines[h.line - 1], h.start, h.end)}`));
   }

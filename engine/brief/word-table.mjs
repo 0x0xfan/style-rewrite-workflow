@@ -2,7 +2,10 @@
 //
 // 词表在 docs/用户校准词表.json，每条：
 //   { id, 禁, 换, 类型, 日期, 用户原话, 来源稿, 录入, 正则?, 位置?, 说明? }
-//   - 录入 只有两个值："用户点名" / "主线程预防性"，后者不许冒充前者
+//   - 录入 三个值："用户点名" / "员工修改" / "主线程预防性"；前两个效力相同（都要有 用户原话：员工修改填对照表那行"原→改"），
+//     预防性不许冒充前两个（2026-09-08 回稿 P-v2 起加 员工修改）
+//   - 位置 "第一行" 表示只查稿件第一行；其它位置值（报进价 / 句首）只是给人看的说明，机器靠 正则 限定
+//   - 说明 / 备注 自由文字，机器不读
 //   - 类型 "实物专用" 的条目只在虚拟选题（--topic-type 虚拟）时生效
 //   - 正则 给了就按正则匹配，否则按 禁 字段做字面匹配
 //   - 位置 "第一行" 表示只查稿件第一行
@@ -18,7 +21,9 @@ export const TYPES = [
   '内部术语', '压缩词', '自造对仗', '书面词', '整齐收口', '经验表用词',
   '套用错', '空包袱', '开头固定句', '旧系列引用', '实物专用',
 , '内容判断', '半句话', '不通顺', '借用错', '来源不明', '选题红线', '用词不当'];
-export const SOURCES = ['用户点名', '主线程预防性'];
+export const SOURCES = ['用户点名', '员工修改', '主线程预防性'];
+/** 效力等同用户点名的录入值（都必须带用户原话） */
+export const USER_SOURCES = ['用户点名', '员工修改'];
 
 export function resolvePath(p) {
   return path.isAbsolute(p) ? p : path.resolve(REPO_ROOT, p);
@@ -45,7 +50,7 @@ export function loadTable(p = DEFAULT_TABLE) {
     seen.add(e.id);
     if (!TYPES.includes(e.类型)) throw new Error(`词表${where}类型不认识：${e.类型}（可用：${TYPES.join('|')}）`);
     if (!SOURCES.includes(e.录入)) throw new Error(`词表${where}录入只能是 ${SOURCES.join(' / ')}，现在是：${e.录入}`);
-    if (e.录入 === '用户点名' && !(e.用户原话 || '').trim()) throw new Error(`词表${where}标了用户点名却没有用户原话`);
+    if (USER_SOURCES.includes(e.录入) && !(e.用户原话 || '').trim()) throw new Error(`词表${where}标了${e.录入}却没有用户原话`);
     if (e.正则) {
       try { new RegExp(e.正则, 'u'); } catch (err) { throw new Error(`词表${where}正则写错：${err.message}`); }
     }
@@ -74,8 +79,9 @@ export function renderMarkdown(entries, { topicType } = {}) {
   const out = [];
   for (const g of groups) {
     const users = g.rows.filter((r) => r.录入 === '用户点名').length;
-    const pre = g.rows.length - users;
-    let title = `### ${g.type}（${g.rows.length} 条：用户点名 ${users} / 预防性 ${pre}）`;
+    const staff = g.rows.filter((r) => r.录入 === '员工修改').length;
+    const pre = g.rows.length - users - staff;
+    let title = `### ${g.type}（${g.rows.length} 条：用户点名 ${users}${staff ? ` / 员工修改 ${staff}` : ''} / 预防性 ${pre}）`;
     if (g.type === '实物专用') {
       title += topicType === '虚拟'
         ? '　—— 本篇是虚拟选题，这一类生效'
@@ -95,5 +101,6 @@ export function renderMarkdown(entries, { topicType } = {}) {
 
 export function countBySource(entries) {
   const users = entries.filter((e) => e.录入 === '用户点名').length;
-  return { total: entries.length, users, preventive: entries.length - users };
+  const staff = entries.filter((e) => e.录入 === '员工修改').length;
+  return { total: entries.length, users, staff, preventive: entries.length - users - staff };
 }

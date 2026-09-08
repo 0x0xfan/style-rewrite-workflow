@@ -617,10 +617,10 @@ ${sec.replace(/^##\s*/, '## ')}
 
 > 这张表每一条都是用户对稿子的一次字句纠正（"用户点名"），或主线程从同一病根推出来的同类词（"预防性"）。**左列的词不许出现，右列是稿里该怎么说。**
 > ${topicNote}
-> 交稿前跑 \`${checkCmd}\`，命中即改，报告里贴输出。本表 ${c.total} 条（用户点名 ${c.users} / 预防性 ${c.preventive}）。
+> 交稿前跑 \`${checkCmd}\`，命中即改，报告里贴输出。本表 ${c.total} 条（用户点名 ${c.users} / 员工修改 ${c.staff} / 预防性 ${c.preventive}）。
 
 ${renderWordTable(filtered, { topicType })}`);
-  stats.push(['用户校准词表', `${c.total} 条（用户点名 ${c.users} / 预防性 ${c.preventive}）${topicType ? `，选题类型 ${topicType}` : '，未给 --topic-type'}`]);
+  stats.push(['用户校准词表', `${c.total} 条（用户点名 ${c.users} / 员工修改 ${c.staff} / 预防性 ${c.preventive}）${topicType ? `，选题类型 ${topicType}` : '，未给 --topic-type'}`]);
   if (!topicType) missing.push('**选题类型**：没给 `--topic-type`，第十一节"实物专用"那一类没法过滤，交稿前跑 check-words 时自己补 `--topic-type 虚拟|实物`。');
 }
 
