@@ -1,8 +1,11 @@
 #!/usr/bin/env node
-// 合并五份真人语料包分表 → docs/真人语料包/总表.json + 总表.md
+// 合并真人语料包分表 → docs/真人语料包/总表.json + 总表.md
 // 用法：node engine/corpus-pack/merge-pack.mjs [--dump <dir>]
 //   --dump 把待人工复核的清单（场景 E 粗分、效果倍数候选、收入数字候选、立场候选、品类改判）写到目录里
 // 人工裁定放在同目录 manual-overrides.json（子场景、立场、效果倍数保留/追加删除、收入数字改判）。
+// 分表来源：扫 docs/真人语料包/part-*.md（2026-09-08 起不再写死五个文件名）。
+//   part-<数字>[-xxx].md → 分表名 part-<数字>，按数字排；其余（如 kb-intake 产出的 part-inbox-<日期>.md）→ 分表名 = 文件名去 .md，排在编号分表之后。
+//   part-5 仍按"圣矾本人"格式解析作者档案（项 / 内容两列）。
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -11,13 +14,15 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..', '..');
 const PACK_DIR = path.join(ROOT, 'docs', '真人语料包');
-const PARTS = [
-  ['part-1', 'part-1.md'],
-  ['part-2', 'part-2.md'],
-  ['part-3', 'part-3.md'],
-  ['part-4', 'part-4.md'],
-  ['part-5', 'part-5-圣矾本人.md'],
-];
+const PARTS = fs.readdirSync(PACK_DIR)
+  .filter((f) => /^part-.+\.md$/i.test(f))
+  .map((f) => { const m = f.match(/^(part-(\d+))(?:[-_.]|\.md$)/); return { file: f, name: m ? m[1] : f.replace(/\.md$/, ''), num: m ? Number(m[2]) : Infinity }; })
+  .sort((a, b) => a.num - b.num || a.file.localeCompare(b.file))
+  .map((p) => [p.name, p.file]);
+if (!PARTS.length) throw new Error('docs/真人语料包/ 下没有 part-*.md');
+{ const seen = new Set(); for (const [n] of PARTS) { if (seen.has(n)) throw new Error('分表名重复：' + n); seen.add(n); } }
+const CN_NUM = ['零', '一', '两', '三', '四', '五', '六', '七', '八', '九', '十'];
+const PARTS_DESC = `${PARTS.length <= 10 ? CN_NUM[PARTS.length] : PARTS.length}份分表（${PARTS.length === 1 ? PARTS[0][0] : `${PARTS[0][0]} … ${PARTS[PARTS.length - 1][0]}`}）`;
 const OVERRIDES_PATH = path.join(__dirname, 'manual-overrides.json');
 const overrides = fs.existsSync(OVERRIDES_PATH)
   ? JSON.parse(fs.readFileSync(OVERRIDES_PATH, 'utf8'))
@@ -466,7 +471,7 @@ stats.physHintFlipped = stats.categoryChanged.filter((d) => d.to === '通用' &&
 const strip = (e) => { const o = {}; for (const [k, v] of Object.entries(e)) { if (v === undefined || k.startsWith('__')) continue; o[k] = v; } return o; };
 const json = {
   生成时间: new Date().toISOString().slice(0, 10),
-  说明: '由 engine/corpus-pack/merge-pack.mjs 合并五份分表生成；原句字段已还原防审查写法，原句_原样保留分表原文；品类按 2026-09-08 八条统一做法重判。',
+  说明: `由 engine/corpus-pack/merge-pack.mjs 合并${PARTS_DESC.replace(/（.*$/, '')}生成；原句字段已还原防审查写法，原句_原样保留分表原文；品类按 2026-09-08 八条统一做法重判。`,
   统计: stats.after,
   openings: openingsFinal.map(strip),
   sayings: sayingsFinal.map(strip),
@@ -484,7 +489,7 @@ const SUBSCENE_LIST = ['心态', '动作', '选品判断', '上架与文案', '�
 let md = [];
 md.push('# 真人语料包 · 总表');
 md.push('');
-md.push(`> 由五份分表（part-1 … part-5）机械合并再人工过一遍生成，脚本 \`engine/corpus-pack/merge-pack.mjs\`，人工裁定在 \`engine/corpus-pack/manual-overrides.json\`。机器读 \`总表.json\`。生成日期 ${json.生成时间}。`);
+md.push(`> 由${PARTS_DESC}机械合并再人工过一遍生成，脚本 \`engine/corpus-pack/merge-pack.mjs\`，人工裁定在 \`engine/corpus-pack/manual-overrides.json\`。机器读 \`总表.json\`。生成日期 ${json.生成时间}。`);
 md.push('');
 md.push('## 使用须知');
 md.push('');

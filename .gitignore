@@ -9,7 +9,7 @@ npm-debug.log*
 
 # Local agent/runtime state
 .agents/
-.claude/
+.claude/*
 .collect-chrome-profile/
 artifacts/
 **/__pycache__/
@@ -39,3 +39,6 @@ research-runs/
 .codex/skills/content-fusion/examples/**/output/
 codex代安装_重写版.md
 钱十七-框架拆解-新版.md
+
+# 2026-09-08 skills 要进仓库，其余 .claude/ 仍忽略（父目录用 .claude/* 才能再包含子目录）
+!.claude/skills/
