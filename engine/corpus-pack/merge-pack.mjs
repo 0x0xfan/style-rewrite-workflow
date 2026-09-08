@@ -6,6 +6,10 @@
 // 分表来源：扫 docs/真人语料包/part-*.md（2026-09-08 起不再写死五个文件名）。
 //   part-<数字>[-xxx].md → 分表名 part-<数字>，按数字排；其余（如 kb-intake 产出的 part-inbox-<日期>.md）→ 分表名 = 文件名去 .md，排在编号分表之后。
 //   part-5 仍按"圣矾本人"格式解析作者档案（项 / 内容两列）。
+// 2026-09-08 起：
+//   - 开头层每条按同目录 opening-types.json 贴"切入大类"（没归到的写"待定"），总表.md 开头层按大类分小节。
+//   - 合表前先读现有 总表.json，按 id 把"用过的期"和顶层"写回顺序"带过来（mark-used 写回的不会被重建清掉）；
+//     旧表有、新表没有的 id 在报告里列出。
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -30,6 +34,30 @@ const overrides = fs.existsSync(OVERRIDES_PATH)
 
 const args = process.argv.slice(2);
 const dumpDir = args.includes('--dump') ? args[args.indexOf('--dump') + 1] : null;
+
+// ---------- 0a. 开头切入大类（opening-types.json；每个 id 只许归一个大类，没归到的写"待定"） ----------
+const OPENING_TYPES_PATH = path.join(__dirname, 'opening-types.json');
+const openingTypes = fs.existsSync(OPENING_TYPES_PATH) ? JSON.parse(fs.readFileSync(OPENING_TYPES_PATH, 'utf8')) : { 大类: [] };
+const OPENING_TYPE_GROUPS = (openingTypes.大类 || []).map((g) => ({ 名: g.名, 判据: g.判据 || '', ids: g.ids || [] }));
+if (!OPENING_TYPE_GROUPS.some((g) => g.名 === '待定')) OPENING_TYPE_GROUPS.push({ 名: '待定', 判据: '合表时没归到任何大类的。', ids: [] });
+const openingTypeOf = new Map();
+for (const g of OPENING_TYPE_GROUPS) {
+  for (const id of g.ids) {
+    if (openingTypeOf.has(id)) throw new Error(`opening-types.json 里 ${id} 同时归在「${openingTypeOf.get(id)}」和「${g.名}」`);
+    openingTypeOf.set(id, g.名);
+  }
+}
+
+// ---------- 0b. 现有总表：把 mark-used 写回的"用过的期"和顶层"写回顺序"带过来 ----------
+const OUT_JSON = path.join(PACK_DIR, '总表.json');
+const prevPack = fs.existsSync(OUT_JSON) ? (() => { try { return JSON.parse(fs.readFileSync(OUT_JSON, 'utf8')); } catch (e) { throw new Error(`现有总表.json 读不出来（${e.message}），不敢重建：先修好或删掉它`); } })() : null;
+const prevUsed = new Map(); // id → 用过的期
+if (prevPack) {
+  for (const layer of ['openings', 'sayings', 'voices']) {
+    for (const e of prevPack[layer] || []) if (e && e.id) prevUsed.set(e.id, Array.isArray(e.用过的期) ? e.用过的期 : []);
+  }
+}
+const prevWriteOrder = prevPack && Array.isArray(prevPack.写回顺序) ? prevPack.写回顺序 : null;
 
 // ---------- 1. 防审查写法还原（做法 8） ----------
 // 顺序有讲究：长的先换。每条 [正则, 替换, 说明]
@@ -259,7 +287,7 @@ for (const [partName, file] of PARTS) {
     const [cat, catNote] = normCategory(r['品类']);
     const structure = decensor(r['结构：每句干什么（⓪ = 自报家门的位置）'] ?? r['结构：每句干什么（⓪ = 自报家门位置）'] ?? r['结构：每句干什么（⓪ = 合同句位置）'] ?? Object.entries(r).find(([k]) => k.startsWith('结构'))?.[1] ?? '');
     openings.push({
-      id, 切入方式: r['切入方式'], 结构: structure, 步数: steps, 口播要压缩: compress,
+      id, 切入方式: r['切入方式'], 切入大类: undefined, 结构: structure, 步数: steps, 口播要压缩: compress,
       适合: r['适合讲什么'], 品类: cat, 品类_分表原标: cat, 品类_注: catNote || undefined,
       作者: authorFromId(id), 出处: fixSource(r['出处']), 用过的期: [], 来源分表: partName,
     });
@@ -332,6 +360,13 @@ for (const [partName, file] of PARTS) {
       stats.idSuffixed.push(e.id);
     }
   }
+}
+
+// ---- 开头切入大类：编号定稿后再贴（opening-types.json 里写的是带 ·pN 后缀的最终编号）----
+{
+  const known = new Set(openings.map((e) => e.id));
+  stats.openingTypeUnknownIds = [...openingTypeOf.keys()].filter((id) => !known.has(id));
+  for (const e of openings) e.切入大类 = openingTypeOf.get(e.id) || '待定';
 }
 
 // ---- 做法 3/4：品类重判 ----
@@ -448,6 +483,22 @@ const authorsFinal = [...authorMap.values()].map((a) => {
 const idSet = new Set();
 for (const e of [...openingsFinal, ...sayingsFinal, ...voicesFinal]) { if (idSet.has(e.id)) throw new Error('id 重复：' + e.id); idSet.add(e.id); }
 
+// ---- 带回"用过的期"和"写回顺序"（mark-used 写的东西不许被重建清掉）----
+stats.usedCarried = 0;
+stats.usedLostIds = []; // 旧表有、新表没有的 id（分表改了编号）
+stats.usedLostWithEpisodes = []; // 其中带着"用过的期"的，最要紧
+if (prevPack) {
+  for (const e of [...openingsFinal, ...sayingsFinal, ...voicesFinal]) {
+    const used = prevUsed.get(e.id);
+    if (used && used.length) { e.用过的期 = [...used]; stats.usedCarried++; }
+  }
+  for (const [id, used] of prevUsed) {
+    if (idSet.has(id)) continue;
+    stats.usedLostIds.push(id);
+    if (used.length) stats.usedLostWithEpisodes.push({ id, 用过的期: used });
+  }
+}
+
 // ---- 统计 ----
 const countBy = (list, f) => list.reduce((m, e) => { const k = f(e); m[k] = (m[k] || 0) + 1; return m; }, {});
 stats.after = { openings: openingsFinal.length, sayings: sayingsFinal.length, voices: voicesFinal.length, authors: authorsFinal.length };
@@ -455,6 +506,7 @@ stats.sayingsByScene = countBy(sayingsFinal, (e) => e.场景);
 stats.sayingsByCategory = countBy(sayingsFinal, (e) => e.品类);
 stats.voicesByCategory = countBy(voicesFinal, (e) => e.品类);
 stats.openingsByCategory = countBy(openingsFinal, (e) => e.品类);
+stats.openingsByType = Object.fromEntries(OPENING_TYPE_GROUPS.map((g) => [g.名, openingsFinal.filter((e) => e.切入大类 === g.名).length]));
 stats.sayingsByAuthor = countBy(sayingsFinal, (e) => e.作者);
 stats.subsceneE = countBy(sayingsFinal.filter((e) => e.场景 === 'E'), (e) => e.子场景);
 stats.income = { sayings: sayingsFinal.filter((e) => e.含收入数字).length, voices: voicesFinal.filter((e) => e.含收入数字).length };
@@ -471,14 +523,15 @@ stats.physHintFlipped = stats.categoryChanged.filter((d) => d.to === '通用' &&
 const strip = (e) => { const o = {}; for (const [k, v] of Object.entries(e)) { if (v === undefined || k.startsWith('__')) continue; o[k] = v; } return o; };
 const json = {
   生成时间: new Date().toISOString().slice(0, 10),
-  说明: `由 engine/corpus-pack/merge-pack.mjs 合并${PARTS_DESC.replace(/（.*$/, '')}生成；原句字段已还原防审查写法，原句_原样保留分表原文；品类按 2026-09-08 八条统一做法重判。`,
+  说明: `由 engine/corpus-pack/merge-pack.mjs 合并${PARTS_DESC.replace(/（.*$/, '')}生成；原句字段已还原防审查写法，原句_原样保留分表原文；品类按 2026-09-08 八条统一做法重判；开头"切入大类"按 engine/corpus-pack/opening-types.json 归类；"用过的期"和"写回顺序"从上一版总表带过来。`,
   统计: stats.after,
   openings: openingsFinal.map(strip),
   sayings: sayingsFinal.map(strip),
   voices: voicesFinal.map(strip),
   authors: authorsFinal.map((a) => ({ 作者: a.作者, 档案: a.档案, 来源分表: a.来源分表, 分表档案: a.分表档案 })),
 };
-fs.writeFileSync(path.join(PACK_DIR, '总表.json'), JSON.stringify(json, null, 1), 'utf8');
+if (prevWriteOrder) json.写回顺序 = [...prevWriteOrder];
+fs.writeFileSync(OUT_JSON, JSON.stringify(json, null, 1), 'utf8');
 
 // ---------- 7. 输出 MD ----------
 const cell = (v) => (v === undefined || v === null ? '' : String(Array.isArray(v) ? v.join('、') : v).replace(/\|/g, '｜').replace(/\r?\n/g, ' '));
@@ -501,19 +554,29 @@ md.push('5. **立场**：标了 `反虚拟` 的条目站在实物立场贬虚拟
 md.push('6. **效果倍数一律不收**（曝光差几倍、流量涨十倍、翻倍）；分表里已收的这次删掉，清单见文末。自嘲式小数字（"第一个月只赚三百"）保留，亲历标"含作者亲历"。');
 md.push('7. **含收入数字**：原声层带收入数字的留着并标 true；说法层按口径不该有，若标了 true 的请人工看一眼（清单见文末）。同行链接的想要数、浏览量不算收入。');
 md.push('8. **防审查写法已还原**（🔗→链接、💧→流量、dan→单、Li→利、feng→封 / 风控、bao光→曝光、lian接 / L接→链接、liu量→流量、马扁→骗、红现→红线、板权→版权 等）；原样在 JSON 的 `原句_原样` 字段。W / K / w 当数量词（1W、几K）的没动。');
-md.push('9. **用过的期**：初始为空，同一条隔几期才能再用。');
+md.push('9. **用过的期**：初始为空，同一条隔几期才能再用。`mark-used.mjs` 写回到 JSON；重跑合表会从上一版总表把"用过的期"和顶层"写回顺序"按编号带过来，不会清掉。');
 md.push('10. **作者归属**：按分表的公众号归堆；part-3 编号带 `*` 的三篇（文内署名阿拉丁）改归阿拉丁，编号保留原样。');
+md.push('11. **切入大类**：开头层每条按"第一句干什么"归一个大类（清单和判据在 `engine/corpus-pack/opening-types.json`，共 ' + (OPENING_TYPE_GROUPS.length - 1) + ' 个 + 待定）；抽取人各自起的"切入方式"原名保留。配料包 `--opening-types` 先按大类名精确匹配。');
 md.push('');
 
 // 开头层
+const usedCell = (e) => (Array.isArray(e.用过的期) ? e.用过的期.join('、') : '');
 md.push('## 一、开头层（结构，不抄原文）');
 md.push('');
-md.push(`共 ${openingsFinal.length} 条，按切入方式排序。⓪ = 自报家门 / 合同句的位置。`);
+md.push(`共 ${openingsFinal.length} 条，按切入大类分小节，小节内按切入方式排序。⓪ = 自报家门 / 合同句的位置。`);
 md.push('');
-const openSorted = [...openingsFinal].sort((a, b) => a.切入方式.localeCompare(b.切入方式, 'zh-Hans-CN') || a.id.localeCompare(b.id));
-md.push(table(['编号', '切入方式', '结构：每句干什么', '步数', '适合讲什么', '品类', '作者', '出处', '来源分表', '用过的期'],
-  openSorted.map((e) => [e.id, e.切入方式, e.结构, e.步数 == null ? '' : `${e.步数}${e.口播要压缩 ? '，口播要压缩' : ''}`, e.适合, e.品类, e.作者, e.出处, e.来源分表, ''])));
+md.push('大类一览：' + OPENING_TYPE_GROUPS.map((g) => `${g.名} ${stats.openingsByType[g.名] || 0}`).join(' · '));
 md.push('');
+for (const g of OPENING_TYPE_GROUPS) {
+  const rows = openingsFinal.filter((e) => e.切入大类 === g.名).sort((a, b) => a.切入方式.localeCompare(b.切入方式, 'zh-Hans-CN') || a.id.localeCompare(b.id));
+  if (!rows.length) continue;
+  md.push(`### ${g.名}（${rows.length} 条）`);
+  md.push('');
+  if (g.判据) { md.push(`> 判据：${g.判据}`); md.push(''); }
+  md.push(table(['编号', '切入方式', '结构：每句干什么', '步数', '适合讲什么', '品类', '作者', '出处', '来源分表', '用过的期'],
+    rows.map((e) => [e.id, e.切入方式, e.结构, e.步数 == null ? '' : `${e.步数}${e.口播要压缩 ? '，口播要压缩' : ''}`, e.适合, e.品类, e.作者, e.出处, e.来源分表, usedCell(e)])));
+  md.push('');
+}
 
 // 说法层
 md.push('## 二、说法层（原句照录，防审查写法已还原）');
@@ -530,12 +593,12 @@ for (const sc of ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']) {
       md.push(`#### E · ${sub}（${r2.length} 条）`);
       md.push('');
       md.push(table(['编号', '原句', '作者', '文章', '亲历', '品类', '口播', '立场', '含收入数字', '来源分表', '用过的期'],
-        r2.map((e) => [e.id, e.原句, e.作者, e.文章, e.亲历, e.品类, e.口播, e.立场 || '', e.含收入数字 ? 'true' : '', e.来源分表, ''])));
+        r2.map((e) => [e.id, e.原句, e.作者, e.文章, e.亲历, e.品类, e.口播, e.立场 || '', e.含收入数字 ? 'true' : '', e.来源分表, usedCell(e)])));
       md.push('');
     }
   } else {
     md.push(table(['编号', '原句', '作者', '文章', '亲历', '品类', '口播', '立场', '含收入数字', '来源分表', '用过的期'],
-      rows.map((e) => [e.id, e.原句, e.作者, e.文章, e.亲历, e.品类, e.口播, e.立场 || '', e.含收入数字 ? 'true' : '', e.来源分表, ''])));
+      rows.map((e) => [e.id, e.原句, e.作者, e.文章, e.亲历, e.品类, e.口播, e.立场 || '', e.含收入数字 ? 'true' : '', e.来源分表, usedCell(e)])));
     md.push('');
   }
 }
@@ -543,8 +606,8 @@ for (const sc of ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']) {
 // 原声层
 md.push(`## 三、原声层（${voicesFinal.length} 条）`);
 md.push('');
-md.push(table(['编号', '谁说的', '原句', '情境', '品类', '出处', '含收入数字', '来源分表'],
-  voicesFinal.map((e) => [e.id, e.谁说的, e.原句, e.情境, e.品类, e.出处, e.含收入数字 ? 'true' : '', e.来源分表])));
+md.push(table(['编号', '谁说的', '原句', '情境', '品类', '出处', '含收入数字', '来源分表', '用过的期'],
+  voicesFinal.map((e) => [e.id, e.谁说的, e.原句, e.情境, e.品类, e.出处, e.含收入数字 ? 'true' : '', e.来源分表, usedCell(e)])));
 md.push('');
 
 // 作者档案
@@ -579,6 +642,13 @@ md.push('说法层按品类：' + Object.entries(stats.sayingsByCategory).map(([
 md.push('');
 md.push('场景 E 子场景：' + SUBSCENE_LIST.map((k) => `${k} ${stats.subsceneE[k] || 0}`).join(' · '));
 md.push('');
+md.push('开头层按切入大类：' + OPENING_TYPE_GROUPS.map((g) => `${g.名} ${stats.openingsByType[g.名] || 0}`).join(' · ') + (stats.openingTypeUnknownIds.length ? `；opening-types.json 里有 ${stats.openingTypeUnknownIds.length} 个编号在总表里找不到：${stats.openingTypeUnknownIds.join('、')}` : ''));
+md.push('');
+{
+  const order = json.写回顺序 ? json.写回顺序.join(' → ') : '（还没有写回过）';
+  md.push(`用过的期：从上一版总表带过来 ${stats.usedCarried} 条；写回顺序：${order}。` + (stats.usedLostIds.length ? `旧表有、这版没有的编号 ${stats.usedLostIds.length} 个（分表改了编号？）：${stats.usedLostIds.join('、')}` + (stats.usedLostWithEpisodes.length ? `；其中带"用过的期"的：${stats.usedLostWithEpisodes.map((d) => `${d.id}（${d.用过的期.join('、')}）`).join('、')}` : '') : '旧表编号全部都还在。'));
+  md.push('');
+}
 md.push(`含收入数字：说法层 ${stats.income.sayings} 条，原声层 ${stats.income.voices} 条。立场标记：${Object.entries(stats.stance).map(([k, v]) => `${k} ${v}`).join('、') || '无'}。阿拉丁：开头 ${stats.aladdin.openings} / 说法 ${stats.aladdin.sayings} / 原声 ${stats.aladdin.voices}。`);
 md.push('');
 md.push(`防审查写法还原：共 ${stats.decensorTotal} 处，涉及 ${stats.restoredEntries} 条。` + Object.entries(stats.decensor).map(([k, v]) => `${k} ${v}`).join('，'));
@@ -616,4 +686,6 @@ if (dumpDir) {
   w('stats.json', stats);
 }
 
-console.log(JSON.stringify({ before: stats.before, after: stats.after, dedupe: stats.dedupe.length, effectDeleted: stats.effectDeleted.length, categoryChanged: stats.categoryChanged.length, subsceneE: stats.subsceneE, income: stats.income, stance: stats.stance, aladdin: stats.aladdin, decensorTotal: stats.decensorTotal, restoredEntries: stats.restoredEntries, virtualWithPhys: stats.virtualWithPhys.length }, null, 1));
+console.log(JSON.stringify({ before: stats.before, after: stats.after, dedupe: stats.dedupe.length, effectDeleted: stats.effectDeleted.length, categoryChanged: stats.categoryChanged.length, subsceneE: stats.subsceneE, income: stats.income, stance: stats.stance, aladdin: stats.aladdin, decensorTotal: stats.decensorTotal, restoredEntries: stats.restoredEntries, virtualWithPhys: stats.virtualWithPhys.length,
+  openingsByType: stats.openingsByType, openingTypeUnknownIds: stats.openingTypeUnknownIds,
+  usedCarried: stats.usedCarried, writeOrder: json.写回顺序 || null, usedLostIds: stats.usedLostIds, usedLostWithEpisodes: stats.usedLostWithEpisodes }, null, 1));

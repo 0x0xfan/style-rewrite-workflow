@@ -2,7 +2,8 @@
 // build-brief.mjs（抽范文进配料包）和 mark-used.mjs（定稿后写回"用过的期"）共用。
 //
 // 总表结构：{ openings: [...], sayings: [...], voices: [...], authors: [...], 写回顺序?: [...] }
-//   openings 每条：id / 切入方式 / 结构 / 步数 / 口播要压缩 / 适合 / 品类 / 作者 / 出处 / 用过的期
+//   openings 每条：id / 切入方式 / 切入大类 / 结构 / 步数 / 口播要压缩 / 适合 / 品类 / 作者 / 出处 / 用过的期
+//     切入大类：merge-pack 按 engine/corpus-pack/opening-types.json 贴的十几个大类名（没归到的是"待定"）；切入方式是抽取人各自起的原名
 //   sayings  每条：id / 原句 / 作者 / 文章 / 场景 A–J / 子场景（E 才有）/ 亲历 / 品类 / 口播 / 含收入数字 / 立场? / 用过的期
 //   voices   每条：id / 谁说的 / 原句 / 情境 / 品类 / 出处 / 含收入数字 /（用过的期，写回后才有）
 //   写回顺序：mark-used 维护的期号列表，按写回先后；"最近两期"按它算。没有这个键时按各条"用过的期"出现顺序推。
@@ -185,9 +186,18 @@ function normType(s) {
   return String(s || '').replace(/[“”"]/g, '').replace(/\s+/g, '').toLowerCase();
 }
 
+/** 总表开头层里出现过的切入大类名（去重、按出现顺序），给报错和 --help 用。 */
+export function openingTypeNames(data) {
+  const out = [];
+  for (const e of data.openings || []) { const t = e.切入大类; if (t && !out.includes(t)) out.push(t); }
+  return out;
+}
+
 /**
- * 按切入方式抽开头结构。包含匹配：请求名是总表切入方式的子串。
- * 整串匹配不到时退一步，按 " + " 拆成片段，任一片段匹配到就算"部分匹配"。
+ * 按切入大类 / 切入方式抽开头结构。匹配顺序：
+ *   1. 请求名 == 总表"切入大类"（精确，忽略空格和引号）→ "大类精确匹配"
+ *   2. 请求名是总表"切入方式"的子串 → "包含匹配"（旧行为，兼容没归类的名字）
+ *   3. 按 " + " 拆成片段，任一片段包含匹配 → "部分匹配"
  * 返回 { picked, dropped, perType: [{type, mode, candidates, got}], unmatched: [type...] }
  */
 export function pickOpenings(data, { types, n, seed, topicType, avoidEpisodes }) {
@@ -197,8 +207,12 @@ export function pickOpenings(data, { types, n, seed, topicType, avoidEpisodes })
   const unmatched = [];
   for (const type of types) {
     const key = normType(type);
-    let mode = '包含匹配';
-    let cands = kept.filter((e) => normType(e.切入方式).includes(key));
+    let mode = '大类精确匹配';
+    let cands = kept.filter((e) => e.切入大类 && normType(e.切入大类) === key);
+    if (!cands.length) {
+      mode = '包含匹配';
+      cands = kept.filter((e) => normType(e.切入方式).includes(key));
+    }
     if (!cands.length) {
       const pieces = String(type).split(/\s*\+\s*/).map(normType).filter((s) => s.length >= 2);
       if (pieces.length > 1) {
@@ -316,10 +330,10 @@ function cell(s) {
 }
 
 export function renderOpenings(picked) {
-  const head = '| 编号 | 切入方式 | 结构（⓪ = 自报家门 / 合同句的位置） | 步数 | 适合讲什么 | 作者 |\n|---|---|---|---|---|---|';
+  const head = '| 编号 | 大类 | 切入方式 | 结构（⓪ = 自报家门 / 合同句的位置） | 步数 | 适合讲什么 | 作者 |\n|---|---|---|---|---|---|---|';
   const rows = picked.map((e) => {
     const steps = `${e.步数 ?? ''}${e.口播要压缩 === true || Number(e.步数) > 5 ? '，口播要压缩' : ''}`;
-    return `| ${cell(e.id)} | ${cell(e.切入方式)} | ${cell(e.结构)} | ${cell(steps)} | ${cell(e.适合)} | ${cell(e.作者)} |`;
+    return `| ${cell(e.id)} | ${cell(e.切入大类 || '')} | ${cell(e.切入方式)} | ${cell(e.结构)} | ${cell(steps)} | ${cell(e.适合)} | ${cell(e.作者)} |`;
   });
   return `${head}\n${rows.join('\n')}`;
 }

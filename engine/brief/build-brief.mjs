@@ -20,7 +20,7 @@ import {
 import {
   loadPack, recentEpisodes, pickOpenings, pickSayings, pickVoices,
   renderOpenings, renderSayings, renderVoices, droppedSummary, parseSceneSpec,
-  DEFAULT_PACK,
+  openingTypeNames, DEFAULT_PACK,
 } from './corpus-pack.mjs';
 
 // ───────────────────────── 基础工具 ─────────────────────────
@@ -227,7 +227,8 @@ const USAGE = `
   --pack <总表.json>：真人语料包；给了才出"真人开头结构 / 真人说法 / 原声"三节。
   --episode <期标识>：本篇期号或 filmId。用来轮换（用过的期里含本期或最近两期的不进）和做抽样种子；
                      定稿后 node engine/brief/mark-used.mjs 写回。
-  --opening-types：切入方式，逗号分隔，包含匹配。--n-openings 默认 5。
+  --opening-types：切入大类名，逗号分隔（大类清单见 engine/corpus-pack/opening-types.json 或 docs/配料包规范.md）。
+                   先按"切入大类"精确匹配；匹配不到再退到旧的"切入方式"包含匹配。--n-openings 默认 5。
   --scenes：场景字母，逗号分隔，E 可写 E:动作 指定子场景。--n-sayings 默认 30，按场景均分。
   --n-voices：原声条数，默认 5。
   --authors：说法层只取这些作者（可选）。
@@ -351,8 +352,9 @@ if (args.pack) {
     usedIds.push(...r.picked.map((e) => e.id));
     const perType = r.perType.map((t) => `${t.type}：${t.mode}，候选 ${t.candidates}，取 ${t.got}`).join('；');
     if (r.unmatched.length) {
-      missing.push(`**真人开头结构**：这些切入方式在总表里包含匹配不到任何一条：${r.unmatched.join('、')}。跑 \`node engine/brief/build-brief.mjs --help\` 没法列总表切入方式，直接翻 ${args.pack.replace(/\.json$/i, '.md')} 第一节"切入方式"列挑一个再跑。`);
-      process.stderr.write(`[build-brief] 提醒：切入方式匹配不到：${r.unmatched.join('、')}\n`);
+      const names = openingTypeNames(pack.data).filter((t) => t !== '待定');
+      missing.push(`**真人开头结构**：这些名字既不是总表的切入大类、也在"切入方式"里包含匹配不到：${r.unmatched.join('、')}。总表现有的切入大类：${names.join('、') || '（总表没有切入大类字段，先跑 merge-pack.mjs）'}。`);
+      process.stderr.write(`[build-brief] 提醒：切入大类 / 切入方式匹配不到：${r.unmatched.join('、')}\n`);
     }
     if (r.picked.length < nOpen) missing.push(`**真人开头结构**：要 ${nOpen} 条只抽到 ${r.picked.length} 条（候选不够或被过滤）。`);
     parts.push(`---
