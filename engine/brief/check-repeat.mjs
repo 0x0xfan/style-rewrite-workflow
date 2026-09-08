@@ -34,7 +34,22 @@ const BUILTIN_TEMPLATES = [
   '视频比较干货', '建议先点赞后观看', '以免后面找不到了',
 ];
 // 说明书第四节写死的贴士句式，也是可照抄的。
-const BUILTIN_PHRASES = ['这里特别强调一点', '这里有个重点要注意', '这里给大家一个小建议', '这里给大家总结了'];
+export const BUILTIN_PHRASES = ['这里特别强调一点', '这里有个重点要注意', '这里给大家一个小建议', '这里给大家总结了',
+  // 用户 2026-09-08 定的标尺句和人话换法，跨期照用不算撞
+  '开单之后如果你的执行力不到位，那么你的退款率会很高', '不是到你手里的利润', '这部分不需要你负责',
+  // 说明书第三节催赞句与第四节进度回收句式，属可照抄
+  '这期干货非常多', '视频比较干货，建议先点赞后观看，以免后面找不到了', '到了这一步',
+  // 报数的固定说法
+  '好评率百分之九十九', '好评率百分之九十', '全店累计卖出', '店铺累计卖出', '排最前面那条链接', '排最前面那家', '排在最前面那'];
+// 校准词表「换」一列里 ≥8 个汉字的说法也是用户定的，跨期照用不算撞
+function wordTablePhrases(n) {
+  try {
+    const t = JSON.parse(fs.readFileSync(resolvePath('docs/用户校准词表.json'), 'utf8'));
+    const out = [];
+    for (const e of t) for (const f of String(e.换 || '').split(/[^一-鿿]+/)) if (f.length >= n) out.push(f);
+    return out;
+  } catch { return []; }
+}
 
 const CJK_RE = /[一-鿿]/;
 const NUM = '[二三四五六七八九十两]';   // 「一」不算：到这一步 / 一件事 是普通话，不是名字
@@ -71,7 +86,8 @@ function cjkFragments(s, minLen = 4) {
 export function loadTemplates(stylePath = DEFAULT_STYLE, n = DEFAULT_N) {
   const abs = resolvePath(stylePath);
   const templates = new Set(BUILTIN_TEMPLATES);
-  const phrases = new Set(BUILTIN_PHRASES.filter((p) => p.length >= n));
+  // 内置短语是人挑的，不受窗口长度限制；词表换法按窗口长度过滤
+  const phrases = new Set([...BUILTIN_PHRASES, ...wordTablePhrases(n).filter((p) => p.length >= n)]);
   let source = '内置';
   if (fs.existsSync(abs)) {
     const md = fs.readFileSync(abs, 'utf8');

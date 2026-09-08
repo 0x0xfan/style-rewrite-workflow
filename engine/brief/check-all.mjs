@@ -21,7 +21,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadTable, resolvePath, DEFAULT_TABLE } from './word-table.mjs';
 import { readLines, activeEntries, scanDraft, structuralChecks, snippet, sourceLabel } from './check-words.mjs';
-import { collectAgainst, loadTemplates, checkRepeat, DEFAULT_STYLE, DEFAULT_N } from './check-repeat.mjs';
+import { collectAgainst, loadTemplates, checkRepeat, DEFAULT_STYLE, DEFAULT_N, BUILTIN_PHRASES } from './check-repeat.mjs';
 import { loadRules, DEFAULT_RULES } from './render-rules.mjs';
 import { checkSourceLeakage, readSourceFile } from '../leakage/check-source-leakage.mjs';
 import { checkCopy } from '../compliance/check-copy.mjs';
@@ -369,7 +369,7 @@ for (const r of rules.filter((x) => x.查法 === 'leakage')) {
   const protPath = r.参数?.受保护短语 ? resolvePath(r.参数.受保护短语) : '';
   if (protPath && fs.existsSync(protPath)) { try { prot = JSON.parse(fs.readFileSync(protPath, 'utf8')).protectedPhrases || []; } catch { /* 读不出就只用模板 */ } }
   const { templates } = loadTemplates(args.style, 4);
-  const protAll = [...new Set([...prot, ...templates])].sort((a, b) => b.length - a.length);
+  const protAll = [...([...new Set([...prot, ...templates])].sort((a, b) => b.length - a.length)), ...BUILTIN_PHRASES];
   const lr = checkSourceLeakage(texts.join('\n'), { draft: draftText }, { n: r.参数?.n || 12, protectedPhrases: protAll });
   const d = lr.results[0];
   // 定位行号：片段可能跨行（对照工具是整篇拼起来比的），按片段开头几个字找
@@ -392,7 +392,12 @@ for (const r of rules.filter((x) => x.查法 === 'leakage')) {
       for (const f of cr.findings.filter((f) => groups.includes(f.group))) {
         for (const h of [...new Set(f.hits)]) {
           const li = lines.findIndex((l) => l.replace(/\s/g, '').includes(h));
-          res.hits.push(hit(li >= 0 ? li + 1 : 0, `「${h}」（${f.group}：${f.reason}）${li >= 0 ? '：' + lines[li].trim() : ''}`));
+          const line = li >= 0 ? lines[li].replace(/\s/g, '') : '';
+          const at = line.indexOf(h);
+          // 否定语境（别写百分百原题 / 不保证百分之百）只提示不退回：用户 #14 故事和事实链都要求这么说
+          const negated = at >= 0 && /(不|别|没|非|不是|不保证|不写|不许|不要)[^。；]{0,6}$/.test(line.slice(Math.max(0, at - 8), at));
+          if (negated) res.notes.push(`提示 第 ${li + 1} 行「${h}」在否定语境里（${f.group}），不计命中：${lines[li].trim()}`);
+          else res.hits.push(hit(li >= 0 ? li + 1 : 0, `「${h}」（${f.group}：${f.reason}）${li >= 0 ? '：' + lines[li].trim() : ''}`));
         }
       }
       if (groups.includes('money-density')) res.notes.push(`赚钱类词密度 ${(cr.densityRatio * 100).toFixed(2)}%（check-copy 上限 2%，长稿只看）`);
