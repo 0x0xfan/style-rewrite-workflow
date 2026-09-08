@@ -17,7 +17,7 @@ export const DEFAULT_TABLE = 'docs/用户校准词表.json';
 export const TYPES = [
   '内部术语', '压缩词', '自造对仗', '书面词', '整齐收口', '经验表用词',
   '套用错', '空包袱', '开头固定句', '旧系列引用', '实物专用',
-, '内容判断', '半句话', '不通顺', '借用错', '来源不明'];
+, '内容判断', '半句话', '不通顺', '借用错', '来源不明', '选题红线'];
 export const SOURCES = ['用户点名', '主线程预防性'];
 
 export function resolvePath(p) {
@@ -54,10 +54,12 @@ export function loadTable(p = DEFAULT_TABLE) {
 }
 
 /** 按选题类型过滤：实物专用只对虚拟选题生效。topicType 为空则全留（由调用方标注）。 */
-export function filterByTopic(entries, topicType) {
-  if (!topicType) return entries;
-  if (topicType === '虚拟') return entries;
-  return entries.filter((e) => e.类型 !== '实物专用');
+export function filterByTopic(entries, topicType, topicName = '') {
+  // 选题红线：带「选题」字段的条目只对同名选题生效（例：京东家政 不写返利）
+  let out = entries.filter((e) => !e.选题 || (topicName && topicName.includes(e.选题)));
+  if (!topicType) return out;
+  if (topicType === '虚拟') return out;
+  return out.filter((e) => e.类型 !== '实物专用');
 }
 
 /** 把词表渲染成 markdown 表（按类型分组，文档顺序）。 */

@@ -2,7 +2,7 @@
 // check-words.mjs —— 交稿前用用户校准词表查一遍口播稿
 //
 // 用法：
-//   node engine/brief/check-words.mjs <稿件.txt> [--table docs/用户校准词表.json] [--topic-type 虚拟|实物]
+//   node engine/brief/check-words.mjs <稿件.txt> [--table docs/用户校准词表.json] [--topic-type 虚拟|实物] [--topic 选题名]
 //
 // 逐行扫描，命中就打印：行号、命中词、换成什么、类型、用户哪天说的、用户点名还是预防性。
 //   - --topic-type 虚拟 时才启用「实物专用」那一类
@@ -20,7 +20,7 @@ function die(msg) {
 
 const USAGE = `
 用法：
-  node engine/brief/check-words.mjs <稿件.txt> [--table docs/用户校准词表.json] [--topic-type 虚拟|实物]
+  node engine/brief/check-words.mjs <稿件.txt> [--table docs/用户校准词表.json] [--topic-type 虚拟|实物] [--topic 选题名]
 
   --table       词表路径，默认 ${DEFAULT_TABLE}
   --topic-type  虚拟 / 实物。给「虚拟」才查实物专用词；不给就不查那一类并提醒一句
@@ -31,14 +31,14 @@ const USAGE = `
 // ───────────────────────── 参数 ─────────────────────────
 
 function parseArgs(argv) {
-  const a = { file: null, table: DEFAULT_TABLE, topicType: '' };
+  const a = { file: null, table: DEFAULT_TABLE, topicType: '', topic: '' };
   for (let i = 0; i < argv.length; i++) {
     const t = argv[i];
     if (t === '--help' || t === '-h') { process.stdout.write(USAGE); process.exit(0); }
-    if (t === '--table' || t === '--topic-type') {
+    if (t === '--table' || t === '--topic-type' || t === '--topic') {
       const v = argv[i + 1];
       if (v === undefined || v.startsWith('--')) die(`${t} 后面缺值`);
-      if (t === '--table') a.table = v; else a.topicType = v;
+      if (t === '--table') a.table = v; else if (t === '--topic') a.topic = v; else a.topicType = v;
       i++;
       continue;
     }
@@ -109,7 +109,7 @@ if (!fs.existsSync(fileAbs)) die(`稿件不存在：${fileAbs}`);
 const raw = fs.readFileSync(fileAbs, 'utf8').replace(/^﻿/, '');
 const lines = raw.replace(/\r\n/g, '\n').split('\n');
 
-const active = args.topicType ? filterByTopic(table.entries, args.topicType) : table.entries.filter((e) => e.类型 !== '实物专用');
+const active = filterByTopic(table.entries, args.topicType, args.topic).filter((e) => args.topicType ? true : e.类型 !== '实物专用');
 const lineEntries = active.filter((e) => e.位置 !== '第一行');
 const firstLineEntries = active.filter((e) => e.位置 === '第一行');
 
