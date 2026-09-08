@@ -13,6 +13,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  loadTable as loadWordTable, filterByTopic, renderMarkdown as renderWordTable,
+  countBySource, DEFAULT_TABLE as DEFAULT_WORD_TABLE,
+} from './word-table.mjs';
 
 // ───────────────────────── 基础工具 ─────────────────────────
 
@@ -176,7 +180,7 @@ function assertAllFound(hits, wanted, what, file) {
 
 const KNOWN = new Set([
   'style', 'factcard', 'facts', 'chain', 'links', 'angles', 'angle',
-  'stories', 'story-ids', 'experiences', 'exp-ids', 'topic', 'out', 'help',
+  'stories', 'story-ids', 'experiences', 'exp-ids', 'topic', 'topic-type', 'words', 'out', 'help',
 ]);
 
 function parseArgs(argv) {
@@ -204,7 +208,11 @@ const USAGE = `
     --angles docs/开头角度清单-xxx.md --angle C \\
     --stories docs/圣矾真实经历清单.md --story-ids 91,65 \\
     --experiences docs/闲鱼经验库/总表.json --exp-ids X-风控-014,X-心态-002 \\
-    --topic "闲鱼卖京东家政券" --out <输出.md>
+    --topic "闲鱼卖京东家政券" --topic-type 虚拟 \\
+    --out <输出.md>
+
+  --topic-type 虚拟|实物：决定用户校准词表里"实物专用"那一类要不要进配料包（虚拟选题才进）。
+  --words <词表.json>：用户校准词表路径，默认 ${DEFAULT_WORD_TABLE}。
 
 路径相对仓库根或绝对皆可。缺哪个参数就跳过那一节，并在配料包末尾"缺项"里列出。
 编号找不到会报错退出 1。
@@ -221,6 +229,10 @@ const parts = [];     // 输出的各节
 
 const topic = args.topic || '（未给 --topic）';
 const today = new Date().toISOString().slice(0, 10);
+
+const topicType = args['topic-type'] ? args['topic-type'].trim() : '';
+if (topicType && !['虚拟', '实物'].includes(topicType)) die(`--topic-type 只能是 虚拟 或 实物，现在是：${topicType}`);
+const checkCmd = `node engine/brief/check-words.mjs <稿件.txt> --topic-type ${topicType || '虚拟|实物'}`;
 
 // ── 1. 抬头 ──────────────────────────────────────────────
 parts.push(`# 配料包 · ${topic}
@@ -242,6 +254,7 @@ parts.push(`# 配料包 · ${topic}
 - 单句不超过五十字。
 - 全部用汉字数字，不出现阿拉伯数字、百分号、英文字母；零头取整加"多"（如"九千八百多件"）。
 - 交稿前先自己过一遍第七节那张机器查表，命中即打回。
+- 交稿前先跑 \`${checkCmd}\`，命中即改，报告里贴输出。第八节那张"禁 → 换"表就是它查的词表，写的时候先别往上撞。
 `);
 
 // ── 2. 风格说明书 ────────────────────────────────────────
@@ -365,7 +378,7 @@ parts.push(`---
 
 # 四、项目事实（固定部分，每篇都一样）
 
-${factParts.length ? factParts.join('\n\n') : '（这一节整个空着，见第八节缺项。）'}`);
+${factParts.length ? factParts.join('\n\n') : '（这一节整个空着，见第九节缺项。）'}`);
 
 // ── 5. 故事 ──────────────────────────────────────────────
 if (args.stories && args['story-ids']) {
@@ -453,14 +466,38 @@ ${sec.replace(/^##\s*/, '## ')}
   stats.push(['机器查表', '一节（说明书 §十八）']);
 }
 
-// ── 8. 缺项 ──────────────────────────────────────────────
+// ── 8. 用户校准词表 ──────────────────────────────────────
+{
+  let wt;
+  try { wt = loadWordTable(args.words || DEFAULT_WORD_TABLE); } catch (e) { die(e.message); }
+  const filtered = filterByTopic(wt.entries, topicType);
+  const c = countBySource(filtered);
+  const topicNote = topicType
+    ? `本篇是**${topicType}**选题${topicType === '虚拟' ? '，"实物专用"那一类生效：退货、运费、快递这些词一个都不许出现（"退款"可以）' : '，"实物专用"那一类已剔掉'}。`
+    : '没给 `--topic-type`，"实物专用"那一类照列但没法替你判断生不生效，写手自己看选题定。';
+  parts.push(`---
+
+# 八、用户校准词表（禁 → 换）
+
+<!-- 来源：${args.words || DEFAULT_WORD_TABLE}${topicType ? `　--topic-type ${topicType}` : ''} -->
+
+> 这张表每一条都是用户对稿子的一次字句纠正（"用户点名"），或主线程从同一病根推出来的同类词（"预防性"）。**左列的词不许出现，右列是稿里该怎么说。**
+> ${topicNote}
+> 交稿前跑 \`${checkCmd}\`，命中即改，报告里贴输出。本表 ${c.total} 条（用户点名 ${c.users} / 预防性 ${c.preventive}）。
+
+${renderWordTable(filtered, { topicType })}`);
+  stats.push(['用户校准词表', `${c.total} 条（用户点名 ${c.users} / 预防性 ${c.preventive}）${topicType ? `，选题类型 ${topicType}` : '，未给 --topic-type'}`]);
+  if (!topicType) missing.push('**选题类型**：没给 `--topic-type`，第八节"实物专用"那一类没法过滤，交稿前跑 check-words 时自己补 `--topic-type 虚拟|实物`。');
+}
+
+// ── 9. 缺项 ──────────────────────────────────────────────
 parts.push(`---
 
-# 八、缺项
+# 九、缺项
 
 ${missing.length
     ? missing.map((m) => `- ${m}`).join('\n')
-    : '（无。这份配料包是齐的：风格、开头、事实、故事、经验、机器查表六样都在。）'}`);
+    : '（无。这份配料包是齐的：风格、开头、事实、故事、经验、机器查表、用户校准词表七样都在。）'}`);
 
 // ───────────────────────── 落盘 ─────────────────────────
 
@@ -474,7 +511,7 @@ if (args.out) {
   process.stdout.write(`[build-brief] 已写出：${outAbs}\n`);
   process.stdout.write(`[build-brief] 汉字数：${hanzi}　总字符：${output.length}\n`);
   for (const [k, v] of stats) process.stdout.write(`[build-brief]   ${k}：${v}\n`);
-  process.stdout.write(`[build-brief] 缺项：${missing.length ? missing.length + ' 条（见配料包第八节）' : '无'}\n`);
+  process.stdout.write(`[build-brief] 缺项：${missing.length ? missing.length + ' 条（见配料包第九节）' : '无'}\n`);
 } else {
   process.stdout.write(output);
 }
