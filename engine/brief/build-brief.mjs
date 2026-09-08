@@ -17,6 +17,11 @@ import {
   loadTable as loadWordTable, filterByTopic, renderMarkdown as renderWordTable,
   countBySource, DEFAULT_TABLE as DEFAULT_WORD_TABLE,
 } from './word-table.mjs';
+import {
+  loadPack, recentEpisodes, pickOpenings, pickSayings, pickVoices,
+  renderOpenings, renderSayings, renderVoices, droppedSummary, parseSceneSpec,
+  DEFAULT_PACK,
+} from './corpus-pack.mjs';
 
 // ───────────────────────── 基础工具 ─────────────────────────
 
@@ -181,6 +186,7 @@ function assertAllFound(hits, wanted, what, file) {
 const KNOWN = new Set([
   'style', 'factcard', 'facts', 'chain', 'links', 'angles', 'angle',
   'stories', 'story-ids', 'experiences', 'exp-ids', 'topic', 'topic-type', 'words', 'out', 'help',
+  'pack', 'episode', 'opening-types', 'n-openings', 'scenes', 'n-sayings', 'n-voices', 'authors',
 ]);
 
 function parseArgs(argv) {
@@ -208,11 +214,23 @@ const USAGE = `
     --angles docs/开头角度清单-xxx.md --angle C \\
     --stories docs/圣矾真实经历清单.md --story-ids 91,65 \\
     --experiences docs/闲鱼经验库/总表.json --exp-ids X-风控-014,X-心态-002 \\
+    --pack ${DEFAULT_PACK} --episode <期标识> \\
+    --opening-types "反常识揭晓,命令你现在做一个动作" --n-openings 5 \\
+    --scenes "A,B,D,H,G,E:动作" --n-sayings 30 --n-voices 5 \\
+    --authors "一鱼,陈陈,策主" \\
     --topic "闲鱼卖京东家政券" --topic-type 虚拟 \\
     --out <输出.md>
 
-  --topic-type 虚拟|实物：决定用户校准词表里"实物专用"那一类要不要进配料包（虚拟选题才进）。
+  --topic-type 虚拟|实物：决定用户校准词表里"实物专用"那一类要不要进配料包（虚拟选题才进）；
+                          同时决定真人语料包剔掉"实物专用"（虚拟）还是"虚拟专用"（实物）。
   --words <词表.json>：用户校准词表路径，默认 ${DEFAULT_WORD_TABLE}。
+  --pack <总表.json>：真人语料包；给了才出"真人开头结构 / 真人说法 / 原声"三节。
+  --episode <期标识>：本篇期号或 filmId。用来轮换（用过的期里含本期或最近两期的不进）和做抽样种子；
+                     定稿后 node engine/brief/mark-used.mjs 写回。
+  --opening-types：切入方式，逗号分隔，包含匹配。--n-openings 默认 5。
+  --scenes：场景字母，逗号分隔，E 可写 E:动作 指定子场景。--n-sayings 默认 30，按场景均分。
+  --n-voices：原声条数，默认 5。
+  --authors：说法层只取这些作者（可选）。
 
 路径相对仓库根或绝对皆可。缺哪个参数就跳过那一节，并在配料包末尾"缺项"里列出。
 编号找不到会报错退出 1。
@@ -233,6 +251,9 @@ const today = new Date().toISOString().slice(0, 10);
 const topicType = args['topic-type'] ? args['topic-type'].trim() : '';
 if (topicType && !['虚拟', '实物'].includes(topicType)) die(`--topic-type 只能是 虚拟 或 实物，现在是：${topicType}`);
 const checkCmd = `node engine/brief/check-words.mjs <稿件.txt> --topic-type ${topicType || '虚拟|实物'}`;
+const leakCorpus = (args.pack || DEFAULT_PACK).replace(/\.json$/i, '.md');
+const leakCmd = `node engine/leakage/check-source-leakage.mjs --corpus ${leakCorpus} --drafts <稿件.txt>`;
+const episode = args.episode ? args.episode.trim() : '';
 
 // ── 1. 抬头 ──────────────────────────────────────────────
 parts.push(`# 配料包 · ${topic}
@@ -243,8 +264,9 @@ parts.push(`# 配料包 · ${topic}
 **写稿公式**
 
 \`\`\`
-一篇口播稿 = 项目事实（固定，第四节）+ 故事（第五节）+ 一批闲鱼经验（第六节）
-风格固定（第二节说明书），开头角度按第三节走。
+一篇口播稿 = 项目事实（固定，第七节）+ 故事（第八节）+ 一批闲鱼经验（第九节）
+风格固定（第二节说明书），开头角度按第三节走，措辞照第四、五、六节的真人语料走。
+三个来源打架时的顺序：节奏听风格说明书，措辞听真人语料，事实听事实链。
 \`\`\`
 
 **落盘要求**
@@ -253,8 +275,9 @@ parts.push(`# 配料包 · ${topic}
 - 一句一行。
 - 单句不超过五十字。
 - 全部用汉字数字，不出现阿拉伯数字、百分号、英文字母；零头取整加"多"（如"九千八百多件"）。
-- 交稿前先自己过一遍第七节那张机器查表，命中即打回。
-- 交稿前先跑 \`${checkCmd}\`，命中即改，报告里贴输出。第八节那张"禁 → 换"表就是它查的词表，写的时候先别往上撞。
+- 交稿前先自己过一遍第十节那张机器查表，命中即打回。
+- 交稿前先跑 \`${checkCmd}\`，命中即改，报告里贴输出。第十一节那张"禁 → 换"表就是它查的词表，写的时候先别往上撞。
+- 交稿前再跑 \`${leakCmd}\`，真人语料十二字连抄命中即打回。第四、五、六节是拿来学措辞的，不是拿来搬的。
 `);
 
 // ── 2. 风格说明书 ────────────────────────────────────────
@@ -270,7 +293,7 @@ if (args.style) {
 ${styleDoc.text.trim()}`);
   stats.push(['风格说明书', `全文嵌入，${countHanzi(styleDoc.text)} 汉字`]);
 } else {
-  missing.push('**风格说明书**：没给 `--style`，第二节和第七节都空着。写手拿不到风格标准，等于白写。');
+  missing.push('**风格说明书**：没给 `--style`，第二节和第十节都空着。写手拿不到风格标准，等于白写。');
 }
 
 // ── 3. 开头 ──────────────────────────────────────────────
@@ -298,7 +321,116 @@ ${sec}`);
   missing.push('**开头**：没给 `--angles` / `--angle`，第三节空着。开头得自己定角度。');
 }
 
-// ── 4. 项目事实 ──────────────────────────────────────────
+// ── 4/5/6. 真人语料包：开头结构 / 说法 / 原声 ─────────────
+const usedIds = [];   // 本包选用的语料编号，文末列出给 mark-used 用
+const packStats = []; // 给报告用：各层过滤掉多少、按什么原因
+if (args.pack) {
+  let pack;
+  try { pack = loadPack(args.pack); } catch (e) { die(e.message); }
+  const seed = episode || topic;
+  const avoid = episode ? recentEpisodes(pack.data, episode) : null;
+  const avoidNote = episode
+    ? `轮换：避开"用过的期"含 ${[...avoid].join('、')} 的条目（本期 + 最近写回的两期）。`
+    : '没给 `--episode`，不做轮换，抽样种子用选题名代替。';
+  if (!episode) missing.push('**真人语料包**：没给 `--episode`，"用过的期"没法轮换，也没法写回。定稿前补上再生成一次。');
+  if (!topicType) missing.push('**真人语料包**：没给 `--topic-type`，"实物专用 / 虚拟专用 / 反虚拟"没法剔，第四、五、六节照列了，写手自己看选题避开。');
+
+  const nOpen = args['n-openings'] !== undefined ? Number(args['n-openings']) : 5;
+  const nSay = args['n-sayings'] !== undefined ? Number(args['n-sayings']) : 30;
+  const nVoice = args['n-voices'] !== undefined ? Number(args['n-voices']) : 5;
+  for (const [k, v] of [['--n-openings', nOpen], ['--n-sayings', nSay], ['--n-voices', nVoice]]) {
+    if (!Number.isInteger(v) || v < 0) die(`${k} 要是非负整数，现在是：${v}`);
+  }
+  const authors = args.authors ? splitIds(args.authors) : [];
+  const commonTail = `<!-- 来源：${args.pack}${topicType ? `　--topic-type ${topicType}` : ''}${episode ? `　--episode ${episode}` : ''} -->`;
+
+  // 4. 真人开头结构
+  if (args['opening-types']) {
+    const types = splitIds(args['opening-types']);
+    const r = pickOpenings(pack.data, { types, n: nOpen, seed, topicType, avoidEpisodes: avoid });
+    usedIds.push(...r.picked.map((e) => e.id));
+    const perType = r.perType.map((t) => `${t.type}：${t.mode}，候选 ${t.candidates}，取 ${t.got}`).join('；');
+    if (r.unmatched.length) {
+      missing.push(`**真人开头结构**：这些切入方式在总表里包含匹配不到任何一条：${r.unmatched.join('、')}。跑 \`node engine/brief/build-brief.mjs --help\` 没法列总表切入方式，直接翻 ${args.pack.replace(/\.json$/i, '.md')} 第一节"切入方式"列挑一个再跑。`);
+      process.stderr.write(`[build-brief] 提醒：切入方式匹配不到：${r.unmatched.join('、')}\n`);
+    }
+    if (r.picked.length < nOpen) missing.push(`**真人开头结构**：要 ${nOpen} 条只抽到 ${r.picked.length} 条（候选不够或被过滤）。`);
+    parts.push(`---
+
+# 四、真人开头结构（学结构，不抄句）
+
+${commonTail}
+
+> 这些是别的闲鱼博主开头的**结构**，不是句子。学的是"每一步干什么、⓪ 放哪儿"，句子自己写。
+> ${avoidNote}
+> 匹配情况：${perType}。
+
+${r.picked.length ? renderOpenings(r.picked) : '（一条都没抽到，见缺项。）'}
+
+> **超过五步的要压缩。开头预算八句，含合同句和框架。**`);
+    stats.push(['真人开头结构', `${r.picked.length} 条（要 ${nOpen}）；候选池 ${r.poolSize}，过滤：${droppedSummary(r.dropped)}`]);
+    packStats.push(['openings', r.dropped, r.perType]);
+  } else {
+    missing.push('**真人开头结构**：给了 `--pack` 但没给 `--opening-types`，第四节空着。');
+    parts.push(`---\n\n# 四、真人开头结构（学结构，不抄句）\n\n（没给 \`--opening-types\`，空着。）`);
+  }
+
+  // 5. 真人说法
+  if (args.scenes) {
+    const scenes = splitIds(args.scenes);
+    const bad = scenes.map(parseSceneSpec).filter((s) => !/^[A-J]$/.test(s.scene));
+    if (bad.length) die(`--scenes 只认 A–J（E 可写 E:子场景），看不懂：${bad.map((s) => s.label).join('、')}`);
+    const r = pickSayings(pack.data, { scenes, n: nSay, seed, topicType, avoidEpisodes: avoid, authors });
+    usedIds.push(...r.picked.map((e) => e.id));
+    const perScene = r.perScene.map((s) => `${s.label} 候选 ${s.candidates} 配额 ${s.quota} 取 ${s.got}`).join('；');
+    if (r.picked.length < nSay) missing.push(`**真人说法**：要 ${nSay} 条只抽到 ${r.picked.length} 条（候选不够或被过滤）。`);
+    parts.push(`---
+
+# 五、真人说法（措辞照走，内容换成我们的事实；整句搬会被连抄检查打回）
+
+${commonTail}
+
+> 学的是句式、口气、连接方式。**里面的品、数、人、事全换成第七节的事实和第八节的故事。**
+> 亲历标记写"含作者亲历 / 本人亲历"的，事必须换成圣矾本期的；"纯措辞"的可以直接学句式。
+> 交稿前跑 \`${leakCmd}\`，和总表连着十二个字一样就打回。
+> ${avoidNote}${authors.length ? `\n> 作者限定：${authors.join('、')}。` : ''}
+> 分配：${perScene}。
+
+${renderSayings(r.picked, scenes.map((s) => parseSceneSpec(s).label))}`);
+    stats.push(['真人说法', `${r.picked.length} 条（要 ${nSay}）；候选池 ${r.poolSize}，过滤：${droppedSummary(r.dropped)}`]);
+    packStats.push(['sayings', r.dropped, r.perScene]);
+  } else {
+    missing.push('**真人说法**：给了 `--pack` 但没给 `--scenes`，第五节空着。');
+    parts.push(`---\n\n# 五、真人说法（措辞照走，内容换成我们的事实；整句搬会被连抄检查打回）\n\n（没给 \`--scenes\`，空着。）`);
+  }
+
+  // 6. 原声
+  {
+    const r = pickVoices(pack.data, { n: nVoice, seed, topicType, avoidEpisodes: avoid });
+    usedIds.push(...r.picked.map((e) => e.id));
+    if (r.picked.length < nVoice) missing.push(`**原声**：要 ${nVoice} 条只抽到 ${r.picked.length} 条（候选不够或被过滤）。`);
+    parts.push(`---
+
+# 六、原声（学"引一句原话"的做法，原话本身不许当我们的）
+
+${commonTail}
+
+> 看的是别人怎么把买家、学员、家人的一句话嵌进稿里（先给情境、再引原话、再接自己一句）。
+> **原话本身是别人的买家说的，不许写成我们的买家说的。** 标了"含收入数字"的只学引原话的形。
+> ${avoidNote}
+
+${r.picked.length ? renderVoices(r.picked) : '（一条都没抽到，见缺项。）'}`);
+    stats.push(['原声', `${r.picked.length} 条（要 ${nVoice}）；候选池 ${r.poolSize}，过滤：${droppedSummary(r.dropped)}`]);
+    packStats.push(['voices', r.dropped, null]);
+  }
+} else {
+  missing.push('**真人语料包**：没给 `--pack`，第四、五、六节（真人开头结构 / 真人说法 / 原声）空着。写手没有措辞范本，容易写成 AI 腔。');
+  parts.push(`---\n\n# 四、真人开头结构（学结构，不抄句）\n\n（没给 \`--pack\`，空着。）`);
+  parts.push(`---\n\n# 五、真人说法（措辞照走，内容换成我们的事实；整句搬会被连抄检查打回）\n\n（没给 \`--pack\`，空着。）`);
+  parts.push(`---\n\n# 六、原声（学"引一句原话"的做法，原话本身不许当我们的）\n\n（没给 \`--pack\`，空着。）`);
+}
+
+// ── 7. 项目事实 ──────────────────────────────────────────
 const factParts = [];
 
 // 4a/4b/4d/4e：事实链
@@ -307,7 +439,7 @@ if (args.chain) {
 
   const sec2 = extractSection(doc.lines, /^##\s*二、/);
   if (!sec2) die(`事实链里找不到第二节（"## 二、..."）\n        文件：${doc.abs}`);
-  factParts.push(`## 4.1　生意句三个数（原样）\n\n${sec2.replace(/^##\s*/, '### ')}`);
+  factParts.push(`## 7.1　生意句三个数（原样）\n\n${sec2.replace(/^##\s*/, '### ')}`);
   stats.push(['事实链第二节', '生意句三个数，一节']);
 
   if (args.links) {
@@ -323,14 +455,14 @@ if (args.chain) {
     const rendered = blocks
       .map((b) => `${b.header}\n${b.sep}\n${b.rows.join('\n')}`)
       .join('\n\n');
-    factParts.push(`## 4.2　本篇要讲的链条环节（第 ${wanted.join('、')} 环）
+    factParts.push(`## 7.2　本篇要讲的链条环节（第 ${wanted.join('、')} 环）
 
 > 规则：每条事实只挂一个环节。引某条事实，就只能用它在本表里这一格的用途。第四列"常见的写错"逐条对照。
 
 ${rendered}`);
     stats.push(['事实链环节', `${wanted.length} 环（${wanted.join('、')}）`]);
   } else {
-    missing.push('**链条环节**：没给 `--links`，第 4.2 小节空着（不知道本篇讲哪几环）。');
+    missing.push('**链条环节**：没给 `--links`，第 7.2 小节空着（不知道本篇讲哪几环）。');
   }
 } else {
   missing.push('**事实链**：没给 `--chain`，缺"生意句三个数"、链条环节表、"不许入稿"、"一跳规则"四样。这是最硬的四样，别裸写。');
@@ -345,7 +477,7 @@ if (args.factcard && args.facts) {
     return m ? m[1] : null;
   });
   assertAllFound(hits, wanted, '事实卡（--facts）', doc.abs);
-  factParts.push(`## 4.3　本篇能用的事实（${wanted.length} 条）
+  factParts.push(`## 7.3　本篇能用的事实（${wanted.length} 条）
 
 <!-- 来源：${args.factcard} -->
 
@@ -355,11 +487,11 @@ if (args.factcard && args.facts) {
 ${renderBlocks(blocks)}`);
   stats.push(['事实卡', `${wanted.length} 条（${wanted.join('、')}）`]);
 } else if (args.factcard && !args.facts) {
-  missing.push('**事实卡**：给了 `--factcard` 但没给 `--facts`，第 4.3 小节空着。');
+  missing.push('**事实卡**：给了 `--factcard` 但没给 `--facts`，第 7.3 小节空着。');
 } else if (!args.factcard && args.facts) {
-  missing.push('**事实卡**：给了 `--facts` 但没给 `--factcard`，没有事实卡文件，第 4.3 小节空着。');
+  missing.push('**事实卡**：给了 `--facts` 但没给 `--factcard`，没有事实卡文件，第 7.3 小节空着。');
 } else {
-  missing.push('**事实卡**：没给 `--factcard` / `--facts`，第 4.3 小节空着，稿里不该出现任何具体数字。');
+  missing.push('**事实卡**：没给 `--factcard` / `--facts`，第 7.3 小节空着，稿里不该出现任何具体数字。');
 }
 
 // 4d/4e：不许入稿 + 一跳规则
@@ -369,18 +501,18 @@ if (args.chain) {
   if (!sec4) die(`事实链里找不到第四节"不许入稿"（"## 四、..."）\n        文件：${doc.abs}`);
   const sec5 = extractSection(doc.lines, /^##\s*五、/);
   if (!sec5) die(`事实链里找不到第五节"允许的推理跳数"（"## 五、..."）\n        文件：${doc.abs}`);
-  factParts.push(`## 4.4　不许入稿（原样，逐条对）\n\n${sec4.replace(/^##\s*/, '### ')}`);
-  factParts.push(`## 4.5　允许的推理跳数（原样，写完自己走一遍）\n\n${sec5.replace(/^##\s*/, '### ')}`);
+  factParts.push(`## 7.4　不许入稿（原样，逐条对）\n\n${sec4.replace(/^##\s*/, '### ')}`);
+  factParts.push(`## 7.5　允许的推理跳数（原样，写完自己走一遍）\n\n${sec5.replace(/^##\s*/, '### ')}`);
   stats.push(['事实链第四/五节', '不许入稿 + 一跳规则，各一节']);
 }
 
 parts.push(`---
 
-# 四、项目事实（固定部分，每篇都一样）
+# 七、项目事实（固定部分，每篇都一样）
 
-${factParts.length ? factParts.join('\n\n') : '（这一节整个空着，见第九节缺项。）'}`);
+${factParts.length ? factParts.join('\n\n') : '（这一节整个空着，见第十二节缺项。）'}`);
 
-// ── 5. 故事 ──────────────────────────────────────────────
+// ── 8. 故事 ──────────────────────────────────────────────
 if (args.stories && args['story-ids']) {
   const doc = readFileOrDie(args.stories, '经历清单（--stories）');
   const wanted = splitIds(args['story-ids']);
@@ -394,7 +526,7 @@ if (args.stories && args['story-ids']) {
     .map((id) => `${id}（${hits.get(id).length} 处）`);
   parts.push(`---
 
-# 五、故事（本篇用 ${wanted.length} 条）
+# 八、故事（本篇用 ${wanted.length} 条）
 
 <!-- 来源：${args.stories} -->
 
@@ -404,12 +536,12 @@ ${dupNote.length ? `>\n> （编号在原文件里出现多处，下面都列出�
 ${renderBlocks(blocks)}`);
   stats.push(['故事', `${wanted.length} 个编号（${wanted.join('、')}），命中 ${[...hits.values()].reduce((a, b) => a + b.length, 0)} 行`]);
 } else if (args.stories || args['story-ids']) {
-  missing.push('**故事**：`--stories` 和 `--story-ids` 要一起给，只给了一半，第五节空着。');
+  missing.push('**故事**：`--stories` 和 `--story-ids` 要一起给，只给了一半，第八节空着。');
 } else {
-  missing.push('**故事**：没给 `--stories` / `--story-ids`，第五节空着。没有故事就只剩干条，稿会很硬。');
+  missing.push('**故事**：没给 `--stories` / `--story-ids`，第八节空着。没有故事就只剩干条，稿会很硬。');
 }
 
-// ── 6. 闲鱼经验 ──────────────────────────────────────────
+// ── 9. 闲鱼经验 ──────────────────────────────────────────
 if (args.experiences && args['exp-ids']) {
   const p = resolvePath(args.experiences);
   if (!fs.existsSync(p)) die(`闲鱼经验总表（--experiences）文件不存在：${p}`);
@@ -434,7 +566,7 @@ if (args.experiences && args['exp-ids']) {
   const flagged = wanted.filter((id) => /⚠️|🚫/.test(byId.get(id).标记 || ''));
   parts.push(`---
 
-# 六、闲鱼经验（本篇用 ${wanted.length} 条）
+# 九、闲鱼经验（本篇用 ${wanted.length} 条）
 
 <!-- 来源：${args.experiences} -->
 
@@ -447,18 +579,18 @@ if (args.experiences && args['exp-ids']) {
 ${rows.join('\n')}${flagged.length ? `\n\n**要剥的**：${flagged.join('、')}——按上表"备注"列处理，别原样搬。` : ''}`);
   stats.push(['闲鱼经验', `${wanted.length} 条（${wanted.join('、')}），其中带标记 ${flagged.length} 条`]);
 } else if (args.experiences || args['exp-ids']) {
-  missing.push('**闲鱼经验**：`--experiences` 和 `--exp-ids` 要一起给，只给了一半，第六节空着。');
+  missing.push('**闲鱼经验**：`--experiences` 和 `--exp-ids` 要一起给，只给了一半，第九节空着。');
 } else {
-  missing.push('**闲鱼经验**：没给 `--experiences` / `--exp-ids`，第六节空着。没有同行经验，正文会薄。');
+  missing.push('**闲鱼经验**：没给 `--experiences` / `--exp-ids`，第九节空着。没有同行经验，正文会薄。');
 }
 
-// ── 7. 交稿前机器查 ──────────────────────────────────────
+// ── 10. 交稿前机器查 ──────────────────────────────────────
 if (styleDoc) {
   const sec = extractSection(styleDoc.lines, /^##\s*十八、/);
   if (!sec) die(`风格说明书里找不到"交稿前机器查一遍"那一节（"## 十八、..."）\n        文件：${styleDoc.abs}`);
   parts.push(`---
 
-# 七、交稿前机器查一遍（重复列一次，写手最容易漏这节）
+# 十、交稿前机器查一遍（重复列一次，写手最容易漏这节）
 
 ${sec.replace(/^##\s*/, '## ')}
 
@@ -466,7 +598,7 @@ ${sec.replace(/^##\s*/, '## ')}
   stats.push(['机器查表', '一节（说明书 §十八）']);
 }
 
-// ── 8. 用户校准词表 ──────────────────────────────────────
+// ── 11. 用户校准词表 ──────────────────────────────────────
 {
   let wt;
   try { wt = loadWordTable(args.words || DEFAULT_WORD_TABLE); } catch (e) { die(e.message); }
@@ -477,7 +609,7 @@ ${sec.replace(/^##\s*/, '## ')}
     : '没给 `--topic-type`，"实物专用"那一类照列但没法替你判断生不生效，写手自己看选题定。';
   parts.push(`---
 
-# 八、用户校准词表（禁 → 换）
+# 十一、用户校准词表（禁 → 换）
 
 <!-- 来源：${args.words || DEFAULT_WORD_TABLE}${topicType ? `　--topic-type ${topicType}` : ''} -->
 
@@ -487,17 +619,32 @@ ${sec.replace(/^##\s*/, '## ')}
 
 ${renderWordTable(filtered, { topicType })}`);
   stats.push(['用户校准词表', `${c.total} 条（用户点名 ${c.users} / 预防性 ${c.preventive}）${topicType ? `，选题类型 ${topicType}` : '，未给 --topic-type'}`]);
-  if (!topicType) missing.push('**选题类型**：没给 `--topic-type`，第八节"实物专用"那一类没法过滤，交稿前跑 check-words 时自己补 `--topic-type 虚拟|实物`。');
+  if (!topicType) missing.push('**选题类型**：没给 `--topic-type`，第十一节"实物专用"那一类没法过滤，交稿前跑 check-words 时自己补 `--topic-type 虚拟|实物`。');
 }
 
-// ── 9. 缺项 ──────────────────────────────────────────────
+// ── 12. 缺项 ──────────────────────────────────────────────
 parts.push(`---
 
-# 九、缺项
+# 十二、缺项
 
 ${missing.length
     ? missing.map((m) => `- ${m}`).join('\n')
-    : '（无。这份配料包是齐的：风格、开头、事实、故事、经验、机器查表、用户校准词表七样都在。）'}`);
+    : '（无。这份配料包是齐的：风格、开头、真人语料三节、事实、故事、经验、机器查表、用户校准词表都在。）'}`);
+
+// ── 13. 本包选用的语料编号 ──────────────────────────────
+if (args.pack) {
+  const markCmd = `node engine/brief/mark-used.mjs --pack ${args.pack} --episode ${episode || '<期标识>'} --ids ${usedIds.length ? usedIds.join(',') : '<编号>'}`;
+  parts.push(`---
+
+# 十三、本包选用的语料编号
+
+> 定稿后跑下面这条，把本期写回这些条目的"用过的期"（只写回真正用上的也行，把没用的编号删掉再跑）：
+>
+> \`${markCmd}\`
+
+${usedIds.length ? usedIds.join(',') : '（一条都没抽到）'}`);
+  stats.push(['本包选用的语料编号', `${usedIds.length} 条`]);
+}
 
 // ───────────────────────── 落盘 ─────────────────────────
 
@@ -511,7 +658,11 @@ if (args.out) {
   process.stdout.write(`[build-brief] 已写出：${outAbs}\n`);
   process.stdout.write(`[build-brief] 汉字数：${hanzi}　总字符：${output.length}\n`);
   for (const [k, v] of stats) process.stdout.write(`[build-brief]   ${k}：${v}\n`);
-  process.stdout.write(`[build-brief] 缺项：${missing.length ? missing.length + ' 条（见配料包第九节）' : '无'}\n`);
+  for (const [layer, dropped, detail] of packStats) {
+    process.stdout.write(`[build-brief]   语料包 ${layer} 过滤：${droppedSummary(dropped)}\n`);
+    if (detail) for (const d of detail) process.stdout.write(`[build-brief]     ${JSON.stringify(d)}\n`);
+  }
+  process.stdout.write(`[build-brief] 缺项：${missing.length ? missing.length + ' 条（见配料包第十二节）' : '无'}\n`);
 } else {
   process.stdout.write(output);
 }
