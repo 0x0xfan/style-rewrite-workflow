@@ -475,7 +475,7 @@ if (args.factcard && args.facts) {
   const doc = readFileOrDie(args.factcard, '事实卡（--factcard）');
   const wanted = splitIds(args.facts);
   const { hits, blocks } = pickTableRows(doc.lines, wanted, (cell) => {
-    const m = cell.replace(/\*/g, '').match(/^([AB]\d+)$/);
+    const m = cell.replace(/\*/g, '').match(/^([ABCSZ]\d+)$/);
     return m ? m[1] : null;
   });
   assertAllFound(hits, wanted, '事实卡（--facts）', doc.abs);
