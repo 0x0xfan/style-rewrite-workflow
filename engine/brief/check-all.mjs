@@ -271,7 +271,7 @@ function chainSection(chainAbs, headingPrefix) {
 
 function chainBannedItems(chainAbs) {
   return chainSection(chainAbs, '## 四、')
-    .filter((l) => /^\|\s*\*\*/.test(l))
+    .filter((l) => /^\|\s*(【[^】]*】)?\s*\*\*/.test(l))
     .map((l) => {
       const cells = l.split('|').map((c) => c.trim());
       const name = (cells[1] || '').replace(/\*\*/g, '');
