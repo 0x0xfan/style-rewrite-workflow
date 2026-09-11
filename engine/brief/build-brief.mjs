@@ -15,7 +15,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   loadTable as loadWordTable, filterByTopic, renderMarkdown as renderWordTable,
-  countBySource, DEFAULT_TABLE as DEFAULT_WORD_TABLE,
+  countBySource, DEFAULT_TABLE as DEFAULT_WORD_TABLE, USER_SOURCES as USER_WORD_SOURCES,
 } from './word-table.mjs';
 import {
   loadPack, recentEpisodes, pickOpenings, pickSayings, pickVoices,
@@ -187,7 +187,15 @@ const KNOWN = new Set([
   'style', 'factcard', 'facts', 'chain', 'links', 'angles', 'angle',
   'stories', 'story-ids', 'experiences', 'exp-ids', 'topic', 'topic-type', 'words', 'out', 'help',
   'pack', 'episode', 'opening-types', 'n-openings', 'scenes', 'n-sayings', 'n-voices', 'authors',
+  'lean',
 ]);
+/** 不带值的开关参数 */
+const FLAGS = new Set(['help', 'lean']);
+
+// --lean（写手版）只嵌风格说明书的这几节（按 "## 节号、" 匹配）
+const LEAN_STYLE_SECTIONS = ['三', '四', '七', '八', '十三', '十四', '十五', '十七'];
+// --lean 用户校准词表只嵌这几类里"用户点名 / 员工修改"的条目
+const LEAN_WORD_TYPES = ['内部术语', '借用错', '用词不当'];
 
 function parseArgs(argv) {
   const a = {};
@@ -196,7 +204,7 @@ function parseArgs(argv) {
     if (!t.startsWith('--')) die(`看不懂的参数：${t}`);
     const key = t.slice(2);
     if (!KNOWN.has(key)) die(`不认识的参数：--${key}\n        可用参数：${[...KNOWN].map((k) => '--' + k).join(' ')}`);
-    if (key === 'help') { a.help = true; continue; }
+    if (FLAGS.has(key)) { a[key] = true; continue; }
     const val = argv[i + 1];
     if (val === undefined || val.startsWith('--')) die(`--${key} 后面缺值`);
     a[key] = val;
@@ -232,6 +240,9 @@ const USAGE = `
   --scenes：场景字母，逗号分隔，E 可写 E:动作 指定子场景。--n-sayings 默认 30，按场景均分。
   --n-voices：原声条数，默认 5。
   --authors：说法层只取这些作者（可选）。
+  --lean：写手版（不带值）。说明书只嵌 ${LEAN_STYLE_SECTIONS.join('、')} 八节；词表只嵌 ${LEAN_WORD_TYPES.join(' / ')}
+          三类里用户点名 / 员工修改的"禁 → 换"两列；不嵌机器查表和事实链第五节；
+          --n-openings / --n-sayings / --n-voices 默认改为 3 / 15 / 3（显式给了按给的）。目标四万字符以内。
 
 路径相对仓库根或绝对皆可。缺哪个参数就跳过那一节，并在配料包末尾"缺项"里列出。
 编号找不到会报错退出 1。
@@ -255,12 +266,17 @@ const checkCmd = `node engine/brief/check-words.mjs <稿件.txt> --topic-type ${
 const leakCorpus = (args.pack || DEFAULT_PACK).replace(/\.json$/i, '.md');
 const leakCmd = `node engine/leakage/check-source-leakage.mjs --corpus ${leakCorpus} --drafts <稿件.txt>`;
 const episode = args.episode ? args.episode.trim() : '';
+const lean = !!args.lean;
 
 // ── 1. 抬头 ──────────────────────────────────────────────
-parts.push(`# 配料包 · ${topic}
+const machineCheckLine = lean
+  ? `- 交稿前跑 \`node engine/brief/check-all.mjs <稿件.txt> --rules docs/写稿规则.json --topic-type ${topicType || '虚拟|实物'}\`，它把词表、机器查表、连抄一起查，命中即打回。`
+  : '- 交稿前先自己过一遍第十节那张机器查表，命中即打回。';
+parts.push(`# 配料包 · ${topic}${lean ? '（写手版）' : ''}
 
-> 生成时间：${today}　·　生成器：\`engine/brief/build-brief.mjs\`
-> **这份文件就是你写这篇稿要用的全部配料。不要再去翻别的大文件，也不要自己补配料。**
+> 生成时间：${today}　·　生成器：\`engine/brief/build-brief.mjs${lean ? ' --lean' : ''}\`
+> **这份文件就是你写这篇稿要用的全部配料。不要再去翻别的大文件，也不要自己补配料。**${lean ? `
+> 写手版：风格说明书只嵌 ${LEAN_STYLE_SECTIONS.length} 节、词表只嵌最常撞的三类、机器查表交给脚本。完整说明书见 \`${args.style || 'docs/人设说明书-钱十七.md'}\`，写手不用读。` : ''}
 
 **写稿公式**
 
@@ -276,8 +292,8 @@ parts.push(`# 配料包 · ${topic}
 - 一句一行。
 - 单句不超过五十字。
 - 全部用汉字数字，不出现阿拉伯数字、百分号、英文字母；零头取整加"多"（如"九千八百多件"）。
-- 交稿前先自己过一遍第十节那张机器查表，命中即打回。
-- 交稿前先跑 \`${checkCmd}\`，命中即改，报告里贴输出。第十一节那张"禁 → 换"表就是它查的词表，写的时候先别往上撞。
+${machineCheckLine}
+- 交稿前先跑 \`${checkCmd}\`，命中即改，报告里贴输出。第十一节那张"禁 → 换"表${lean ? '是它查的词表里写手最常撞的一部分' : '就是它查的词表'}，写的时候先别往上撞。
 - 交稿前再跑 \`${leakCmd}\`，真人语料十二字连抄命中即打回。第四、五、六节是拿来学措辞的，不是拿来搬的。
 `);
 
@@ -285,14 +301,34 @@ parts.push(`# 配料包 · ${topic}
 let styleDoc = null;
 if (args.style) {
   styleDoc = readFileOrDie(args.style, '风格说明书（--style）');
-  parts.push(`---
+  if (lean) {
+    const secs = [];
+    for (const n of LEAN_STYLE_SECTIONS) {
+      const sec = extractSection(styleDoc.lines, new RegExp(`^##\\s*${n}、`));
+      if (!sec) die(`风格说明书里找不到第${n}节（"## ${n}、..."），--lean 要嵌它\n        文件：${styleDoc.abs}`);
+      secs.push(sec);
+    }
+    const body = secs.join('\n\n');
+    parts.push(`---
+
+# 二、风格说明书（写手版：只嵌 ${LEAN_STYLE_SECTIONS.map((n) => `§${n}`).join(' ')}，照着写）
+
+<!-- 来源：${args.style}　--lean -->
+
+> 完整说明书见 \`${args.style}\`，写手不用读。下面八节是开头、每一块、词表、数字、句子、结尾、绝不做、红线，原样节选。
+
+${body}`);
+    stats.push(['风格说明书', `写手版嵌 ${LEAN_STYLE_SECTIONS.length} 节，${countHanzi(body)} 汉字（全文 ${countHanzi(styleDoc.text)}）`]);
+  } else {
+    parts.push(`---
 
 # 二、风格说明书（原样全文，照着写）
 
 <!-- 来源：${args.style} -->
 
 ${styleDoc.text.trim()}`);
-  stats.push(['风格说明书', `全文嵌入，${countHanzi(styleDoc.text)} 汉字`]);
+    stats.push(['风格说明书', `全文嵌入，${countHanzi(styleDoc.text)} 汉字`]);
+  }
 } else {
   missing.push('**风格说明书**：没给 `--style`，第二节和第十节都空着。写手拿不到风格标准，等于白写。');
 }
@@ -336,9 +372,9 @@ if (args.pack) {
   if (!episode) missing.push('**真人语料包**：没给 `--episode`，"用过的期"没法轮换，也没法写回。定稿前补上再生成一次。');
   if (!topicType) missing.push('**真人语料包**：没给 `--topic-type`，"实物专用 / 虚拟专用 / 反虚拟"没法剔，第四、五、六节照列了，写手自己看选题避开。');
 
-  const nOpen = args['n-openings'] !== undefined ? Number(args['n-openings']) : 5;
-  const nSay = args['n-sayings'] !== undefined ? Number(args['n-sayings']) : 30;
-  const nVoice = args['n-voices'] !== undefined ? Number(args['n-voices']) : 5;
+  const nOpen = args['n-openings'] !== undefined ? Number(args['n-openings']) : (lean ? 3 : 5);
+  const nSay = args['n-sayings'] !== undefined ? Number(args['n-sayings']) : (lean ? 15 : 30);
+  const nVoice = args['n-voices'] !== undefined ? Number(args['n-voices']) : (lean ? 3 : 5);
   for (const [k, v] of [['--n-openings', nOpen], ['--n-sayings', nSay], ['--n-voices', nVoice]]) {
     if (!Number.isInteger(v) || v < 0) die(`${k} 要是非负整数，现在是：${v}`);
   }
@@ -501,11 +537,16 @@ if (args.chain) {
   const doc = readFileOrDie(args.chain, '事实链（--chain）');
   const sec4 = extractSection(doc.lines, /^##\s*四、/);
   if (!sec4) die(`事实链里找不到第四节"不许入稿"（"## 四、..."）\n        文件：${doc.abs}`);
-  const sec5 = extractSection(doc.lines, /^##\s*五、/);
-  if (!sec5) die(`事实链里找不到第五节"允许的推理跳数"（"## 五、..."）\n        文件：${doc.abs}`);
   factParts.push(`## 7.4　不许入稿（原样，逐条对）\n\n${sec4.replace(/^##\s*/, '### ')}`);
-  factParts.push(`## 7.5　允许的推理跳数（原样，写完自己走一遍）\n\n${sec5.replace(/^##\s*/, '### ')}`);
-  stats.push(['事实链第四/五节', '不许入稿 + 一跳规则，各一节']);
+  if (lean) {
+    factParts.push(`## 7.5　允许的推理跳数\n\n（写手版不嵌。规矩一句话：只用 7.3 每条事实写明用途的那一跳，不往前推第二步；要看全文见 \`${args.chain}\` 第五节。）`);
+    stats.push(['事实链第四节', '不许入稿，一节（--lean 不嵌第五节一跳规则）']);
+  } else {
+    const sec5 = extractSection(doc.lines, /^##\s*五、/);
+    if (!sec5) die(`事实链里找不到第五节"允许的推理跳数"（"## 五、..."）\n        文件：${doc.abs}`);
+    factParts.push(`## 7.5　允许的推理跳数（原样，写完自己走一遍）\n\n${sec5.replace(/^##\s*/, '### ')}`);
+    stats.push(['事实链第四/五节', '不许入稿 + 一跳规则，各一节']);
+  }
 }
 
 parts.push(`---
@@ -587,7 +628,14 @@ ${rows.join('\n')}${flagged.length ? `\n\n**要剥的**：${flagged.join('、')}
 }
 
 // ── 10. 交稿前机器查 ──────────────────────────────────────
-if (styleDoc) {
+if (styleDoc && lean) {
+  parts.push(`---
+
+# 十、交稿前机器查一遍
+
+（写手版不嵌这张表。交稿前跑抬头里那条 \`check-all.mjs\`，它按 \`docs/写稿规则.json\` 把压缩词、书面词、空悬念、免责句、阿拉伯数字全查一遍，命中即打回，自己勾的不算。）`);
+  stats.push(['机器查表', '--lean 不嵌（交给 check-all.mjs）']);
+} else if (styleDoc) {
   const sec = extractSection(styleDoc.lines, /^##\s*十八、/);
   if (!sec) die(`风格说明书里找不到"交稿前机器查一遍"那一节（"## 十八、..."）\n        文件：${styleDoc.abs}`);
   parts.push(`---
@@ -609,6 +657,25 @@ ${sec.replace(/^##\s*/, '## ')}
   const topicNote = topicType
     ? `本篇是**${topicType}**选题${topicType === '虚拟' ? '，"实物专用"那一类生效：退货、运费、快递这些词一个都不许出现（"退款"可以）' : '，"实物专用"那一类已剔掉'}。`
     : '没给 `--topic-type`，"实物专用"那一类照列但没法替你判断生不生效，写手自己看选题定。';
+  if (lean) {
+    const leanRows = filtered.filter((e) => LEAN_WORD_TYPES.includes(e.类型) && USER_WORD_SOURCES.includes(e.录入));
+    const esc = (s) => String(s ?? '').replace(/\|/g, '｜').replace(/\r?\n/g, ' ');
+    const table = leanRows.length
+      ? ['| 禁 | 换成 |', '| --- | --- |', ...leanRows.map((r) => `| ${esc(r.位置 === '第一行' ? `${r.禁}（只查第一句）` : r.禁)} | ${esc(r.换)} |`)].join('\n')
+      : '（这三类里没有用户点名 / 员工修改的条目。）';
+    parts.push(`---
+
+# 十一、用户校准词表（写手版：禁 → 换）
+
+<!-- 来源：${args.words || DEFAULT_WORD_TABLE}${topicType ? `　--topic-type ${topicType}` : ''}　--lean -->
+
+> 全表 ${c.total} 条交稿时 \`check-words.mjs\` 全查；这里只列写手最常撞的三类（${LEAN_WORD_TYPES.join(' / ')}）里用户亲口纠正或员工改过的 ${leanRows.length} 条。**左列不许出现，右列是该怎么说。**
+> ${topicNote}
+
+${table}`);
+    stats.push(['用户校准词表', `写手版 ${leanRows.length} 条（全表 ${c.total}：用户点名 ${c.users} / 员工修改 ${c.staff} / 预防性 ${c.preventive}）${topicType ? `，选题类型 ${topicType}` : '，未给 --topic-type'}`]);
+    if (!topicType) missing.push('**选题类型**：没给 `--topic-type`，交稿前跑 check-words 时自己补 `--topic-type 虚拟|实物`。');
+  } else {
   parts.push(`---
 
 # 十一、用户校准词表（禁 → 换）
@@ -622,6 +689,7 @@ ${sec.replace(/^##\s*/, '## ')}
 ${renderWordTable(filtered, { topicType })}`);
   stats.push(['用户校准词表', `${c.total} 条（用户点名 ${c.users} / 员工修改 ${c.staff} / 预防性 ${c.preventive}）${topicType ? `，选题类型 ${topicType}` : '，未给 --topic-type'}`]);
   if (!topicType) missing.push('**选题类型**：没给 `--topic-type`，第十一节"实物专用"那一类没法过滤，交稿前跑 check-words 时自己补 `--topic-type 虚拟|实物`。');
+  }
 }
 
 // ── 12. 缺项 ──────────────────────────────────────────────
@@ -657,8 +725,8 @@ if (args.out) {
   fs.mkdirSync(path.dirname(outAbs), { recursive: true });
   fs.writeFileSync(outAbs, output, 'utf8');
   const hanzi = countHanzi(output);
-  process.stdout.write(`[build-brief] 已写出：${outAbs}\n`);
-  process.stdout.write(`[build-brief] 汉字数：${hanzi}　总字符：${output.length}\n`);
+  process.stdout.write(`[build-brief] 已写出：${outAbs}${lean ? '　（--lean 写手版）' : ''}\n`);
+  process.stdout.write(`[build-brief] 汉字数：${hanzi}　总字符：${output.length}${lean && output.length > 40000 ? '　⚠️ 写手版超过四万字符' : ''}\n`);
   for (const [k, v] of stats) process.stdout.write(`[build-brief]   ${k}：${v}\n`);
   for (const [layer, dropped, detail] of packStats) {
     process.stdout.write(`[build-brief]   语料包 ${layer} 过滤：${droppedSummary(dropped)}\n`);
