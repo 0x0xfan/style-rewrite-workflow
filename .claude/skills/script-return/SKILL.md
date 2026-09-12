@@ -138,3 +138,10 @@ node engine/return/screen-check.mjs --film <filmId> [--topic-type 虚拟|实物]
 - 退出码 1 = 有命中，逐条打印 场景｜上屏字｜换成。
 - 改法：上屏字**照口播稿原话**改（稿里说"三点"屏上就写"三点"），`slices/SceneNN.tsx` 和 `scenes.spec.json` **同改**（否则重编译会把旧字带回来），长度尽量不变；改完重跑 `node scripts/by2/storyboard-lint.mjs --film <filmId> --stills --json`，error 0 才提交。
 - 上屏字与口播逐字相同会多一条 L4「口播复读」提示，属预期，不用管。
+
+## 渲染前：目检接触表，小毛病直接修（用户 2026-09-12「小毛病你看到了直接修好再渲染」）
+
+分镜过了 lint 和 screen-check 之后、排 `render-full` 之前，主线程看一次 `.artifacts/<film>-lint/contact.png`：
+- **直接修、不问**：字压字、字被裁、单字甩到下一行、角标/圆章挤进标题、标签框被色条压住、一两句小字飘在大片空底上（能放大或往中间收就收，收不了就留）。
+- 修法：只改 `slices/SceneNN.tsx` 与 `scenes.spec.json` 对应那场的位置/尺寸/字号，不加字、不改口播、不改帧位；改完重跑 `storyboard-lint --stills`，error 0 才提交、才排渲染。
+- 渲染任务已经在跑的期不要再改文件；改动留到下一版再渲。
