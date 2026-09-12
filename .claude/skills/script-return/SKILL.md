@@ -124,3 +124,17 @@ node engine/return/registry.mjs update --id <id> --status 已回稿并交付 \
 node engine/return/registry.mjs add --id <选题字母-vN> --topic <选题> --film <filmId> --draft <稿件路径> \
   --brief <配料包> --chain <事实链> --factcard <事实卡> --assets <素材目录> --angle <开头角度> --date <交付日期>
 ```
+
+## 分镜之后必跑：上屏字过词表（2026-09-12 起）
+
+视频项目的分镜生成器会自己编上屏标签，不过我们的词表。2026-09-12 两期实测把用户判过的词带回屏幕（电影票「三件事讲完 / 九成九好评 / 最后一块」，苹果多开「三件事说清 / 先卖后进货 / 开鱼小铺」），口播稿本身是对的。
+
+分镜任务成功（lint error 0）后、交用户 Studio 审之前：
+
+```bash
+node engine/return/screen-check.mjs --film <filmId> [--topic-type 虚拟|实物]
+```
+
+- 退出码 1 = 有命中，逐条打印 场景｜上屏字｜换成。
+- 改法：上屏字**照口播稿原话**改（稿里说"三点"屏上就写"三点"），`slices/SceneNN.tsx` 和 `scenes.spec.json` **同改**（否则重编译会把旧字带回来），长度尽量不变；改完重跑 `node scripts/by2/storyboard-lint.mjs --film <filmId> --stills --json`，error 0 才提交。
+- 上屏字与口播逐字相同会多一条 L4「口播复读」提示，属预期，不用管。
