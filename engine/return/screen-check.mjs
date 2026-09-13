@@ -42,7 +42,7 @@ for (const line of out.split('\n')) {
   const m = line.match(/^第\s*(\d+)\s*行\s+(命中「.*)$/); if (!m) continue;
   const r = rows[Number(m[1]) - 1]; if (r) hits.push(`${r.scene}｜${r.text}｜${m[2]}`);
 }
-for (const r of rows) if (/三件事|第[一二三四五]块|最后一块|[二三四五]块[，：、]|妥妥的/.test(r.text)) hits.push(`${r.scene}｜${r.text}｜分段词/装置词：用"点"，不用"块/三件事"；"妥妥的"不用`);
+for (const r of rows) if (/[一二两三四五六七八九十几]件事|第[一二三四五]块|最后一块|[二三四五]块[，：、]|妥妥的/.test(r.text)) hits.push(`${r.scene}｜${r.text}｜分段词/装置词：用"点"，不用"块/三件事"；"妥妥的"不用`);
 console.log(`[screen-check] ${opt.film}：上屏字 ${rows.length} 条，命中 ${hits.length} 条`);
 for (const h of hits) console.log('  ' + h);
 process.exit(hits.length ? 1 : 0);
