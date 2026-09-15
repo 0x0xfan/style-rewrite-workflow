@@ -6,7 +6,7 @@
 - Project: 风格仿写
 - Type: 内容/写作工作流
 - Goal: 不绑 IP 的双能力引擎。能力一（拆解）：从任意 IP 的样本中拆出可验证、可人工批准、generation-ready 的风格 DNA 控制契约。能力二（仿写）：拿指定 IP 的 DNA 改写用户提供的内容。
-- Current next step: F011 双路线对照——同一选题分别用钱十七 DNA（严谨线）和半佛 DNA（轻量线）各出一稿，判定哪套方法真的有效。
+- Current next step: **新 agent 先读 `HANDOFF.md`（2026-09-15 重写）**。当前主线是「员工改稿 → 学习 → 视频项目出片」与批量出稿；本文件下方关于 DNA/profile/F011/approval 的规则属于旧路线，已不在生产链上。
 - Stack: Codex Skill, JSON/Markdown evidence bundle, Node CLI. 无 UI、无模型调用、无外部服务；旧本地工作台已于 2026-08-22 删除。
 
 ## Read First
