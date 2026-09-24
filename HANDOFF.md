@@ -40,7 +40,7 @@
 `D:\项目仓库\闲鱼知识库\cleaned\` 有新同行文章 → `kb-intake` 技能 → 合进 `docs/真人语料包/总表.{json,md}`。
 
 ### D. 短视频（2026-09-24 新增）
-60–90 秒口播稿，规格 `docs/短视频规格.md`，流程 skill `.claude/skills/short-video/`（Codex 入口 `.codex/skills/short-video/`，别的模型也按它写）。写完必须走 5b dbs 审稿（`.claude/skills/dbs-hook`、`dbs-script-flow`，原始诊断要贴进说明.md）。试稿与 Gemini 试跑在 `scratch/短视频*`。下一步：用户定是否开批量（建议先 SRT 类 10 条、先排组合表）。
+60–90 秒口播稿，规格 `docs/短视频规格.md`，流程 skill `.claude/skills/short-video/`（Codex 入口 `.codex/skills/short-video/`，别的模型也按它写）。写完必须走 5b dbs 审稿（`.claude/skills/dbs-hook`、`dbs-script-flow`，原始诊断要贴进说明.md）。试稿与 Gemini 试跑在 `scratch/短视频*`。2026-09-24 首批 SRT 类 10 条已验收，交付 NAS `待审文案\短\<期号>-<选题>\*-0924-*`（同目录里 09-23 的 A/B/C 是旧写法稿）；待员工改回。竖屏出片待视频项目立项（已发任务卡）。
 
 ## 3. 现在可以接的活（2026-09-15 实查）
 
