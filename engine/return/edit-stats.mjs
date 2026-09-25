@@ -58,7 +58,9 @@ export function dateStr(d) {
 export function modelOf(entry) {
   if (!entry) return '未知';
   for (const f of MODEL_FIELDS) if (entry[f]) return entry[f];
-  return '未知';
+  // daily-write 登记时把模型写在备注里：「写稿模型 gemini；…」
+  const m = /写稿模型\s*([^；;\s]+)/.exec(entry.备注 || '');
+  return m ? m[1] : '未知';
 }
 
 /**
