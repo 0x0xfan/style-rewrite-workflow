@@ -18,7 +18,8 @@
     "check:lexicon": "node engine/naturalness/check-lexicon.mjs",
     "check:draft": "node engine/brief/check-all.mjs",
     "ledger": "node engine/variation/check-repetition.mjs --ledger",
-    "stats:edits": "node engine/return/edit-stats.mjs"
+    "stats:edits": "node engine/return/edit-stats.mjs",
+    "scan:topic": "node engine/collect/topic-scan.mjs"
   },
   "engines": {
     "node": ">=18"
