@@ -17,7 +17,8 @@
     "check:style-floor": "node engine/naturalness/check-style-floor.mjs",
     "check:lexicon": "node engine/naturalness/check-lexicon.mjs",
     "check:draft": "node engine/brief/check-all.mjs",
-    "ledger": "node engine/variation/check-repetition.mjs --ledger"
+    "ledger": "node engine/variation/check-repetition.mjs --ledger",
+    "stats:edits": "node engine/return/edit-stats.mjs"
   },
   "engines": {
     "node": ">=18"
