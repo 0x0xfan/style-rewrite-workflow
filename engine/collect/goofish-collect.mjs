@@ -624,6 +624,65 @@ async function collectShop(browser, sessionId, shopUrl, rank) {
   }
 }
 
+// ------------------------------- 截图前图片懒加载等待 -------------------------------
+
+// 商品缩略图/详情图走懒加载：只静置固定毫秒数截图会截到"数字/标题都在、图区空白"。
+// 这里逐屏滚到底触发懒加载请求，再滚回顶部，轮询等待页面内 <img> 全部
+// complete && naturalWidth>0；设超时上限，超时也照常截图，但如实记录未加载张数，
+// 绝不假装全部加载成功。
+const IMAGE_STATUS_JS = `(() => {
+  const imgs = Array.from(document.images || []);
+  let loaded = 0;
+  for (const img of imgs) {
+    if (img.complete && img.naturalWidth > 0) loaded++;
+  }
+  return { total: imgs.length, loaded };
+})()`;
+
+const IMAGE_WAIT_MAX_MS = 15000;
+const IMAGE_WAIT_POLL_MS = 500;
+
+// 纯函数部分（供测试覆盖）：把「页内 img 总数/已加载数 + 耗时」整理成落盘字段。
+// 与 CDP/DOM 无关，不读时钟以外的任何外部状态。
+export function computeImageWaitResult(status, elapsedMs) {
+  const total = (status && status.total) || 0;
+  const loaded = (status && status.loaded) || 0;
+  const unloaded = Math.max(0, total - loaded);
+  return {
+    images_total: total,
+    images_loaded: loaded,
+    images_unloaded: unloaded,
+    images_wait_ms: elapsedMs,
+  };
+}
+
+async function waitForImagesToLoad(browser, sessionId, maxMs = IMAGE_WAIT_MAX_MS) {
+  const t0 = Date.now();
+  // 逐屏滚到底触发懒加载（滚到底部不再前进即停，上限 20 屏）
+  let lastY = -1;
+  for (let i = 0; i < 20; i++) {
+    const y = await evaluate(
+      browser, sessionId,
+      'window.scrollBy(0, Math.round(window.innerHeight*0.9)); Math.round(window.scrollY)'
+    ).catch(() => null);
+    if (y === null || y === lastY) break;
+    lastY = y;
+    await sleep(250);
+  }
+  // 滚回顶部：截图要从页面顶部开始
+  await evaluate(browser, sessionId, 'window.scrollTo(0,0); true').catch(() => {});
+  await sleep(300);
+
+  // 轮询等待图片加载完成，直到全部加载或超时
+  let status = { total: 0, loaded: 0 };
+  while (Date.now() - t0 < maxMs) {
+    status = await evaluate(browser, sessionId, IMAGE_STATUS_JS).catch(() => status);
+    if (status.total === 0 || status.loaded >= status.total) break;
+    await sleep(IMAGE_WAIT_POLL_MS);
+  }
+  return computeImageWaitResult(status, Date.now() - t0);
+}
+
 // ------------------------------- 截图前遮挡守卫 -------------------------------
 
 // 第一步：尝试关闭"可关闭"的浮层（登录引导横幅、广告/引导浮层等）。
@@ -754,6 +813,13 @@ const FIND_RECOMMEND_TOP_JS = `(() => {
 // opts.cropRecommend=true（仅详情页用）：把整页截图裁到"为你推荐"区块之前，
 // 只保留商品信息区；定位不到"为你推荐"时回退整页，绝不报错。
 async function captureFullPage(browser, sessionId, outPath, opts = {}) {
+  // 截图前先等图片懒加载：逐屏滚到底触发请求、滚回顶部、轮询等 <img> 加载完成（有超时上限）。
+  const imgStatus = await waitForImagesToLoad(browser, sessionId).catch(() => ({
+    images_total: 0, images_loaded: 0, images_unloaded: 0, images_wait_ms: 0,
+  }));
+  if (imgStatus.images_unloaded > 0) {
+    log(`[图片未加载] 等待 ${imgStatus.images_wait_ms}ms 后仍有 ${imgStatus.images_unloaded}/${imgStatus.images_total} 张图未加载完成，按超时上限继续截图`);
+  }
   // 截图前遮挡守卫：先关可关闭浮层，再检不可关闭遮挡（登录弹窗/横幅/模态遮罩）。
   const guard = await screenshotGuard(browser, sessionId);
   if (!guard.clean) {
@@ -820,6 +886,7 @@ async function captureFullPage(browser, sessionId, outPath, opts = {}) {
     occluded: !guard.clean,
     occlusions: guard.remaining,
     closed_overlays: guard.closed,
+    ...imgStatus,
   };
 }
 
@@ -1217,7 +1284,12 @@ async function main() {
   process.exit(status === 'ok' ? 0 : 2);
 }
 
-main().catch((e) => {
-  console.error('[致命]', e && e.stack ? e.stack : e);
-  process.exit(1);
-});
+// 只有直接跑本脚本（node goofish-collect.mjs ...，topic-scan.mjs 就是这样 spawn 的）
+// 才自动执行 main()；被测试文件 import 纯函数时不能顺带启动采集 Chrome。
+const isMainModule = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isMainModule) {
+  main().catch((e) => {
+    console.error('[致命]', e && e.stack ? e.stack : e);
+    process.exit(1);
+  });
+}

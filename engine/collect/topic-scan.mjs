@@ -316,7 +316,14 @@ async function main() {
       bytes: v.bytes,
       sha256: v.sha256,
       captured_at: (m && m.captured_at) || capture.captured_at,
+      // 采集器截图前会等商品图懒加载完成（有超时上限）；如实带出未加载张数，
+      // 不因为 PNG 校验通过就假装图片区域都渲染出来了。
+      images_total: (m && m.images_total) ?? null,
+      images_unloaded: (m && m.images_unloaded) ?? null,
     });
+    if (m && m.images_unloaded > 0) {
+      log(`[告警] ${s.id} 截图仍有 ${m.images_unloaded}/${m.images_total} 张图未加载完成`);
+    }
   }
 
   if (rejectedShots.length) {
