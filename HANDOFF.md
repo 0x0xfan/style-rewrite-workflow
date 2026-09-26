@@ -2,6 +2,7 @@
 
 > **2026-09-25 更新（先看这里）**：改成每日稳定产出（每天 10 长 + 6 短，逐步加量）。用户每天给 3 张选题卡（`docs/每日/选题卡模板.txt`），Gemini 按 `.claude/skills/daily-write/SKILL.md` 写稿：`npm run scan:topic` 实搜闲鱼截图 → 写 → `check:draft` → NAS 待审文案 `<日期>-<选题>\` → `registry.mjs add` 登记。员工改动率用 `npm run stats:edits` 看（基线约 13%）。`AGENTS.md` 已重写成一页，旧规矩在 `docs/history/AGENTS-旧路线-20260925.md`。
 > **2026-09-26 更新**：daily-write 改成先出「项目核心卡」交用户确认再写（模板 `docs/每日/核心卡模板.txt`）；干货从闲鱼经验库挑，先用 `node engine/brief/pick-experience.mjs --subtype <子类>` 按适用标签过滤（`docs/闲鱼经验库/适用标签.json`，22 条拿不准的在 `适用标签-待用户确认.md`）；经验写成"怎么做→为什么→不这么做会怎样"；正文讲法六选一，不固定三点；写完做讲偏检查。kb-intake 加了 ③b：新文章同时抽经验进经验库并贴标签。新流程还没真跑过；R005 对非分点讲法会报提示，可忽略。试跑在 `scratch/干货试跑-电影票代买/`。
+> **2026-09-26 SRT 入口**：总流程技能 `.claude/skills/copy-pipeline/`（新会话先看）；两个入口 SRT 优先。`npm run srt:find -- --episode <期号> --out <目录>` 找字幕+原片，`npm run frames:srt` 按时间点截原片（录屏带地址栏 userId、书签栏，交视频项目前要人看）。期号按 NAS 文件夹编号；12/15/16/19 期没有 srt；26 期字幕与视频时长不符。
 > 未完：①（09-25 已修：截图前等图片加载完）② daily-write 还没真跑过，第一天先 3 个选题各长 1 短 1 试跑；③ 短稿样板还没有员工改过的定稿；④ 已审稿每天取几篇出片的节奏还没定。下面第 3 节「批量出稿」流程已被 daily-write 取代。
 
 最后更新：2026-09-15（主会话，Opus 5）
