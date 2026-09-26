@@ -20,7 +20,8 @@
     "ledger": "node engine/variation/check-repetition.mjs --ledger",
     "stats:edits": "node engine/return/edit-stats.mjs",
     "scan:topic": "node engine/collect/topic-scan.mjs",
-    "srt:find": "node engine/brief/srt-find.mjs"
+    "srt:find": "node engine/brief/srt-find.mjs",
+    "frames:srt": "node engine/collect/srt-frames.mjs"
   },
   "engines": {
     "node": ">=18"
