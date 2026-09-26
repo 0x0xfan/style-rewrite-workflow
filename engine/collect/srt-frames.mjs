@@ -20,7 +20,7 @@
 //     不留下部分截图或看起来像成功的清单文件（先做完全部边界检查再落盘，中途失败
 //     就把这次已经写出的文件清掉）。
 //   - 第一版不自动打码、不做人脸/文字识别（假装能识别隐私是骗人）。每一帧清单里都
-//     标"待人看一眼：昵称、头像、订单号、手机号"，人工确认要不要打码。
+//     标"待人看一眼：昵称、头像、订单号、手机号、浏览器地址栏里的 userId、书签栏"，人工确认要不要打码。
 
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
@@ -134,7 +134,7 @@ export function buildManifestJson({ video, offset, frames }) {
     video,
     offset_seconds: offset,
     generated_at: new Date().toISOString(),
-    privacy_note: '待人看一眼：昵称、头像、订单号、手机号（本脚本不做人脸/文字识别，不自动打码）',
+    privacy_note: '待人看一眼：昵称、头像、订单号、手机号、浏览器地址栏里的 userId、书签栏（本脚本不做人脸/文字识别，不自动打码）',
     frames,
   };
 }
@@ -143,7 +143,7 @@ export function buildManifestMarkdown({ video, offset, frames }) {
   const lines = [];
   lines.push(`# 截图清单 · ${path.basename(video)}`);
   lines.push('');
-  lines.push('> **人工检查项**：下面每一帧都待人看一眼——有没有昵称、头像、订单号、手机号，要不要打码。本脚本不做人脸/文字识别，不会自动打码。');
+  lines.push('> **人工检查项**：下面每一帧都待人看一眼——有没有昵称、头像、订单号、手机号、浏览器地址栏里的 userId、书签栏，要不要打码。本脚本不做人脸/文字识别，不会自动打码。');
   lines.push('');
   lines.push(`- 视频：\`${video}\``);
   lines.push(`- 偏移：时间点之后 +${offset}s 截图（躲开字幕切换那一刻的转场）`);
