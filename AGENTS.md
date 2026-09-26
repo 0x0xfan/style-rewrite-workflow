@@ -16,6 +16,7 @@
 
 | 要做的事 | 读 |
 |---|---|
+| **新会话先看：整条文案流程（两个入口：SRT 优先 / 选题卡）** | `.claude/skills/copy-pipeline/SKILL.md` |
 | 写稿（长稿 / 短稿） | `.claude/skills/daily-write/SKILL.md` |
 | 员工改好的稿 → 学习 → 进视频项目 | `.claude/skills/script-return/SKILL.md` |
 | 知识库有新同行文章 | `.claude/skills/kb-intake/SKILL.md` |
