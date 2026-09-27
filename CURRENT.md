@@ -67,5 +67,5 @@
 | 11 | 开头旧规矩（顺序、句数、正则类）归档 | DECISIONS 写"待归档"；09-27 已改 R001/R002/R003/R005，是否全部归档待核 | DECISIONS 09-27 开头标准条 |
 | 12 | 公众号文章（写法/入口） | "下一件事，未开始" | DECISIONS 09-26 核心卡条 |
 | 13 | GitHub 推送 | 本地领先 origin/main 166 个提交；推不推由用户定 | HANDOFF §3 #5（当时 113） |
-| 14 | `docs/AI直采流水线-需求说明.md.tmp`（0 字节） | 删不删问用户 | HANDOFF §3 #6 |
-| 15 | `.claude/worktrees/` 下 13 个 worktree、两个旧 worktree 目录 | 见清理清单，待主控/用户定 | 清理清单（2026-09-27） |
+| 14 | `docs/AI直采流水线-需求说明.md.tmp`（0 字节） | **已删（09-27）** | HANDOFF §3 #6 |
+| 15 | 旧 worktree 清理 | **已清（09-27）**：12 个 agent worktree、pro-repair、qian17-reprofile 已删（qian17 遗留存 `docs/history/qian17-reprofile-遗留-20260927/`）；只留口播设计会话的 sharp-williams | 清理清单（2026-09-27） |
