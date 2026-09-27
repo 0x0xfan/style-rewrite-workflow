@@ -39,6 +39,6 @@
 - 用户不懂技术：说大白话，给选项并带推荐，一次只问一件事；先讨论，用户说干再干。
 - 不浪费额度：不反复重试、不轮询；同一个阻塞连续失败两次就停，写进 `HANDOFF.md` 交回。
 - 只动当前任务需要的文件；不回退别人的改动；没有证据不说"做完了"。
-- 这些文件只由主会话改：`CURRENT.md`、`DECISIONS.md`、`HANDOFF.md`、`docs/反馈台账.md`、`docs/稿件登记.json`（例外：每日写稿按 daily-write 技能用 `engine/return/registry.mjs add` 登记新稿，只追加不改旧条目）、`docs/用户校准词表.json`、`docs/写稿规则.json`。其他 agent 要改，写在报告里交主会话。
+- 这些文件只由主会话改：`CURRENT.md`、`DECISIONS.md`、`HANDOFF.md`、`docs/反馈台账.md`、`docs/稿件登记.json`（例外：每日写稿按 daily-write 技能用 `engine/return/registry.mjs add` 登记新稿、往 `docs/每日/故事登记.md` 末尾追加一行，只追加不改旧条目）、`docs/用户校准词表.json`、`docs/写稿规则.json`。其他 agent 要改，写在报告里交主会话。
 - 视频仓库 `D:\项目仓库\remotion视频制作` 有自己的规矩，动之前先读它的 `AGENTS.md` 和 `STATE.md`。
 - 不推 GitHub，除非用户说推。
