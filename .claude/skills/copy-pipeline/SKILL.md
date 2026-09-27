@@ -41,6 +41,7 @@ description: 文案总流程（新会话先看这个）：两个入口（用户�
 | 员工改好的稿 → 学习 → 进视频项目 → 出片 | `.claude/skills/script-return/SKILL.md` | 学习里和旧规矩冲突的先问用户 |
 | 知识库有新同行文章 | `.claude/skills/kb-intake/SKILL.md` | — |
 | 60–90 秒短视频单独写（不走每日流程时） | `.claude/skills/short-video/SKILL.md` | — |
+| 聊天记录式短视频（手机聊天画面、无配音，左边学员/粉丝问、右边圣矾答） | `.claude/skills/chat-record/SKILL.md` | 首次交付位置问用户 |
 
 ## 硬规矩（细节见 AGENTS.md）
 
