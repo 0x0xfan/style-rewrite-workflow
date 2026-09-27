@@ -18,6 +18,9 @@
 |---|---|
 | **新会话先看：整条文案流程（两个入口：SRT 优先 / 选题卡）** | `.claude/skills/copy-pipeline/SKILL.md` |
 | 写稿（长稿 / 短稿） | `.claude/skills/daily-write/SKILL.md` |
+| 写 60–90 秒口播短视频 | `.claude/skills/short-video/SKILL.md` |
+| 写聊天记录式短视频（手机聊天画面、无配音） | `.claude/skills/chat-record/SKILL.md` |
+| 审稿：开头 / 流畅度 / 共鸣 / 传播 / 发布风险 | `.claude/skills/` 下 `dbs-hook`、`dbs-script-flow`、`dbs-resonate`、`dbs-spread`、`dbs-content-risk-check` 的 `SKILL.md` |
 | 员工改好的稿 → 学习 → 进视频项目 | `.claude/skills/script-return/SKILL.md` |
 | 知识库有新同行文章 | `.claude/skills/kb-intake/SKILL.md` |
 | 了解全貌、路径、已知的坑 | `HANDOFF.md` |
