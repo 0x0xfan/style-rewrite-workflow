@@ -2,7 +2,7 @@
 // check-all.mjs —— 交稿前一条命令：按 docs/写稿规则.json 逐条跑，输出一张表
 //
 // 用法：
-//   node engine/brief/check-all.mjs <稿件> [--rules docs/写稿规则.json] [--topic 京东家政] [--topic-type 虚拟|实物]
+//   node engine/brief/check-all.mjs <稿件> [--rules docs/写稿规则.json] [--topic 京东家政] [--topic-type 虚拟|实物] [--type 产品|经验]
 //        [--chain <事实链.md>] [--against <已定稿文件/目录/带*模式...>] [--corpus docs/真人语料包/总表.md]
 //        [--words docs/用户校准词表.json] [--style docs/人设说明书-钱十七.md] [--n 8]
 //
@@ -28,13 +28,14 @@ import { checkCopy } from '../compliance/check-copy.mjs';
 
 const USAGE = `
 用法：
-  node engine/brief/check-all.mjs <稿件> [--rules ${DEFAULT_RULES}] [--topic 选题名] [--topic-type 虚拟|实物]
+  node engine/brief/check-all.mjs <稿件> [--rules ${DEFAULT_RULES}] [--topic 选题名] [--topic-type 虚拟|实物] [--type 产品|经验]
        [--chain <事实链.md>] [--against <已定稿...>] [--corpus docs/真人语料包/总表.md]
        [--words ${DEFAULT_TABLE}] [--style ${DEFAULT_STYLE}] [--n ${DEFAULT_N}]
 
   --rules       规则表，默认 ${DEFAULT_RULES}
   --topic       选题名，词表里「选题红线」按它生效
   --topic-type  虚拟 / 实物，词表里「实物专用」只在虚拟选题查
+  --type        稿件类型 产品 / 经验（核心卡「稿件类型」一行），经验稿不查带「经验稿不查」参数的规则（R002），默认产品
   --chain       事实链，manual 行把 §四 不入稿清单列出来给主线程对
   --against     已定稿文件 / 目录（递归只读 .txt）/ 带 * 的模式，可多个；稿件自己自动剔掉
   --corpus      真人语料总表，默认取规则表 R040 参数里的路径
@@ -50,12 +51,12 @@ function die(msg) {
 }
 
 function parseArgs(argv) {
-  const a = { file: null, rules: DEFAULT_RULES, topic: '', topicType: '', chain: '', against: [], corpus: '', words: DEFAULT_TABLE, style: DEFAULT_STYLE, n: 0 };
+  const a = { file: null, rules: DEFAULT_RULES, topic: '', topicType: '', type: '', chain: '', against: [], corpus: '', words: DEFAULT_TABLE, style: DEFAULT_STYLE, n: 0 };
   let cur = null;
   for (const t of argv) {
     if (t === '--help' || t === '-h') { process.stdout.write(USAGE); process.exit(0); }
     if (t === '--against') { cur = 'against'; continue; }
-    if (['--rules', '--topic', '--topic-type', '--chain', '--corpus', '--words', '--style', '--n'].includes(t)) { cur = t.slice(2); continue; }
+    if (['--rules', '--topic', '--topic-type', '--type', '--chain', '--corpus', '--words', '--style', '--n'].includes(t)) { cur = t.slice(2); continue; }
     if (t.startsWith('--')) die(`不认识的参数：${t}${USAGE}`);
     if (cur === 'against') { a.against.push(t); continue; }
     if (cur) {
@@ -69,6 +70,7 @@ function parseArgs(argv) {
   }
   if (!a.file) die(`缺稿件路径${USAGE}`);
   if (a.topicType && !['虚拟', '实物'].includes(a.topicType)) die(`--topic-type 只能是 虚拟 或 实物，现在是：${a.topicType}`);
+  if (a.type && !['产品', '经验'].includes(a.type)) die(`--type 只能是 产品 或 经验，现在是：${a.type}`);
   if (a.n && (!Number.isInteger(a.n) || a.n < 3)) die('--n 要是 ≥3 的整数');
   return a;
 }
@@ -116,6 +118,26 @@ const STRUCTURE = {
     if (!money) miss.push('没有「一单多少」的数');
     if (!verb) miss.push(`没有卖 / 收 / 挂这类动作词`);
     return miss.length ? [hit(b[0]?.line || 1, `前${p.句数 || 3}句${miss.join('；')}：${joined.slice(0, 60)}…`)] : [];
+  },
+
+  // 前两句里要有一个结果或数据：数挨着结果词（赚 / 搞到 / 卖出 / 已售 / 想要 / 一个月 / 一单 / 佣金……），同一个逗号句里；
+  // 单独的商品售价不算。用户 2026-09-27：开头突出结果，用数据或结果留人。
+  resultInFirst2(lines, p) {
+    const b = bodyLines(lines).slice(0, p.句数 || 2);
+    const words = p.结果词 || ['赚', '搞到', '卖出', '已售', '想要', '一个月', '一单', '佣金'];
+    const span = p.挨着几个字内 ?? 10;
+    const NUM = /\d|【[^】]{0,6}】|XXX|[一二三四五六七八九十百千万两零]{2,}|[一二三四五六七八九十两][块元毛万千百多成]|几/i;
+    const ok = b.some((x) => x.text.split(/[，。？！；、,.?!;]/).some((clause) => words.some((w) => {
+      let at = clause.indexOf(w);
+      while (at >= 0) {
+        const win = clause.slice(Math.max(0, at - span), at) + '｜' + clause.slice(at + w.length, at + w.length + span);
+        if (NUM.test(win)) return true;
+        at = clause.indexOf(w, at + 1);
+      }
+      return false;
+    })));
+    const joined = b.map((x) => x.text).join('');
+    return ok ? [] : [hit(b[0]?.line || 1, `前${p.句数 || 2}句没有结果或数据（数要挨着 ${words.slice(0, 8).join(' / ')} 这类词，单独的售价不算）：${joined.slice(0, 60)}…`)];
   },
 
   contract(lines, p) {
@@ -329,6 +351,8 @@ try { table = loadTable(args.words); } catch (e) { die(e.message); }
 for (const r of rules.filter((x) => x.查法 === 'structure')) {
   const fn = STRUCTURE[r.参数?.check];
   const res = R(r.id);
+  if (r.参数?.停用) { res.status = '停用'; res.notes.push(`停用：${r.参数.停用}`); continue; }
+  if (r.参数?.经验稿不查 && args.type === '经验') { res.status = '跳过'; res.notes.push('经验稿不查（--type 经验）'); continue; }
   if (!fn) { res.status = '跳过'; res.notes.push(`不认识的 structure 检查：${r.参数?.check}`); if (r.级别 === '退回') notRun.push(r.id); continue; }
   const hs = fn(lines, r.参数 || {});
   // 词表已按类型报过的行不重复报（R001 的 U040、R019 的 U101–U104）
