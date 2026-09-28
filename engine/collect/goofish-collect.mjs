@@ -349,9 +349,58 @@ function isLoggedIn(sig) {
   return sig.userVisible;               // 已登录唯一证据：昵称/头像可见
 }
 
-async function waitForLogin(browser, sessionId, searchUrl) {
-  let sig = await evaluate(browser, sessionId, LOGIN_PROBE_JS);
-  if (isLoggedIn(sig)) {
+// 登录弹窗"先观察再下结论"（2026-09-28 修复）：
+//   闲鱼网页打开时会先弹登录框；登录缓存没失效的话，约 3 秒后自动用旧账号登录、
+//   弹框消失、卡片加载出来。所以页面刚加载时看到弹框不能立刻判"需要人工登录"，
+//   要原地每 LOGIN_SETTLE_POLL_MS 复查一次（不刷新、不重开页面），最多等
+//   LOGIN_SETTLE_MAX_MS；等满仍未登录才判需要人工。
+export const LOGIN_SETTLE_MAX_MS = 12000;
+export const LOGIN_SETTLE_POLL_MS = 1000;
+
+// 纯函数：输入原地复查得到的快照序列（按时间先后，每项形如
+//   { elapsedMs, loginVisible, userVisible, cardCount, noResults }），
+// 输出 'continue'（已登录且有卡片/明确无结果，或等满后已登录）/
+//      'wait'（还没到等待上限，继续原地复查）/
+//      'manual'（等满仍未登录，需要人工登录）。
+// 只看最新一次快照 + 已用时长；不读时钟、不碰页面。
+export function decideLoginState(samples, settleMaxMs = LOGIN_SETTLE_MAX_MS) {
+  const list = Array.isArray(samples) ? samples.filter(Boolean) : [];
+  if (!list.length) return 'wait';
+  const last = list[list.length - 1];
+  const loggedIn = isLoggedIn(last);
+  const ready = loggedIn && ((last.cardCount || 0) > 0 || !!last.noResults);
+  if (ready) return 'continue';
+  const elapsed = Number(last.elapsedMs) || 0;
+  if (elapsed < settleMaxMs) return 'wait';
+  // 等满：已登录（只是卡片还没出来）按原逻辑继续，交给后续采集；未登录才要人工。
+  return loggedIn ? 'continue' : 'manual';
+}
+
+// 原地复查登录态直到 decideLoginState 给出结论；期间绝不导航/刷新。
+async function settleLoginState(browser, sessionId, settleMaxMs = LOGIN_SETTLE_MAX_MS) {
+  const t0 = Date.now();
+  const samples = [];
+  let sig = null;
+  for (;;) {
+    try {
+      sig = await evaluate(browser, sessionId, LOGIN_PROBE_JS);
+      samples.push({ ...sig, elapsedMs: Date.now() - t0 });
+    } catch {
+      samples.push({ loginVisible: true, userVisible: false, cardCount: 0, noResults: false, elapsedMs: Date.now() - t0 });
+    }
+    const verdict = decideLoginState(samples, settleMaxMs);
+    if (verdict !== 'wait') return { verdict, sig: sig || samples[samples.length - 1] };
+    if (samples.length === 1 && sig && sig.loginVisible) {
+      log(`看到登录弹窗，先原地观察（每 ${LOGIN_SETTLE_POLL_MS / 1000}s 复查一次，最多 ${settleMaxMs / 1000}s；登录缓存有效时弹框会自动消失）…`);
+    }
+    await sleep(LOGIN_SETTLE_POLL_MS);
+  }
+}
+
+async function waitForLogin(browser, sessionId) {
+  const settled = await settleLoginState(browser, sessionId);
+  let sig = settled.sig;
+  if (settled.verdict === 'continue') {
     log(`登录态正常（可见用户昵称/头像=${sig.userVisible}，卡片 ${sig.cardCount}，无结果页=${sig.noResults}）`);
     return sig;
   }
@@ -368,20 +417,25 @@ async function waitForLogin(browser, sessionId, searchUrl) {
   console.log('>>>          截图会被弹窗污染、无法当视频素材；(2) 未登录数据可能与登录态存在口径差。');
   console.log('>>> 请在采集专用 Chrome 窗口扫码登录闲鱼（本脚本不会自动登录、不输账号信息）。');
   console.log(`>>> 登录成功后脚本会自动继续（最长等待 ${LOGIN_POLL_MAX_MS / 60000} 分钟）。`);
+  console.log('>>> 等待期间脚本不会刷新或重开页面，只在原地复查，不会打断你扫码。');
   console.log('======================================================');
   console.log('');
 
   const deadline = Date.now() + LOGIN_POLL_MAX_MS;
   while (Date.now() < deadline) {
     await sleep(LOGIN_POLL_INTERVAL_MS);
-    // 每轮重新加载搜索页再检测，避免旧 DOM 残留导致误判
+    // 只原地复查，不导航/不刷新（2026-09-28 修复：原来每轮 gotoAndSettle 重开搜索页，
+    // 会把用户正在扫的二维码刷掉，导致根本没法人工登录）。
     try {
-      await gotoAndSettle(browser, sessionId, searchUrl, 2000);
       sig = await evaluate(browser, sessionId, LOGIN_PROBE_JS);
     } catch { continue; }
     if (isLoggedIn(sig)) {
-      log(`检测到登录成功（可见用户昵称/头像=${sig.userVisible}，卡片 ${sig.cardCount}）`);
-      return sig;
+      log(`检测到登录成功（可见用户昵称/头像=${sig.userVisible}，卡片 ${sig.cardCount}），原地等结果卡片加载…`);
+      // 登录后页面自己会刷新出结果；仍只原地复查，等卡片/无结果标志出现（最多 LOGIN_SETTLE_MAX_MS）。
+      const after = await settleLoginState(browser, sessionId);
+      if (after.verdict === 'continue') return after.sig;
+      sig = after.sig;
+      continue;
     }
     const left = Math.round((deadline - Date.now()) / 1000);
     log(`仍未登录（${sig.loginReason || '未见用户昵称/头像'}，卡片 ${sig.cardCount}，剩余 ${left}s）…`);
@@ -1057,7 +1111,7 @@ async function main() {
 
     // 4) 登录态检测 + 等待
     await waitIfCaptcha(browser, page.sessionId);
-    const loginSig = await waitForLogin(browser, page.sessionId, searchUrl);
+    const loginSig = await waitForLogin(browser, page.sessionId);
 
     // 5) 关键词切分兜底：主词无结果 / 有想要数的商品不足时，降级尝试更短候选词，
     //    用第一个"出结果且想要卡充足(≥MIN_WANTS_CARDS)"的词继续全流程。
