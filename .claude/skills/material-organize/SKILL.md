@@ -60,6 +60,8 @@ manifest 图片条目：`path`、`description`、`usage`、`tags`、`source`（m
 
 **百度（可选）**：想佐证"有人在搜"才跑 `node engine/collect/baidu-demand.mjs --query "<用户给的词>" --out "research-runs/素材整理/<YYYYMMDD>-<slug>/素材/百度"`。已知它对当前打开的页面会超时：**失败一次就跳过**，报告里写一句。
 
+**货源证据 / 教程演示（用户 2026-09-28 定，规矩同 `.claude/skills/daily-write/SKILL.md` 第 4.2 节）**：这个品的货从哪来——开源项目找 GitHub 仓库页，装了就能用的软件找官网/下载页，代充/代开类找官方价格页，拿不准就按"GitHub → 官网/下载页 → 官方价格页 → 资源站公开页"顺序试；教程演示找官方教程/帮助文档/工具界面页。都只看公开页面截图，不注册、不登录、不下载安装、不点广告、不付费；截图要解码、查尺寸和 SHA-256；对题核对，不对题不收；盗版资源站、破解站不截。没有自动脚本，用浏览器打开截图：Claude 内置浏览器或采集专用 Chrome 的 CDP 截图，两选一，在报告里写清用了哪个。存 `素材/supply/`、`素材/tutorial/`；截图里的网址、账号只记在工作目录资料里，不进 description/usage。
+
 **每张要交的图都要验**：能正常解码、记下尺寸和 SHA-256（AGENTS.md：不许假截图）。验不过的不交。
 
 ## 4. 整理进收件箱（唯一允许写视频仓库的地方）
@@ -81,7 +83,7 @@ manifest 图片条目：`path`、`description`、`usage`、`tags`、`source`（m
     "description": "一句话：图里是什么、看得到哪个数", "usage": "可选：拿来证明什么，没有就空字符串",
     "needsMask": false, "maskNote": "" }
   ```
-  `description` / `usage` 写图里的内容（比如"闲鱼搜索结果页，排第一的商品标价九块九、三百多人想要"），**不写搜索词原文、不写链接、不写店铺名和卖家昵称**（隐私红线）。
+  `description` / `usage` 写图里的内容（比如"闲鱼搜索结果页，排第一的商品标价九块九、三百多人想要"），**不写搜索词原文、不写链接、不写店铺名和卖家昵称**（隐私红线）。百度需求佐证 / 货源证据 / 教程演示这三类图，`usage` 分别写 `demand` / `supply` / `tutorial`，`description` 照样写图里看得到什么（比如"GitHub 仓库页，显示 star 数一千二百多"），网址同样不写进去。
 - `searched.json`：本次**所有搜过的词都记上，含不对题和查不到的**：`[{ "word": "…", "date": "YYYY-MM-DD", "onTopic": true }]`（查不到记 `onTopic: false`）。收件箱里已有 `searched.json`（上次的还没登记）→ 读出来，在数组后面追加本次的条目，旧条目一条不动；这是收件箱里唯一允许改的已有文件。
 - 放完把收件箱里本次新增的文件列一遍，每个 JSON 用 `node -e "JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'))" <文件>` 验一遍是合法 JSON。
 

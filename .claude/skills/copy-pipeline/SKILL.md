@@ -22,6 +22,8 @@ description: 文案总流程（新会话先看这个）：两个入口（用户�
                         ↓
         素材：原片截图 / 素材库里用户放的图和关键词 / 以前的现成截图 → 都没有才闲鱼实搜（npm run scan:topic）
                         ↓
+        补其他来源：百度需求佐证（demand）/ 货源证据-GitHub或官网或官方价格页（supply）/ 教程演示（tutorial），见 daily-write 第 4.2 节
+                        ↓
         从闲鱼经验库挑干货（engine/brief/pick-experience.mjs）
                         ↓
         写长稿 / 短稿 → 自检（npm run check:draft）

@@ -35,6 +35,7 @@ description: 写聊天记录式竖屏短视频文案（画面是手机聊天记�
 - **知识类**：照 short-video 第 2 节「知识类」（`docs/真人语料包/总表.md` 只用"可用"堆、写前读原文；经验库只从 `node engine/brief/pick-experience.mjs --subtype <资料类|代办服务类|软件账号类> --out <文件>` 的候选里挑）。
 - **闲鱼数据**：想要人数、浏览数、标价只能来自实际截图（SRT 原片截图、素材池现成截图、`research-runs` 实采）。都没有就停下报告，不写这条；要实搜走 daily-write 4.1 的 `npm run scan:topic`，先问用户。截图要解码、查尺寸和 SHA-256 才算有效（AGENTS.md）。实搜时搜索词怎么定、搜完怎么对题核对，同样按 daily-write 第 4 节两条规矩来，不重复。
 - **先查素材库**：这个品在视频项目素材库有 `topic.json` 或用户上传的图（`source=manual`），先用用户的图和关键词，规矩照 daily-write 第 4 节素材顺序第 2 条（`needsMask`、待打码、`_inbox` 里的图不直接进素材清单）；二次整理补来的图见 `.claude/skills/material-organize/SKILL.md`。
+- **要用百度需求佐证 / 货源证据 / 教程演示时**，按 daily-write 第 4.2 节的规矩来（讲产品的稿如果要证明"货从哪来"可以用一张 supply 截图，讲经验的稿一般用不上）。
 - 钱数（单价、差价）只来自 SRT 用户亲口说的或选题卡；月入、赚了多少不写。
 
 ## 3. 格式（以 `parse.mjs` 为准）
