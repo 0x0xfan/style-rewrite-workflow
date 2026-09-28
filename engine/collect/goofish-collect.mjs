@@ -367,8 +367,13 @@ export function decideLoginState(samples, settleMaxMs = LOGIN_SETTLE_MAX_MS) {
   const list = Array.isArray(samples) ? samples.filter(Boolean) : [];
   if (!list.length) return 'wait';
   const last = list[list.length - 1];
+  const hasResults = (last.cardCount || 0) > 0 || !!last.noResults;
+  // 实采误判修复（2026-09-28）：可见用户昵称/头像 + 有结果卡片（或明确无结果页），
+  // 一律判已登录继续，不管登录弹窗/文案信号——页面某处残留/常驻的"扫码登录"文案
+  // 不代表未登录（实采见过：头像可见、30 张结果卡片，但仍命中"扫码登录"文案）。
+  if (last.userVisible && hasResults) return 'continue';
   const loggedIn = isLoggedIn(last);
-  const ready = loggedIn && ((last.cardCount || 0) > 0 || !!last.noResults);
+  const ready = loggedIn && hasResults;
   if (ready) return 'continue';
   const elapsed = Number(last.elapsedMs) || 0;
   if (elapsed < settleMaxMs) return 'wait';

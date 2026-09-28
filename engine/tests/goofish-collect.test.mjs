@@ -107,6 +107,24 @@ test('decideLoginState：已登录但卡片迟迟不出，等满后按原逻辑�
   assert.equal(decideLoginState([at(loggedNoCards, 12)]), 'continue');
 });
 
+test('decideLoginState：实采误判修复——头像可见+有结果卡片时，不管登录弹窗/文案信号，一律继续', () => {
+  // 实采信号（2026-09-28）：登录弹窗文案"扫码登录"可见，但头像可见、30 张结果卡片、非无结果页。
+  // 用户手动确认页面完全正常、未登录框。说明该文案是页面残留/常驻，不代表未登录。
+  const real = { loginVisible: true, userVisible: true, cardCount: 30, noResults: false };
+  assert.equal(decideLoginState([at(real, 0)]), 'continue');
+});
+
+test('decideLoginState：无头像+弹框+0卡 → 等待后判人工（对照组，不因新规则误放行）', () => {
+  const seq = [];
+  for (let s = 0; s <= 12; s++) seq.push(at(POPUP, s));
+  const verdicts = run(seq);
+  assert.equal(verdicts[verdicts.length - 1], 'manual');
+});
+
+test('decideLoginState：有头像+弹框+0卡 → 仍先等待（无结果卡片时新规则不生效）', () => {
+  assert.equal(decideLoginState([at(POPUP_WITH_USER, 0)]), 'wait');
+});
+
 test('decideLoginState：空序列 = 等待', () => {
   assert.equal(decideLoginState([]), 'wait');
   assert.equal(decideLoginState(null), 'wait');
