@@ -20,7 +20,7 @@ description: 文案总流程（新会话先看这个）：两个入口（用户�
               ↘                        ↙
         出核心卡 → 【用户确认】（SRT 入口时选题卡和核心卡一起确认）
                         ↓
-        素材：原片截图 / 以前的现成截图 → 都没有才闲鱼实搜（npm run scan:topic）
+        素材：原片截图 / 素材库里用户放的图和关键词 / 以前的现成截图 → 都没有才闲鱼实搜（npm run scan:topic）
                         ↓
         从闲鱼经验库挑干货（engine/brief/pick-experience.mjs）
                         ↓
@@ -38,6 +38,7 @@ description: 文案总流程（新会话先看这个）：两个入口（用户�
 | 步骤 | 用什么 | 谁确认 |
 |---|---|---|
 | SRT 找字幕、填选题卡、截原片、出核心卡、写稿、自检、交付、登记 | `.claude/skills/daily-write/SKILL.md`（写稿全部细节都在这里） | 核心卡要用户确认后才写 |
+| 用户在视频项目素材库放了一个品（截图、链接、关键词、备注），说"二次整理 XX"：读他的东西 → 按他的词和链接补搜 → 查隐私 → 放回素材库收件箱 | `.claude/skills/material-organize/SKILL.md` | 整理哪个品拿不准先问；登记由视频项目跑 import-inbox |
 | 员工改好的稿 → 学习 → 进视频项目 → 出片 | `.claude/skills/script-return/SKILL.md` | 学习里和旧规矩冲突的先问用户 |
 | 知识库有新同行文章 | `.claude/skills/kb-intake/SKILL.md` | — |
 | 60–90 秒短视频单独写（不走每日流程时） | `.claude/skills/short-video/SKILL.md` | — |

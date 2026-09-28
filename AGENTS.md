@@ -21,6 +21,7 @@
 | 写 60–90 秒口播短视频 | `.claude/skills/short-video/SKILL.md` |
 | 写聊天记录式短视频（手机聊天画面、无配音） | `.claude/skills/chat-record/SKILL.md` |
 | 审稿：开头 / 流畅度 / 共鸣 / 传播 / 发布风险 | `.claude/skills/` 下 `dbs-hook`、`dbs-script-flow`、`dbs-resonate`、`dbs-spread`、`dbs-content-risk-check` 的 `SKILL.md` |
+| 素材库二次整理（用户放了截图/链接/关键词，说"二次整理 XX"） | `.claude/skills/material-organize/SKILL.md` |
 | 员工改好的稿 → 学习 → 进视频项目 | `.claude/skills/script-return/SKILL.md` |
 | 知识库有新同行文章 | `.claude/skills/kb-intake/SKILL.md` |
 | 了解全貌、路径、已知的坑 | `HANDOFF.md` |

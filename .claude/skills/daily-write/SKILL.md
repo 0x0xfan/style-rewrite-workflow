@@ -111,8 +111,10 @@ node engine/collect/srt-frames.mjs --video "<mp4 路径>" --times <时:分:秒>,
 
 **素材按这个顺序找，前面有就不往后走（用户 2026-09-26 定）：**
 1. **原片截图**（SRT 入口，第 1A 节第三步截的 `素材/原片/`）。画面里看得到的闲鱼数可以用：打开图亲眼核对，说明.md 写清每个数对应哪张图、哪个时间点。
-2. **现成截图**：这个选题以前做过的话，`research-runs/*<选题>*/delivery/*/` 下通常已有打过码的闲鱼截图和 `assets.md` 清单（视频项目出片也用这批图）。有就直接用，不重搜；稿里每个数只从这些图里取、打开图亲眼核对，说明.md 写清每个数对应 assets.md 哪一行、哪张图。
-3. 前两样都没有、或者没有稿里要用的闲鱼数，才跑下面的 topic-scan 实搜。
+2. **先查素材库**（用户 2026-09-28 定）：视频项目 `D:\项目仓库\remotion视频制作\public\ips\xianyu-fanshen\assets\<slug>\topic.json` 有这个品（对 `name` / `slug`），或素材清单 `ips\xianyu-fanshen\assets\manifest.json` 里这个 slug 下有 `source=manual` 的用户图，就先用用户的图和关键词：图里的数照样打开图亲眼核对、说明.md 写清对应哪张图（manifest 的 path）；`needsMask: true`、`status` 是 `pending-tag` / `privacy-hold`、路径在 `_inbox` 里的图，数可以核对着用，但在说明.md 的"待人工看的图"里列出来，不直接交视频项目；要实搜时搜索词优先用 `topic.json` 的 `keywords`（用户给的词，算用户确认过）。用户说过"二次整理"的，整理结果也在这里（`.claude/skills/material-organize/SKILL.md`）。视频仓库只读。
+   - 为什么排在原片截图后、现成截图前：原片是这期视频本身的画面，最权威；素材库是用户为这个品亲手搜的，比以前别的稿子留下的截图新、也更对题；现成截图可能是旧的、别的角度的。选题卡入口没有原片，就从这一条开始。
+3. **现成截图**：这个选题以前做过的话，`research-runs/*<选题>*/delivery/*/` 下通常已有打过码的闲鱼截图和 `assets.md` 清单（视频项目出片也用这批图）。有就直接用，不重搜；稿里每个数只从这些图里取、打开图亲眼核对，说明.md 写清每个数对应 assets.md 哪一行、哪张图。
+4. 前三样都没有、或者没有稿里要用的闲鱼数，才跑下面的 topic-scan 实搜。
 ### 4.1 查闲鱼（必须真搜）
 
 ```

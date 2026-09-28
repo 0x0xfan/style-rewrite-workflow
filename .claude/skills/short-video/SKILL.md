@@ -38,6 +38,8 @@ description: 写 60–90 秒闲鱼短视频口播稿（圣矾本人口吻、钱�
 - 文章里的数字、平台结论没核实就不写数，只讲做法和道理。
 - 按适用标签过滤：用闲鱼经验库的条目时只从 `node engine/brief/pick-experience.mjs --subtype <本期虚拟子类>` 的候选清单里挑（实物专用、🚫 都已剔除）；语料包条目「品类」是实物专用的不用。
 
+**先查素材库**：这个品在视频项目素材库有 `topic.json` 或用户上传的图（`source=manual`），先用用户的图和关键词，规矩照 daily-write 第 4 节素材顺序第 2 条；用户说过"二次整理"的，补来的图也在那里（`.claude/skills/material-organize/SKILL.md`）。
+
 **要去闲鱼实搜（topic-scan）时**，搜索词怎么定、搜完怎么对题核对，按 `.claude/skills/daily-write/SKILL.md` 第 4 节两条规矩来，不再重复。
 
 ## 3. 排组合表（写之前）
