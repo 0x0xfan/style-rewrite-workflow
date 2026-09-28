@@ -26,9 +26,9 @@ description: 文案总流程（新会话先看这个）：两个入口（用户�
                         ↓
         写长稿 / 短稿 → 自检（npm run check:draft）
                         ↓
-        放 NAS 待审文案\<日期>-<选题>\（稿 + 素材 + 说明.md）→ registry.mjs add 登记
+        放 NAS 待审文案\<选题>\（只放正稿 + 同名 .素材.md），素材和 说明.md 放 NAS 资料\<选题>\ → registry.mjs add 登记
                         ↓
-        员工改稿，放 NAS 已审 → npm run stats:edits 看改动率（基线约 13%）
+        员工改稿，放 NAS 已用（原「已审」，2026-09-28 改名）→ npm run stats:edits 看改动率（基线约 13%）
                         ↓
         script-return 技能：学习改动 → 进视频项目 → 配音 → 分镜 → 渲染
 ```

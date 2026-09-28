@@ -1,11 +1,12 @@
 #!/usr/bin/env node
-// edit-stats.mjs —— 员工改稿计数：扫 NAS 已审目录里所有稿，认出源稿、逐句对照，算改动率，看趋势是不是往下走
+// edit-stats.mjs —— 员工改稿计数：扫 NAS 已用目录里所有稿，认出源稿、逐句对照，算改动率，看趋势是不是往下走
+//   （NAS「已审」2026-09-28 改名「已用」，见 AGENTS.md）
 //
 // 用法：
-//   node engine/return/edit-stats.mjs [--since YYYY-MM-DD] [--out <md路径>] [--nas <已审目录>]
+//   node engine/return/edit-stats.mjs [--since YYYY-MM-DD] [--out <md路径>] [--nas <已用目录>]
 //        [--registry docs/稿件登记.json] [--n 8] [--min 0.3] [--threshold 0.5]
 //
-// 做法：读 NAS 已审目录下所有文件（按已审文件的最后修改时间算"哪天改完的"）→ 对每篇跑
+// 做法：读 NAS 已用目录下所有文件（按已用文件的最后修改时间算"哪天改完的"）→ 对每篇跑
 //       identify.mjs 的认稿算法找出对应原稿 → 跑 diff-sentences.mjs 的对照算法算改动句数（换词/改通顺/
 //       增/删/挪位置分开数）→ 改动率 = 改动句数 / 原稿句数。
 // 输出三段：① 按日期排的表（日期/稿件/写稿模型/原稿句数/改动句数/换词/改通顺/增/删/改动率）
@@ -21,7 +22,7 @@ import { identify, formatIdentify } from './identify.mjs';
 import { diffSentences, CHANGED_TYPES } from './diff-sentences.mjs';
 import { readText, splitSentences, parseArgs, loadRegistry, cell, resolvePath, DEFAULT_REGISTRY } from './lib.mjs';
 
-export const DEFAULT_NAS_DIR = '\\\\Zqkj_nas\\一楼4t\\素材生成库\\ai文案\\已审';
+export const DEFAULT_NAS_DIR = '\\\\Zqkj_nas\\一楼4t\\素材生成库\\ai文案\\已用';
 export const DEFAULT_N = 8;
 export const DEFAULT_MIN = 0.3;
 export const DEFAULT_THRESHOLD = 0.5;
@@ -29,12 +30,12 @@ const MODEL_FIELDS = ['写稿模型', '模型', 'AI模型', 'model'];
 
 const USAGE = `
 用法：
-  node engine/return/edit-stats.mjs [--since YYYY-MM-DD] [--out <md路径>] [--nas <已审目录>]
+  node engine/return/edit-stats.mjs [--since YYYY-MM-DD] [--out <md路径>] [--nas <已用目录>]
        [--registry ${DEFAULT_REGISTRY}] [--n ${DEFAULT_N}] [--min ${DEFAULT_MIN}] [--threshold ${DEFAULT_THRESHOLD}]
 
-  --since      只统计已审文件最后修改时间 ≥ 这天的稿
+  --since      只统计已用文件最后修改时间 ≥ 这天的稿
   --out        写 markdown 文件；不给就打 stdout
-  --nas        已审目录，默认 NAS 已审（一楼4t）
+  --nas        已用目录，默认 NAS 已用（一楼4t，原「已审」2026-09-28 改名）
   --registry   稿件登记表
   --n / --min  认稿窗口与门槛，同 identify.mjs
   --threshold  对照相似度阈值，同 diff-sentences.mjs
@@ -74,7 +75,7 @@ export function listFiles(dir) {
 }
 
 /**
- * 对一篇已审稿算统计。file: { name, mtimeDate(Date), text(string) }
+ * 对一篇已用稿算统计。file: { name, mtimeDate(Date), text(string) }
  * 返回 { recognized:true, row } 或 { recognized:false, name, dateStr, reason }
  */
 export function statForFile(file, registry, { n = DEFAULT_N, min = DEFAULT_MIN, threshold = DEFAULT_THRESHOLD } = {}) {
@@ -155,7 +156,7 @@ export function renderMarkdown({ rows, unrecognized, daily, since = '', nasDir =
   const out = [];
   out.push('# 员工改稿计数');
   out.push('');
-  out.push(`> 扫描：${nasDir || 'NAS 已审目录'}${since ? `　起始日期：${since}` : ''}　生成：${dateStr(new Date())}`);
+  out.push(`> 扫描：${nasDir || 'NAS 已用目录'}${since ? `　起始日期：${since}` : ''}　生成：${dateStr(new Date())}`);
   out.push('> 改动率 = 员工改动句数（换词+改通顺+增+删+挪位置）/ 原稿句数；数越低说明离"不用人改"越近。');
   out.push('');
   out.push('## 逐篇明细（按日期）');
@@ -199,7 +200,7 @@ if (invokedDirectly) {
   if (!(min > 0 && min <= 1)) die('--min 要在 0 到 1 之间');
   if (!(threshold > 0 && threshold < 1)) die('--threshold 要在 0 到 1 之间');
   if (a.since && !/^\d{4}-\d{2}-\d{2}$/.test(a.since)) die('--since 要是 YYYY-MM-DD');
-  if (!fs.existsSync(nasDir)) die(`已审目录读不到：${nasDir}`);
+  if (!fs.existsSync(nasDir)) die(`已用目录读不到：${nasDir}`);
 
   let registry;
   try { registry = loadRegistry(a.registry || DEFAULT_REGISTRY); } catch (e) { die(e.message); }
