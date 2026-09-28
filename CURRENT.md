@@ -17,9 +17,9 @@
 | 线 | 做什么 | 技能 / 入口 | 交到哪 |
 |---|---|---|---|
 | 总流程 | 两个入口：用户视频 SRT 优先 / 用户选题卡补充 → 找素材 → 写 → 待审 → 员工改 → 进视频项目 | `.claude/skills/copy-pipeline/`（新会话先看） | — |
-| 长稿（产品稿 / 经验稿） | 五分钟口播。先出核心卡给用户确认再写；产品稿站"没做过闲鱼的小白"角度，经验稿可站"已在做"角度 | `.claude/skills/daily-write/` | NAS `待审文案\<日期>-<选题>\` + `registry.mjs add` 登记 |
-| 口播短视频 | 60–90 秒、一条一件事、竖屏；一律对小白讲，前两句说闲鱼 + 一个闲鱼数据 | `.claude/skills/short-video/`（规格 `docs/短视频规格.md`） | NAS `待审文案\短\<期号>-<选题>\` |
-| 聊天记录式短视频 | 手机聊天画面、无配音；左边学员/粉丝问闲鱼问题，右边圣矾答 | `.claude/skills/chat-record/` | NAS `待审文案\聊天记录\<期号>-<选题>\` |
+| 长稿（产品稿 / 经验稿） | 五分钟口播。先出核心卡给用户确认再写；产品稿站"没做过闲鱼的小白"角度，经验稿可站"已在做"角度 | `.claude/skills/daily-write/` | NAS `待审文案\<选题>\`（只放正稿）+ `资料\<选题>\`（说明/卡/字幕/截图）+ `registry.mjs add` 登记 |
+| 口播短视频 | 60–90 秒、一条一件事、竖屏；一律对小白讲，前两句说闲鱼 + 一个闲鱼数据 | `.claude/skills/short-video/`（规格 `docs/短视频规格.md`） | NAS `待审文案\<选题>\`（正稿 + 同名 .素材.md）+ `资料\<选题>\` |
+| 聊天记录式短视频 | 手机聊天画面、无配音；左边学员/粉丝问闲鱼问题，右边圣矾答 | `.claude/skills/chat-record/` | NAS `待审文案\<选题>\`（正稿 + 同名 .素材.md）+ `资料\<选题>\` |
 | 审稿（配合写稿用） | 开头 / 流畅度 / 共鸣 / 传播 / 发布风险 | `.claude/skills/dbs-hook`、`dbs-script-flow`、`dbs-resonate`、`dbs-spread`、`dbs-content-risk-check` | 诊断贴进说明.md |
 | 回稿闭环 | 员工改好的稿 → 对照表 → 学习（词表/规则）→ 进视频项目 → 分镜 → 渲染 | `.claude/skills/script-return/` | 视频仓库 `films/<filmId>/copy/qian17/` |
 | 知识库入库 | `闲鱼知识库\cleaned\` 新同行文章 → 真人语料包 + 闲鱼经验库（贴适用标签） | `.claude/skills/kb-intake/` | `docs/真人语料包/`、`docs/闲鱼经验库/` |
