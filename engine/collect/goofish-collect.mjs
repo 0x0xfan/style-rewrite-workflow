@@ -15,6 +15,10 @@
 //   - 截图用 CDP Page.captureScreenshot 落盘为真实 PNG 文件。
 //
 // 边界：不自动登录、不输账号信息、不购买、不过验证码。
+//
+// 关键词自动切分兜底默认关闭（2026-09-28 改）：原词结果不足（无结果，或想要卡数不够）
+// 时直接失败退出（非 0，status=no_results / insufficient_results），绝不自动切成泛词
+// 再截无关结果的图。要试切词候选，显式加 --allow-fallback-split。
 
 import { spawn, execSync, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, writeFileSync, statSync } from 'node:fs';
@@ -36,14 +40,15 @@ const LOGIN_POLL_MAX_MS = 5 * 60 * 1000; // 登录/验证码等待上限 5 分�
 const LOGIN_POLL_INTERVAL_MS = 5000;
 const CDP_TIMEOUT_MS = 30000;
 const SCHEMA_VERSION = '1.3';
-// 关键词切分兜底：主词无结果或"有想要数的商品"不足此值时，降级尝试更短候选词。
-const MIN_WANTS_CARDS = 5;
+// 关键词切分兜底：主词无结果或"有想要数的商品"不足此值时，降级尝试更短候选词
+// （仅在显式 --allow-fallback-split 时才会真的降级；默认直接判失败）。
+export const MIN_WANTS_CARDS = 5;
 // jieba 分词后端（与词表构建、用词检查同一口径），供候选词生成用。
 const SEGMENT_PY = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'naturalness', 'segment.py');
 
 // ------------------------------- 参数解析 -------------------------------
 
-function parseArgs(argv) {
+export function parseArgs(argv) {
   const args = { top: 3, minCards: 15, maxCards: 30 };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -53,7 +58,10 @@ function parseArgs(argv) {
     else if (a === '--min-cards') args.minCards = parseInt(argv[++i], 10);
     else if (a === '--max-cards') args.maxCards = parseInt(argv[++i], 10);
     else if (a === '--port') args.port = parseInt(argv[++i], 10);
-    else if (a === '--no-fallback') args.noFallback = true;
+    // 关键词自动切分兜底默认关闭（2026-09-28 改）：切词会把"AI老照片修复"这类词切成
+    // "修复"这种泛词，搜出无关结果还照样截图、写进数据摘要，污染写稿素材。
+    // 现在只有显式传这个参数才会尝试切词候选；不传（默认）只用原词，原词结果不足就直接失败退出。
+    else if (a === '--allow-fallback-split') args.allowFallbackSplit = true;
   }
   if (!args.query) fail('缺少 --query "<搜索词>"');
   if (!args.out) fail('缺少 --out "<产物目录>"');
@@ -982,7 +990,7 @@ async function gracefulCloseChrome(browser, port) {
   return false;
 }
 
-// ------------------------------- 关键词自动切分兜底 -------------------------------
+// ------------------------------- 关键词自动切分兜底（默认关闭，需 --allow-fallback-split） -------------------------------
 
 // 平台/系统前后缀词（通用，不写死行业）：从查询词剥掉这些边角料得到"核心词"。
 const AFFIX_WORDS = [
@@ -1076,6 +1084,16 @@ async function attemptQuery(browser, sessionId, query, args, skipNav) {
   return { query, searchUrl, noResults: false, cards, wantsCount };
 }
 
+// 纯函数（供测试覆盖）：从已尝试的词里选一个够格的词继续全流程。
+// 2026-09-28 改：不再有"尽力词"兜底（原来在没有词达标时，退而求其次选"想要卡最多"的
+// 词也照样截图交付——这正是"AI老照片修复"被切成"修复"、截了无关结果图的根因）。
+// 现在只接受"想要卡数 ≥ minWantsCards 且非无结果页"的词；没有一个够格就返回 null，
+// 上层判定为失败，不截图、不交付任何数据。
+export function chooseQuery(attempts, minWantsCards = MIN_WANTS_CARDS) {
+  const list = Array.isArray(attempts) ? attempts.filter(Boolean) : [];
+  return list.find((a) => !a.noResults && (a.wantsCount || 0) >= minWantsCards) || null;
+}
+
 // ------------------------------- 主流程 -------------------------------
 
 async function main() {
@@ -1118,12 +1136,12 @@ async function main() {
     await waitIfCaptcha(browser, page.sessionId);
     const loginSig = await waitForLogin(browser, page.sessionId);
 
-    // 5) 关键词切分兜底：主词无结果 / 有想要数的商品不足时，降级尝试更短候选词，
-    //    用第一个"出结果且想要卡充足(≥MIN_WANTS_CARDS)"的词继续全流程。
-    // --no-fallback：小众/精准词强制只用原词（兜底切词对niche词会切到泛词垃圾，宁少而准）。
-    const candidateQueries = args.noFallback
-      ? [args.query]
-      : [args.query, ...generateFallbackQueries(args.query)];
+    // 5) 关键词切分兜底：默认关闭（2026-09-28 改）。只有显式传 --allow-fallback-split
+    //    才会在主词结果不足时尝试更短候选词；默认只用原词一次，够格就用，不够格直接失败退出
+    //    （不截无关图、不伪造"自动切词兜底"的数据）。
+    const candidateQueries = args.allowFallbackSplit
+      ? [args.query, ...generateFallbackQueries(args.query)]
+      : [args.query];
     if (candidateQueries.length > 1) {
       log(`候选词（含原词）：${candidateQueries.map((q) => `「${q}」`).join(' → ')}`);
     }
@@ -1137,36 +1155,42 @@ async function main() {
       log(`「${q}」：${why}`);
       if (!attempt.noResults && attempt.wantsCount >= MIN_WANTS_CARDS) break; // 命中即止
     }
-    // 选词：优先第一个达标词；都不达标时取"想要卡最多、卡片最多"的尽力词；全无结果才判 no_results。
-    let chosen = attempts.find((a) => !a.noResults && a.wantsCount >= MIN_WANTS_CARDS) || null;
-    if (!chosen) {
-      const withCards = attempts.filter((a) => a.cards.length > 0)
-        .sort((a, b) => (b.wantsCount - a.wantsCount) || (b.cards.length - a.cards.length));
-      if (withCards.length) chosen = withCards[0];
-    }
+    // 选词：只接受达标词（想要卡数 ≥ MIN_WANTS_CARDS 且非无结果）。不再有"尽力词"兜底——
+    // 都不达标时不凑合选一个交付，直接判定失败退出，不截无关图。
+    const chosen = chooseQuery(attempts, MIN_WANTS_CARDS);
     queryFallbackTried = attempts
       .filter((a) => a !== chosen)
       .map((a) => ({ query: a.query, no_results: a.noResults, cards: a.cards.length, wants_cards: a.wantsCount }));
 
     if (!chosen) {
-      // 原词及所有切分候选词均无搜索结果：绝不把"猜你喜欢"推荐当结果采集
       queryUsed = args.query;
-      status = 'no_results';
+      const allNoResults = attempts.every((a) => a.noResults);
       const triedTxt = queryFallbackTried.length ? `及 ${queryFallbackTried.length} 个切分候选词（${queryFallbackTried.map((t) => t.query).join('、')}）` : '';
-      statusNote = `已登录，但「${args.query}」${triedTxt}在闲鱼均无搜索结果（"没有找到你想要的宝贝"，页面为猜你喜欢推荐填充）。未采集任何商品，仅存原词无结果页截图为证。`;
-      log(statusNote);
-      // 回到原词无结果页存证
-      await gotoAndSettle(browser, page.sessionId, searchUrl, 2000).catch(() => {});
-      await evaluate(browser, page.sessionId, 'window.scrollTo(0,0); true').catch(() => {});
-      await sleep(600);
-      const p = path.join(shotDir, '01-无结果页.png');
-      const s = await withRetry(() => captureFullPage(browser, page.sessionId, p), '无结果页截图');
-      screenshots.push({
-        id: '01-无结果页', type: 'no_results',
-        file: 'screenshots/01-无结果页.png', source_url: searchUrl,
-        captured_at: new Date().toISOString(), ...s,
-      });
-      log(`截图已落盘：01-无结果页.png（${s.bytes} 字节）— 存证无结果，未采集商品`);
+      if (allNoResults) {
+        // 原词（及所有切分候选词，若启用）均无搜索结果：绝不把"猜你喜欢"推荐当结果采集
+        status = 'no_results';
+        statusNote = `已登录，但「${args.query}」${triedTxt}在闲鱼均无搜索结果（"没有找到你想要的宝贝"，页面为猜你喜欢推荐填充）。未采集任何商品，仅存原词无结果页截图为证。`;
+        log(statusNote);
+        // 回到原词无结果页存证
+        await gotoAndSettle(browser, page.sessionId, searchUrl, 2000).catch(() => {});
+        await evaluate(browser, page.sessionId, 'window.scrollTo(0,0); true').catch(() => {});
+        await sleep(600);
+        const p = path.join(shotDir, '01-无结果页.png');
+        const s = await withRetry(() => captureFullPage(browser, page.sessionId, p), '无结果页截图');
+        screenshots.push({
+          id: '01-无结果页', type: 'no_results',
+          file: 'screenshots/01-无结果页.png', source_url: searchUrl,
+          captured_at: new Date().toISOString(), ...s,
+        });
+        log(`截图已落盘：01-无结果页.png（${s.bytes} 字节）— 存证无结果，未采集商品`);
+      } else {
+        // 有结果但想要卡数不足 MIN_WANTS_CARDS：不再自动切词凑数，也不截无关图，
+        // 直接以明确状态失败退出，交给人换词重搜。
+        status = 'insufficient_results';
+        const detailTxt = attempts.map((a) => `「${a.query}」想要卡 ${a.wantsCount} 条/共 ${a.cards.length} 条`).join('；');
+        statusNote = `原词结果不足，未切词，请换词。${detailTxt}${triedTxt ? `（已试${triedTxt}）` : ''}`;
+        log(statusNote);
+      }
     } else {
     queryUsed = chosen.query;
     searchUrlUsed = chosen.searchUrl;
@@ -1304,8 +1328,9 @@ async function main() {
     status_note: statusNote || undefined,
     capture_scope: `search list page 1 (${searchCards.length} cards) + Top${details.length} detail pages + ${screenshots.filter((s) => s.type === 'shop_page').length} shop homepages`,
     notes_field_semantics: {
-      query_used: '实际用于采集的词；若与 query_original 不同，说明原词结果不足被切分兜底替换',
-      query_fallback_tried: '尝试过但被否决的候选词（含无结果/想要卡不足的记录）',
+      query_used: '实际用于采集的词。默认（不传 --allow-fallback-split）恒等于 query_original；'
+        + '只有显式传该参数且原词结果不足时才可能被切分候选词替换',
+      query_fallback_tried: '尝试过但被否决的候选词（含无结果/想要卡不足的记录）；默认关闭切词时通常为空数组',
       wants: '单品数据：X人想要',
       views: '单品数据：详情页浏览量',
       shop_sold: '店铺数据：店铺累计卖出件数（非本单销量）',

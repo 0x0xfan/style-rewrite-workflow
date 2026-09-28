@@ -33,7 +33,7 @@ description: 写聊天记录式竖屏短视频文案（画面是手机聊天记�
 沿用 `.claude/skills/short-video/SKILL.md` 第 2 节，不另立规矩：
 - **SRT 类**：照 short-video 第 2 节「SRT 类」（SRT 路径、`research-runs/<期>/事实卡-终版.md`、视频项目素材池 `ips/xianyu-fanshen/assets/manifest.json` 优先选有截图能对上的数）。找 SRT 用 `npm run srt:find`（copy-pipeline 里那条）。
 - **知识类**：照 short-video 第 2 节「知识类」（`docs/真人语料包/总表.md` 只用"可用"堆、写前读原文；经验库只从 `node engine/brief/pick-experience.mjs --subtype <资料类|代办服务类|软件账号类> --out <文件>` 的候选里挑）。
-- **闲鱼数据**：想要人数、浏览数、标价只能来自实际截图（SRT 原片截图、素材池现成截图、`research-runs` 实采）。都没有就停下报告，不写这条；要实搜走 daily-write 4.1 的 `npm run scan:topic`，先问用户。截图要解码、查尺寸和 SHA-256 才算有效（AGENTS.md）。
+- **闲鱼数据**：想要人数、浏览数、标价只能来自实际截图（SRT 原片截图、素材池现成截图、`research-runs` 实采）。都没有就停下报告，不写这条；要实搜走 daily-write 4.1 的 `npm run scan:topic`，先问用户。截图要解码、查尺寸和 SHA-256 才算有效（AGENTS.md）。实搜时搜索词怎么定、搜完怎么对题核对，同样按 daily-write 第 4 节两条规矩来，不重复。
 - 钱数（单价、差价）只来自 SRT 用户亲口说的或选题卡；月入、赚了多少不写。
 
 ## 3. 格式（以 `parse.mjs` 为准）

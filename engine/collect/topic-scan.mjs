@@ -11,7 +11,7 @@
 //   2) 逐张截图做"解码 + 尺寸 + 独立算 SHA-256"三项校验，通不过的直接排除、不装作有效；
 //   3) 把校验过的数据重新整理成写稿人能直接用的 scan.json / shots/ / 数据摘要.md。
 //
-// 失败（未登录、验证码、无结果、采集器报错）一律非 0 退出，绝不伪造数据或截图。
+// 失败（未登录、验证码、无结果、结果不足未切词、采集器报错）一律非 0 退出，绝不伪造数据或截图。
 //
 // 登录态 profile 说明：goofish-collect.mjs 把 .collect-chrome-profile 解析成
 // 相对于"子进程 cwd"的路径。在 git worktree 里跑本脚本时，worktree 下通常没有
@@ -259,6 +259,10 @@ async function main() {
     fail(`「${args.keyword}」在闲鱼无搜索结果：${capture.status_note || ''}`);
     return;
   }
+  if (capture.status === 'insufficient_results') {
+    fail(`「${args.keyword}」在闲鱼结果不足：${capture.status_note || '原词结果不足，未切词，请换词'}`);
+    return;
+  }
   if (capture.status === 'error') {
     fail(`采集器报错：${capture.status_note || '未知错误'}`);
     return;
@@ -339,8 +343,11 @@ async function main() {
   // 4) 整理数据（纯函数部分，供测试覆盖）
   const topProducts = pickTopProducts(capture.products, args.top);
   const detailItems = buildDetailItems(capture.detail_evidence);
-  const queryNote = capture.query_used !== args.keyword
-    ? `原词结果不足，实际采集用词为「${capture.query_used}」（采集器自动切词兜底）`
+  // 采集器默认不再自动切词（2026-09-28 改），query_used 正常恒等于 args.keyword；
+  // 这里不再生成"自动切词兜底"提示。若 query_used 与原词不同（只有显式给采集器传
+  // --allow-fallback-split 时才可能发生），如实记录用了哪个词，但不假装这是常规行为。
+  const queryNote = capture.query_used && capture.query_used !== args.keyword
+    ? `实际采集用词为「${capture.query_used}」（与选题词「${args.keyword}」不同，核对是否用了切词候选）`
     : null;
 
   const scan = {

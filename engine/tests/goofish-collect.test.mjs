@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   computeImageWaitResult, decideLoginState, LOGIN_SETTLE_MAX_MS, LOGIN_SETTLE_POLL_MS,
+  parseArgs, chooseQuery, MIN_WANTS_CARDS,
 } from '../collect/goofish-collect.mjs';
 
 // 只测纯函数部分：不启动浏览器、不联网、不碰真实闲鱼页面。
@@ -128,4 +129,59 @@ test('decideLoginState：有头像+弹框+0卡 → 仍先等待（无结果卡�
 test('decideLoginState：空序列 = 等待', () => {
   assert.equal(decideLoginState([]), 'wait');
   assert.equal(decideLoginState(null), 'wait');
+});
+
+// ---------------- 关键词自动切分兜底默认关闭（2026-09-28 改） ----------------
+// 背景：原来"原词结果不足"会自动切成更短的词再搜（如「AI老照片修复」切成「修复」），
+// 搜出无关结果也照样截图、写进数据摘要。现在默认不切词；--allow-fallback-split 才会
+// 尝试候选词；且不管是否切词，都不再有"尽力词"兜底（够不上想要卡阈值就是失败，不凑合）。
+
+test('parseArgs：不传 --allow-fallback-split 时默认关闭切词兜底', () => {
+  const a = parseArgs(['--query', 'AI老照片修复', '--out', 'scratch/x']);
+  assert.equal(a.allowFallbackSplit, undefined);
+});
+
+test('parseArgs：传 --allow-fallback-split 才打开切词兜底', () => {
+  const a = parseArgs(['--query', 'AI老照片修复', '--out', 'scratch/x', '--allow-fallback-split']);
+  assert.equal(a.allowFallbackSplit, true);
+});
+
+test('chooseQuery：唯一一次尝试且想要卡数达标 → 选中它', () => {
+  const attempts = [{ query: 'AI老照片修复', noResults: false, cards: [1, 2, 3, 4, 5, 6], wantsCount: 6 }];
+  const chosen = chooseQuery(attempts);
+  assert.equal(chosen.query, 'AI老照片修复');
+});
+
+test('chooseQuery：原词想要卡数不足阈值、默认不切词（只有一次尝试）→ 判失败，不选任何词', () => {
+  // 对应默认关闭切词兜底时的真实场景：candidateQueries 只含原词一次。
+  const attempts = [{ query: 'AI老照片修复', noResults: false, cards: [1, 2], wantsCount: 2 }];
+  assert.equal(chooseQuery(attempts, MIN_WANTS_CARDS), null);
+});
+
+test('chooseQuery：不再有"尽力词"兜底——即使某候选词有卡片但都不达标，也一律不选（原来会挑想要卡最多的凑合）', () => {
+  const attempts = [
+    { query: '修复', noResults: false, cards: [1, 2, 3], wantsCount: 1 },
+    { query: '老照片', noResults: false, cards: [1], wantsCount: 0 },
+  ];
+  assert.equal(chooseQuery(attempts, MIN_WANTS_CARDS), null);
+});
+
+test('chooseQuery：原词无结果 → 判失败', () => {
+  const attempts = [{ query: 'AI老照片修复', noResults: true, cards: [], wantsCount: 0 }];
+  assert.equal(chooseQuery(attempts), null);
+});
+
+test('chooseQuery：开启切词兜底时，候选词中第一个达标的会被选中', () => {
+  const attempts = [
+    { query: 'AI老照片修复', noResults: false, cards: [1, 2], wantsCount: 2 },
+    { query: '老照片修复', noResults: false, cards: [1, 2, 3, 4, 5, 6, 7], wantsCount: 7 },
+  ];
+  const chosen = chooseQuery(attempts, MIN_WANTS_CARDS);
+  assert.equal(chosen.query, '老照片修复');
+});
+
+test('chooseQuery：空/非法输入不报错，返回 null', () => {
+  assert.equal(chooseQuery([]), null);
+  assert.equal(chooseQuery(null), null);
+  assert.equal(chooseQuery(undefined), null);
 });
