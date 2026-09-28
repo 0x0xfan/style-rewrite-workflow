@@ -8,44 +8,93 @@
 //   node engine/collect/baidu-demand.mjs --query "驾考资料" --out "research-runs/<run>/demand-src"
 //
 // 退出码：0=至少产出结果页；2=验证码硬停 / 无有效产出。失败对上游 CLI 不致命（记需求层缺口）。
+//
+// 浏览器（2026-09-28 改）：
+//   - 永远自己启动一个百度专用 Chrome：独立 profile（系统临时目录下 baidu-demand-chrome-profile，
+//     不克隆登录态、不带扩展），调试端口用 0 让 Chrome 自选空闲端口（从 DevToolsActivePort 读），
+//     不再复用 9222 上的闲鱼采集 Chrome，也不碰用户自己的 Chrome。
+//   - 结束时 Browser.close 关掉自己启动的这个 Chrome；关不掉才按自己记下的 PID 结束进程树。
+//   - 导航不以 Page.navigate 的回应为准：发出后以 loadEventFired 或新文档 readyState 为准，带总超时。
 
-import { spawn, execSync } from 'node:child_process';
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
-import { createHash } from 'node:crypto';
+import { spawn, execSync, spawnSync } from 'node:child_process';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { createHash, randomBytes } from 'node:crypto';
 import { setTimeout as sleep } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
+import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
 
 const DEBUG_HOST = '127.0.0.1';
-const DEBUG_PORT = 9222;
-// 与 goofish-collect 共用同一个采集专用 profile（相对仓库根，不依赖 cwd）。
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const PROFILE_DIR = path.join(REPO_ROOT, '.collect-chrome-profile');
-const PROFILE_NAME = 'Default';
+// 百度专用 profile：只采公开页面，不需要登录态；与闲鱼采集的 .collect-chrome-profile 完全分开。
+export const PROFILE_DIR = path.join(os.tmpdir(), 'baidu-demand-chrome-profile');
 const WINDOW_SIZE = '1600,1000';
 const VIEWPORT = { width: 1600, height: 1000 };
 const CDP_TIMEOUT_MS = 30000;
+export const NAV_TIMEOUT_MS = 30000;
 
 function log(m) { console.log(`[百度采集] ${m}`); }
 function fail(m) { console.error(`[错误] ${m}`); process.exit(1); }
 
-function parseArgs(argv) {
-  const args = {};
+// 纯函数：解析命令行。缺参数时返回 { error }，由调用方决定退出。
+export function parseArgs(argv) {
+  const args = { port: 0 };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--query') args.query = argv[++i];
     else if (a === '--out') args.out = argv[++i];
-    else if (a === '--port') args.port = parseInt(argv[++i], 10);
-    else if (a === '-h' || a === '--help') {
-      console.log('用法：node engine/collect/baidu-demand.mjs --query "<搜索词>" --out "<产物目录>"');
-      process.exit(0);
-    }
+    else if (a === '--port') args.port = parseInt(argv[++i], 10) || 0;
+    else if (a === '--system-proxy') args.systemProxy = true;
+    else if (a === '-h' || a === '--help') args.help = true;
   }
-  if (!args.query) fail('缺少 --query "<搜索词>"');
-  if (!args.out) fail('缺少 --out "<产物目录>"');
-  if (!args.port) args.port = DEBUG_PORT;
+  if (args.help) return args;
+  if (!args.query) args.error = '缺少 --query "<搜索词>"';
+  else if (!args.out) args.error = '缺少 --out "<产物目录>"';
   return args;
+}
+
+// 纯函数：启动参数。port=0 → Chrome 自选空闲端口并写 DevToolsActivePort。
+// 默认 --no-proxy-server 直连：2026-09-28 实测本机系统代理（127.0.0.1:7897）下，Chrome 对
+// www.baidu.com 的文档请求发出后一直拿不到响应（Network.requestWillBeSent 后无 responseReceived），
+// Page.navigate 因此永不回应；直连 114ms 就拿到 200。百度是国内公开站，直连即可。
+// 确需走系统代理时加 --system-proxy。
+export function buildChromeArgs(port, profileDir, { systemProxy = false } = {}) {
+  return [
+    `--remote-debugging-port=${port}`, `--remote-debugging-address=${DEBUG_HOST}`,
+    `--user-data-dir=${profileDir}`,
+    '--no-first-run', '--no-default-browser-check', '--disable-extensions',
+    '--disable-background-networking', '--disable-sync', '--no-service-autorun',
+    ...(systemProxy ? [] : ['--no-proxy-server']),
+    `--window-size=${WINDOW_SIZE}`, 'about:blank',
+  ];
+}
+
+// 纯函数：解析 <profile>/DevToolsActivePort（第一行端口，第二行 /devtools/browser/<id>）。
+export function parseDevToolsActivePort(text) {
+  const lines = String(text || '').split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  const port = parseInt(lines[0], 10);
+  if (!Number.isInteger(port) || port <= 0 || port > 65535) return null;
+  const wsPath = lines[1] && lines[1].startsWith('/devtools/browser/') ? lines[1] : null;
+  return { port, wsPath };
+}
+
+// 纯函数：导航是否已完成。
+// s = { loadEventFired, readyState, marker, href }；marker 是导航前写进旧文档的标记，
+// 新文档里一定没有它——用来防止把旧页面的 readyState=complete 误判成新页面加载完。
+export function isNavigationDone(s) {
+  if (!s) return false;
+  if (s.loadEventFired) return true;
+  if (s.marker) return false;
+  if (!s.href || s.href === 'about:blank') return false;
+  return s.readyState === 'complete' || s.readyState === 'interactive';
+}
+
+// 纯函数：Page.navigate 的回应（若有）里是否带致命错误。ERR_ABORTED 常见于被后续导航替换，不算失败。
+export function navigateReplyError(reply) {
+  if (!reply || !reply.errorText) return null;
+  if (/ERR_ABORTED/i.test(reply.errorText)) return null;
+  return reply.errorText;
 }
 
 function findChrome() {
@@ -76,28 +125,68 @@ async function isDebuggerUp(port) {
   try { const v = await fetchJson(`http://${DEBUG_HOST}:${port}/json/version`); return v && v.webSocketDebuggerUrl ? v : null; }
   catch { return null; }
 }
-async function ensureChrome(port) {
-  const existing = await isDebuggerUp(port);
-  if (existing) { log(`复用已在运行的采集 Chrome（端口 ${port}）`); return existing; }
+function readActivePort() {
+  try { return parseDevToolsActivePort(readFileSync(path.join(PROFILE_DIR, 'DevToolsActivePort'), 'utf8')); }
+  catch { return null; }
+}
+// 上次异常退出留下的"本 profile 的" Chrome：用 CDP 让它自己关掉（只动本 profile，不动别的 Chrome）。
+async function closeLeftoverOwnChrome() {
+  const ap = readActivePort();
+  if (!ap) return;
+  const v = await isDebuggerUp(ap.port);
+  if (!v) return;
+  log(`发现上次残留的百度专用 Chrome（端口 ${ap.port}），先关掉`);
+  try {
+    const ws = await connectWs(v.webSocketDebuggerUrl);
+    const b = new CDP(ws);
+    b.send('Browser.close', {}, undefined, 5000).catch(() => {});
+    const deadline = Date.now() + 8000;
+    while (Date.now() < deadline && await isDebuggerUp(ap.port)) await sleep(300);
+    b.close();
+  } catch {}
+}
+// 启动自己的 Chrome，返回 { version, child, port }。
+async function launchOwnChrome(requestedPort, { systemProxy = false } = {}) {
   const chrome = findChrome();
   if (!chrome) fail('未找到 chrome.exe');
   log(`定位到 Chrome：${chrome}`);
   mkdirSync(PROFILE_DIR, { recursive: true });
-  const args = [
-    `--remote-debugging-port=${port}`, `--remote-debugging-address=${DEBUG_HOST}`,
-    `--user-data-dir=${PROFILE_DIR}`, `--profile-directory=${PROFILE_NAME}`,
-    '--no-first-run', '--no-default-browser-check', `--window-size=${WINDOW_SIZE}`, 'about:blank',
-  ];
-  log('启动采集专用 Chrome（独立 profile）');
-  const child = spawn(chrome, args, { detached: true, stdio: 'ignore' });
-  child.unref();
+  await closeLeftoverOwnChrome();
+  if (requestedPort && await isDebuggerUp(requestedPort)) {
+    fail(`端口 ${requestedPort} 已被别的 Chrome 占用；本脚本只用自己启动的 Chrome，请换端口或不传 --port`);
+  }
+  try { rmSync(path.join(PROFILE_DIR, 'DevToolsActivePort'), { force: true }); } catch {}
+  log(`启动百度专用 Chrome（独立 profile：${PROFILE_DIR}）`);
+  const child = spawn(chrome, buildChromeArgs(requestedPort || 0, PROFILE_DIR, { systemProxy }), { detached: false, stdio: 'ignore' });
+  let exited = false;
+  child.on('exit', () => { exited = true; });
   const deadline = Date.now() + 20000;
   while (Date.now() < deadline) {
-    const v = await isDebuggerUp(port);
-    if (v) { log('调试端口已就绪'); return v; }
-    await sleep(500);
+    const port = requestedPort || (readActivePort() || {}).port;
+    if (port) {
+      const v = await isDebuggerUp(port);
+      if (v) { log(`调试端口已就绪（${port}）`); return { version: v, child, port }; }
+    }
+    if (exited && !requestedPort && !readActivePort()) {
+      // chrome.exe 立即退出 = 本 profile 被另一个进程占着（把启动请求转交给了它）。
+      fail('Chrome 启动后立即退出：百度专用 profile 可能被其他进程占用');
+    }
+    await sleep(400);
   }
+  try { child.kill(); } catch {}
   fail('Chrome 启动 20s 内调试端口未就绪');
+}
+// 关闭自己启动的 Chrome：先 Browser.close（正常退出），等进程结束；不行再按自己的 PID 结束进程树。
+async function closeOwnChrome(browser, chromeInfo) {
+  if (!chromeInfo) return;
+  const { child, port } = chromeInfo;
+  const exitedP = new Promise((r) => { if (child.exitCode !== null) r(true); else child.once('exit', () => r(true)); });
+  if (browser) browser.send('Browser.close', {}, undefined, 5000).catch(() => {});
+  const ok = await Promise.race([exitedP, sleep(8000).then(() => false)]);
+  if (ok && !(await isDebuggerUp(port))) { log('已关闭本次启动的 Chrome'); return; }
+  log('Browser.close 未在 8s 内生效，按本次启动的 PID 结束进程树');
+  if (process.platform === 'win32') spawnSync('taskkill', ['/PID', String(child.pid), '/T', '/F'], { stdio: 'ignore' });
+  else { try { child.kill('SIGKILL'); } catch {} }
 }
 
 class CDP {
@@ -150,14 +239,50 @@ async function evaluate(browser, sessionId, expression) {
   if (r.exceptionDetails) throw new Error(`页面 JS 异常：${r.exceptionDetails.text || ''}`);
   return r.result && r.result.value;
 }
-async function gotoAndSettle(browser, sessionId, url, settleMs = 2500) {
-  await browser.send('Page.navigate', { url }, sessionId);
-  const deadline = Date.now() + 15000;
-  while (Date.now() < deadline) {
-    try { const s = await evaluate(browser, sessionId, 'document.readyState'); if (s === 'complete' || s === 'interactive') break; } catch {}
-    await sleep(300);
+// 稳健导航：发 Page.navigate 但不等它回应；以 loadEventFired 或"新文档" readyState 为准。
+// navigate 的回应只用来记诊断、以及它带回的非 ABORTED 错误（如断网）才算失败。
+async function gotoAndSettle(browser, sessionId, url, settleMs = 2500, timeoutMs = NAV_TIMEOUT_MS) {
+  const marker = 'bd_' + randomBytes(6).toString('hex');
+  await evaluate(browser, sessionId, `(window.__bdNavMarker = ${JSON.stringify(marker)}, true)`).catch(() => {});
+  const st = { navigated: false, loadEventFired: false, reply: null, replyMs: null };
+  const t0 = Date.now();
+  // 只认本次导航主框架提交之后的 loadEventFired，避免上一页迟到的 load 事件被误算。
+  const onEvt = (msg) => {
+    if (msg.sessionId !== sessionId) return;
+    if (msg.method === 'Page.frameNavigated' && msg.params && msg.params.frame && !msg.params.frame.parentId) st.navigated = true;
+    else if (msg.method === 'Page.loadEventFired' && st.navigated) st.loadEventFired = true;
+  };
+  browser.listeners.push(onEvt);
+  browser.send('Page.navigate', { url }, sessionId, timeoutMs)
+    .then((r) => { st.reply = r || {}; st.replyMs = Date.now() - t0; })
+    .catch((e) => { st.reply = { sendError: e.message }; });
+  try {
+    const deadline = t0 + timeoutMs;
+    while (Date.now() < deadline) {
+      const replyErr = navigateReplyError(st.reply);
+      if (replyErr) throw new Error(`导航失败：${replyErr}（${url}）`);
+      let probe = null;
+      if (!st.loadEventFired) {
+        probe = await evaluateWithTimeout(browser, sessionId,
+          `({ readyState: document.readyState, marker: window.__bdNavMarker || null, href: location.href })`, 3000).catch(() => null);
+      }
+      if (isNavigationDone({ loadEventFired: st.loadEventFired, ...(probe || {}) })) {
+        log(`  导航完成 ${Date.now() - t0}ms（loadEventFired=${st.loadEventFired}，navigate 回应=${st.replyMs === null ? '未回应' : st.replyMs + 'ms'}）`);
+        await sleep(settleMs);
+        return;
+      }
+      await sleep(300);
+    }
+    throw new Error(`导航超时 ${timeoutMs}ms：${url}（navigate 回应=${st.replyMs === null ? '未回应' : st.replyMs + 'ms'}）`);
+  } finally {
+    const i = browser.listeners.indexOf(onEvt);
+    if (i >= 0) browser.listeners.splice(i, 1);
   }
-  await sleep(settleMs);
+}
+async function evaluateWithTimeout(browser, sessionId, expression, timeoutMs) {
+  const r = await browser.send('Runtime.evaluate', { expression, returnByValue: true }, sessionId, timeoutMs);
+  if (r.exceptionDetails) throw new Error('页面 JS 异常');
+  return r.result && r.result.value;
 }
 
 const CAPTCHA_PROBE_JS = `(() => {
@@ -294,15 +419,20 @@ function renderManifest(query, results) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
+  if (args.help) {
+    console.log('用法：node engine/collect/baidu-demand.mjs --query "<搜索词>" --out "<产物目录>" [--port <端口，默认自动>] [--system-proxy]');
+    process.exit(0);
+  }
+  if (args.error) fail(args.error);
   const OUT_DIR = path.isAbsolute(args.out) ? args.out : path.resolve(REPO_ROOT, args.out);
   mkdirSync(OUT_DIR, { recursive: true });
-  const version = await ensureChrome(args.port);
-  const bws = await connectWs(version.webSocketDebuggerUrl);
-  const browser = new CDP(bws);
+  const chromeInfo = await launchOwnChrome(args.port, { systemProxy: !!args.systemProxy });
+  let browser = null;
   const results = [];
   let hardStop = false;
 
   try {
+    browser = new CDP(await connectWs(chromeInfo.version.webSocketDebuggerUrl));
     const page = await newPage(browser);
 
     // 1) 下拉联想词（主词优先；联想少时补试等价长尾词）
@@ -356,7 +486,7 @@ async function main() {
     await browser.send('Target.closeTarget', { targetId: page.targetId }).catch(() => {});
   } catch (e) {
     if (String(e.message).startsWith('CAPTCHA_DETECTED')) {
-      log(`[硬停] 检测到百度人机验证：${e.message}。窗口保留，未绕过。`);
+      log(`[硬停] 检测到百度人机验证：${e.message}。未绕过，本次停止采集。`);
       results.push({ kind: 'aborted', reason: e.message });
       hardStop = true;
     } else {
@@ -372,8 +502,16 @@ async function main() {
     log('需求佐证清单：' + path.join(OUT_DIR, 'demand-manifest.md'));
   }
   log('结果日志：' + path.join(OUT_DIR, '_capture-log.json'));
-  browser.close();
+  await closeOwnChrome(browser, chromeInfo);
+  if (browser) browser.close();
   // 有结果页即视为成功产出；验证码硬停或无结果 → 非0（上游按需求层缺口降级，不致命）。
   process.exit(hasResult && !hardStop ? 0 : 2);
 }
-main().catch((e) => { console.error('[致命]', e && e.stack ? e.stack : e); process.exit(1); });
+
+export { safeName, renderManifest };
+
+// 只有直接运行本脚本才执行 main()；测试 import 纯函数时不启动浏览器。
+const isMainModule = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isMainModule) {
+  main().catch((e) => { console.error('[致命]', e && e.stack ? e.stack : e); process.exit(1); });
+}
