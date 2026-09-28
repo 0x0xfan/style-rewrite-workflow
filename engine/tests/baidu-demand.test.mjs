@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   parseArgs, buildChromeArgs, parseDevToolsActivePort, isNavigationDone, navigateReplyError,
+  isCaptchaPage, decideResultWait, planScreenshot, SHOT_TIMEOUT_MS,
   safeName, renderManifest, PROFILE_DIR,
 } from '../collect/baidu-demand.mjs';
 
@@ -60,6 +61,40 @@ test('isNavigationDone：新文档 interactive/complete 算完成；loading、ab
   assert.equal(isNavigationDone({ readyState: 'complete', marker: null, href: 'about:blank' }), false);
   assert.equal(isNavigationDone({}), false);
   assert.equal(isNavigationDone(null), false);
+});
+
+test('isNavigationDone(requireComplete)：结果页 interactive 不算，complete / load 事件才算', () => {
+  const o = { requireComplete: true };
+  assert.equal(isNavigationDone({ readyState: 'interactive', marker: null, href: 'https://www.baidu.com/s?wd=a' }, o), false);
+  assert.equal(isNavigationDone({ readyState: 'complete', marker: null, href: 'https://www.baidu.com/s?wd=a' }, o), true);
+  assert.equal(isNavigationDone({ loadEventFired: true }, o), true);
+  assert.equal(isNavigationDone({ readyState: 'complete', marker: 'bd_x', href: 'https://www.baidu.com/s?wd=a' }, o), false);
+});
+
+test('isCaptchaPage：验证页网址 / 标题 / 文案都能认出；正常结果页不误判', () => {
+  assert.equal(isCaptchaPage({ href: 'https://wappass.baidu.com/static/captcha/tuxing.html?ak=x', title: '', text: '' }), true);
+  assert.equal(isCaptchaPage({ href: 'https://www.baidu.com/s?wd=a', title: '百度安全验证', text: '' }), true);
+  assert.equal(isCaptchaPage({ href: 'https://www.baidu.com/s?wd=a', title: 'a_百度搜索', text: '请拖动滑块完成拼图，拖动滑块' }), true);
+  assert.equal(isCaptchaPage({ href: 'https://www.baidu.com/s?wd=%E8%80%81', title: '老照片修复_百度搜索', text: '百度为您找到相关结果约100个' }), false);
+  assert.equal(isCaptchaPage(null), false);
+});
+
+test('decideResultWait：验证页优先硬停；complete 且有 h3 才 ready；超时报 timeout', () => {
+  assert.equal(decideResultWait({ captcha: true, h3Count: 10, readyState: 'complete' }, 0, 20000), 'captcha');
+  assert.equal(decideResultWait({ captcha: false, h3Count: 10, readyState: 'complete' }, 100, 20000), 'ready');
+  assert.equal(decideResultWait({ captcha: false, h3Count: 0, readyState: 'complete' }, 100, 20000), 'wait');
+  assert.equal(decideResultWait({ captcha: false, h3Count: 5, readyState: 'interactive' }, 100, 20000), 'wait');
+  assert.equal(decideResultWait({ captcha: false, h3Count: 0, readyState: 'complete' }, 20000, 20000), 'timeout');
+  assert.equal(decideResultWait(null, 0, 20000), 'wait');
+});
+
+test('planScreenshot：只要可见区域 / 页面超高 → viewport；否则先整页；超时常量小于 CDP 默认 30s', () => {
+  assert.deepEqual(planScreenshot({ beyondViewport: false, contentHeight: 3000 }), { first: 'viewport', note: null });
+  assert.equal(planScreenshot({ beyondViewport: true, contentHeight: 25000 }).first, 'viewport');
+  assert.match(planScreenshot({ beyondViewport: true, contentHeight: 25000 }).note, /超阈值/);
+  assert.deepEqual(planScreenshot({ beyondViewport: true, contentHeight: 3000 }), { first: 'full_page', note: null });
+  assert.deepEqual(planScreenshot({ beyondViewport: true }), { first: 'full_page', note: null });
+  assert.ok(SHOT_TIMEOUT_MS < 30000);
 });
 
 test('navigateReplyError：未回应/正常回应/ABORTED 不算失败，其他 errorText 算', () => {

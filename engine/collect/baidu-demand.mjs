@@ -82,13 +82,42 @@ export function parseDevToolsActivePort(text) {
 // 纯函数：导航是否已完成。
 // s = { loadEventFired, readyState, marker, href }；marker 是导航前写进旧文档的标记，
 // 新文档里一定没有它——用来防止把旧页面的 readyState=complete 误判成新页面加载完。
-export function isNavigationDone(s) {
+// requireComplete=true（结果页用）：只认 load 事件或 readyState=complete，interactive 不够。
+export function isNavigationDone(s, { requireComplete = false } = {}) {
   if (!s) return false;
   if (s.loadEventFired) return true;
   if (s.marker) return false;
   if (!s.href || s.href === 'about:blank') return false;
+  if (requireComplete) return s.readyState === 'complete';
   return s.readyState === 'complete' || s.readyState === 'interactive';
 }
+
+// 纯函数：是不是百度人机验证页。p = { href, title, text }。
+const CAPTCHA_HOST_RE = /\/\/wappass\.baidu\.com|\/static\/captcha\//i;
+const CAPTCHA_WORDS = ['请输入验证码', '安全验证', '人机验证', '拖动滑块', '向右滑动', '百度安全验证', '旋转图片', '点击完成验证'];
+export function isCaptchaPage(p) {
+  if (!p) return false;
+  if (p.href && CAPTCHA_HOST_RE.test(p.href)) return true;
+  if (p.title && /安全验证|验证码/.test(p.title)) return true;
+  const t = p.text || '';
+  return CAPTCHA_WORDS.some((w) => t.includes(w));
+}
+
+// 纯函数：结果页等待决策。s = { captcha, h3Count, readyState }；返回 'captcha' | 'ready' | 'wait' | 'timeout'。
+export function decideResultWait(s, elapsedMs, timeoutMs) {
+  if (s && s.captcha) return 'captcha';
+  if (s && s.readyState === 'complete' && s.h3Count > 0) return 'ready';
+  return elapsedMs >= timeoutMs ? 'timeout' : 'wait';
+}
+
+// 纯函数：截图方式。整页太高或本来就只要可见区域 → viewport；否则先整页、超时再退回 viewport。
+export function planScreenshot({ beyondViewport, contentHeight, maxHeight = 20000 }) {
+  if (!beyondViewport) return { first: 'viewport', note: null };
+  if (contentHeight && contentHeight > maxHeight) return { first: 'viewport', note: `页面高 ${Math.round(contentHeight)}px 超阈值` };
+  return { first: 'full_page', note: null };
+}
+export const SHOT_TIMEOUT_MS = 12000;
+export const RESULT_WAIT_MS = 20000;
 
 // 纯函数：Page.navigate 的回应（若有）里是否带致命错误。ERR_ABORTED 常见于被后续导航替换，不算失败。
 export function navigateReplyError(reply) {
@@ -241,7 +270,7 @@ async function evaluate(browser, sessionId, expression) {
 }
 // 稳健导航：发 Page.navigate 但不等它回应；以 loadEventFired 或"新文档" readyState 为准。
 // navigate 的回应只用来记诊断、以及它带回的非 ABORTED 错误（如断网）才算失败。
-async function gotoAndSettle(browser, sessionId, url, settleMs = 2500, timeoutMs = NAV_TIMEOUT_MS) {
+async function gotoAndSettle(browser, sessionId, url, settleMs = 2500, timeoutMs = NAV_TIMEOUT_MS, { requireComplete = false } = {}) {
   const marker = 'bd_' + randomBytes(6).toString('hex');
   await evaluate(browser, sessionId, `(window.__bdNavMarker = ${JSON.stringify(marker)}, true)`).catch(() => {});
   const st = { navigated: false, loadEventFired: false, reply: null, replyMs: null };
@@ -266,7 +295,7 @@ async function gotoAndSettle(browser, sessionId, url, settleMs = 2500, timeoutMs
         probe = await evaluateWithTimeout(browser, sessionId,
           `({ readyState: document.readyState, marker: window.__bdNavMarker || null, href: location.href })`, 3000).catch(() => null);
       }
-      if (isNavigationDone({ loadEventFired: st.loadEventFired, ...(probe || {}) })) {
+      if (isNavigationDone({ loadEventFired: st.loadEventFired, ...(probe || {}) }, { requireComplete })) {
         log(`  导航完成 ${Date.now() - t0}ms（loadEventFired=${st.loadEventFired}，navigate 回应=${st.replyMs === null ? '未回应' : st.replyMs + 'ms'}）`);
         await sleep(settleMs);
         return;
@@ -285,15 +314,29 @@ async function evaluateWithTimeout(browser, sessionId, expression, timeoutMs) {
   return r.result && r.result.value;
 }
 
-const CAPTCHA_PROBE_JS = `(() => {
-  const t = (document.body && document.body.innerText) || '';
-  const hit = t.includes('请输入验证码') || t.includes('安全验证') || t.includes('人机验证')
-    || t.includes('拖动滑块') || t.includes('向右滑动') || t.includes('百度安全验证');
-  return { captcha: hit };
-})()`;
+const PAGE_PROBE_JS = `(() => ({
+  href: location.href, title: document.title || '', readyState: document.readyState,
+  text: ((document.body && document.body.innerText) || '').slice(0, 3000),
+  h3Count: document.querySelectorAll('h3').length,
+}))()`;
+async function probePage(browser, sessionId) {
+  return evaluateWithTimeout(browser, sessionId, PAGE_PROBE_JS, 5000).catch(() => null);
+}
 async function assertNoCaptcha(browser, sessionId, where) {
-  const s = await evaluate(browser, sessionId, CAPTCHA_PROBE_JS).catch(() => ({ captcha: false }));
-  if (s.captcha) { throw new Error(`CAPTCHA_DETECTED@${where}`); }
+  const p = await probePage(browser, sessionId);
+  if (isCaptchaPage(p)) { throw new Error(`CAPTCHA_DETECTED@${where}（${p.href}）`); }
+}
+// 结果页：等 complete 且出现结果标题（h3）；途中发现人机验证就硬停。
+async function waitForResults(browser, sessionId) {
+  const t0 = Date.now();
+  for (;;) {
+    const p = await probePage(browser, sessionId);
+    const d = decideResultWait({ captcha: isCaptchaPage(p), h3Count: p ? p.h3Count : 0, readyState: p && p.readyState }, Date.now() - t0, RESULT_WAIT_MS);
+    if (d === 'captcha') throw new Error(`CAPTCHA_DETECTED@result（${p.href}）`);
+    if (d === 'ready') { log(`  结果标题已出现（h3 ${p.h3Count} 个，${Date.now() - t0}ms）`); return; }
+    if (d === 'timeout') throw new Error(`结果页 ${RESULT_WAIT_MS}ms 内未出现结果标题（readyState=${p && p.readyState}，${p && p.href}）`);
+    await sleep(500);
+  }
 }
 
 const OCCLUSION_PROBE_JS = `(() => {
@@ -321,6 +364,8 @@ const OCCLUSION_PROBE_JS = `(() => {
 })()`;
 
 async function captureFullPage(browser, sessionId, outPath, { runGuard = true, beyondViewport = true } = {}) {
+  // 截图前先确认没被跳到人机验证页；是就硬停，不截、不绕。
+  await assertNoCaptcha(browser, sessionId, path.basename(outPath));
   let occluded = false, occlusions = [];
   if (runGuard) {
     const occ = await evaluate(browser, sessionId, OCCLUSION_PROBE_JS).catch(() => ({ remaining: [] }));
@@ -329,17 +374,22 @@ async function captureFullPage(browser, sessionId, outPath, { runGuard = true, b
     if (occluded) log(`[遮挡告警] ${outPath} 检测到遮挡：${occlusions.join(' | ')}`);
   }
   let contentSize = null;
-  try { const m = await browser.send('Page.getLayoutMetrics', {}, sessionId); contentSize = m.cssContentSize || m.contentSize; } catch {}
-  const MAX_H = 20000; let data, meta = {};
-  if (beyondViewport && contentSize && contentSize.height > MAX_H) {
-    const shot = await browser.send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false }, sessionId);
-    data = shot.data; meta = { mode: 'viewport_only', note: `页面高 ${Math.round(contentSize.height)}px 超阈值` };
-  } else if (beyondViewport) {
-    const shot = await browser.send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: true, fromSurface: true }, sessionId);
-    data = shot.data; meta = { mode: 'full_page', width: contentSize ? Math.round(contentSize.width) : VIEWPORT.width, height: contentSize ? Math.round(contentSize.height) : VIEWPORT.height };
+  try { const m = await browser.send('Page.getLayoutMetrics', {}, sessionId, 5000); contentSize = m.cssContentSize || m.contentSize; } catch {}
+  const plan = planScreenshot({ beyondViewport, contentHeight: contentSize && contentSize.height });
+  const viewportShot = () => browser.send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false }, sessionId, SHOT_TIMEOUT_MS);
+  let data, meta = {};
+  if (plan.first === 'full_page') {
+    try {
+      const shot = await browser.send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: true, fromSurface: true }, sessionId, SHOT_TIMEOUT_MS);
+      data = shot.data; meta = { mode: 'full_page', width: contentSize ? Math.round(contentSize.width) : VIEWPORT.width, height: contentSize ? Math.round(contentSize.height) : VIEWPORT.height };
+    } catch (e) {
+      log(`  整页截图失败（${e.message}），退回只截可见区域`);
+      const shot = await viewportShot();
+      data = shot.data; meta = { mode: 'viewport_only', ...VIEWPORT, note: `整页截图失败退回：${e.message}` };
+    }
   } else {
-    const shot = await browser.send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false }, sessionId);
-    data = shot.data; meta = { mode: 'viewport_only', ...VIEWPORT };
+    const shot = await viewportShot();
+    data = shot.data; meta = { mode: 'viewport_only', ...VIEWPORT, ...(plan.note ? { note: plan.note } : {}) };
   }
   const buf = Buffer.from(data, 'base64');
   writeFileSync(outPath, buf);
@@ -455,8 +505,8 @@ async function main() {
 
     // 2) 搜索结果页
     log(`搜索结果页：导航 /s?wd=${args.query}`);
-    await gotoAndSettle(browser, page.sessionId, 'https://www.baidu.com/s?wd=' + encodeURIComponent(args.query), 3000);
-    await assertNoCaptcha(browser, page.sessionId, 'result');
+    await gotoAndSettle(browser, page.sessionId, 'https://www.baidu.com/s?wd=' + encodeURIComponent(args.query), 1500, NAV_TIMEOUT_MS, { requireComplete: true });
+    await waitForResults(browser, page.sessionId);
     const resultInfoJS = `(() => {
       const flat=(document.body&&document.body.innerText||'').replace(/\\s+/g,' ');
       const m = flat.match(/百度为您找到相关结果约?\\s*([0-9,，]+)\\s*个/) || flat.match(/相关结果约?\\s*([0-9,，]+)/);
