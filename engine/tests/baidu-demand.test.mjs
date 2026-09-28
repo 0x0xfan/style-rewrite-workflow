@@ -4,6 +4,8 @@ import {
   parseArgs, buildChromeArgs, parseDevToolsActivePort, isNavigationDone, navigateReplyError,
   isCaptchaPage, decideResultWait, planScreenshot, SHOT_TIMEOUT_MS,
   safeName, renderManifest, PROFILE_DIR,
+  normalizeProxy, proxyMode, isCdpTimeout, dialogResponse, decideAfterStop, parseProfilePids,
+  EVAL_TIMEOUT_MS, CLEANUP_CHECK_MS,
 } from '../collect/baidu-demand.mjs';
 
 // 只测纯函数：不启动浏览器、不联网。
@@ -121,4 +123,57 @@ test('renderManifest：三段齐全', () => {
   assert.match(md, /相关结果约 100 个/);
   assert.match(md, /相关搜索词：相关1/);
   assert.match(md, /特写截图：`rel\.png`/);
+});
+
+test('--proxy：解析、规整、写进启动参数，且优先于直连/系统代理', () => {
+  assert.equal(parseArgs(['--query', 'a', '--out', 'b', '--proxy', '127.0.0.1:7897']).proxy, '127.0.0.1:7897');
+  assert.match(parseArgs(['--query', 'a', '--out', 'b', '--proxy', 'bad']).error, /--proxy 地址不对/);
+  assert.match(parseArgs(['--query', 'a', '--out', 'b', '--proxy', '127.0.0.1:7897', '--system-proxy']).error, /只能选一个/);
+  assert.equal(normalizeProxy('127.0.0.1:7897'), '127.0.0.1:7897');
+  assert.equal(normalizeProxy(' http://127.0.0.1:7897/ '), 'http://127.0.0.1:7897');
+  assert.equal(normalizeProxy('socks5://localhost:1080'), 'socks5://localhost:1080');
+  assert.equal(normalizeProxy('127.0.0.1'), null);
+  assert.equal(normalizeProxy('127.0.0.1:70000'), null);
+  assert.equal(normalizeProxy('ftp://x:1'), null);
+  const a = buildChromeArgs(0, 'p', { proxy: '127.0.0.1:7897' });
+  assert.ok(a.includes('--proxy-server=127.0.0.1:7897'));
+  assert.ok(!a.includes('--no-proxy-server'));
+  assert.equal(proxyMode({}), 'direct');
+  assert.equal(proxyMode({ systemProxy: true }), 'system');
+  assert.equal(proxyMode({ proxy: '127.0.0.1:7897' }), 'explicit:127.0.0.1:7897');
+});
+
+test('isCdpTimeout：只认 CDP 超时，其他错误不算', () => {
+  assert.equal(isCdpTimeout(new Error('CDP 超时：Runtime.evaluate')), true);
+  assert.equal(isCdpTimeout(new Error('CDP 连接已关闭')), false);
+  assert.equal(isCdpTimeout(null), false);
+});
+
+test('单独超时：evaluate 10s、截图 12s；收尾复查 15s', () => {
+  assert.equal(EVAL_TIMEOUT_MS, 10000);
+  assert.equal(SHOT_TIMEOUT_MS, 12000);
+  assert.equal(CLEANUP_CHECK_MS, 15000);
+});
+
+test('dialogResponse：alert/confirm/prompt dismiss；beforeunload 放行离开', () => {
+  assert.deepEqual(dialogResponse('alert'), { accept: false });
+  assert.deepEqual(dialogResponse('confirm'), { accept: false });
+  assert.deepEqual(dialogResponse('prompt'), { accept: false });
+  assert.deepEqual(dialogResponse('beforeunload'), { accept: true });
+});
+
+test('decideAfterStop：验证页硬停；旧文档/空页失败；结果页要有 h3 才放行', () => {
+  assert.equal(decideAfterStop(null), 'fail');
+  assert.equal(decideAfterStop({ href: 'https://wappass.baidu.com/static/captcha/x', title: '', text: '' }), 'captcha');
+  assert.equal(decideAfterStop({ href: 'about:blank', title: '', text: '' }), 'fail');
+  assert.equal(decideAfterStop({ href: 'https://www.baidu.com/', marker: 'bd_x', title: '', text: '' }), 'fail');
+  assert.equal(decideAfterStop({ href: 'https://www.baidu.com/', marker: null, title: '百度一下', text: '' }), 'ready');
+  assert.equal(decideAfterStop({ href: 'https://www.baidu.com/s?wd=a', title: 'a', text: '', h3Count: 0 }, { needResults: true }), 'fail');
+  assert.equal(decideAfterStop({ href: 'https://www.baidu.com/s?wd=a', title: 'a', text: '', h3Count: 8 }, { needResults: true }), 'ready');
+});
+
+test('parseProfilePids：每行一个 PID，去重，忽略杂行', () => {
+  assert.deepEqual(parseProfilePids('123\r\n456\n123\n\nWARNING x\n 789 \n'), [123, 456, 789]);
+  assert.deepEqual(parseProfilePids(''), []);
+  assert.deepEqual(parseProfilePids(undefined), []);
 });

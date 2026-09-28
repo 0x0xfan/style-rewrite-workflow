@@ -15,6 +15,15 @@
 //     不再复用 9222 上的闲鱼采集 Chrome，也不碰用户自己的 Chrome。
 //   - 结束时 Browser.close 关掉自己启动的这个 Chrome；关不掉才按自己记下的 PID 结束进程树。
 //   - 导航不以 Page.navigate 的回应为准：发出后以 loadEventFired 或新文档 readyState 为准，带总超时。
+//
+// 防卡死（2026-09-28 二改）：
+//   - 监听 Page.javascriptDialogOpening，网页弹 alert/confirm/beforeunload 一律自动 dismiss 并记录。
+//   - 每一步记时间戳 / URL / readyState 到 _capture-log.json 的 trace（每步落盘，卡死也留得下）。
+//   - CDP 命令单独超时（evaluate 10s、截图 12s）；超时先截可见区域留证（_stall-*.png），
+//     再 Page.stopLoading，重试一次；还超时才算失败。
+//   - 关浏览器后复查本 profile 的 Chrome 进程最多 15s，仍有残留按 PID 结束并记录。
+//   - 代理：默认直连（--no-proxy-server）；--proxy <地址> 走显式代理（本机实测显式
+//     --proxy-server=127.0.0.1:7897 不卡，卡的是系统代理）；--system-proxy 走系统代理。
 
 import { spawn, execSync, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -31,11 +40,105 @@ const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..
 export const PROFILE_DIR = path.join(os.tmpdir(), 'baidu-demand-chrome-profile');
 const WINDOW_SIZE = '1600,1000';
 const VIEWPORT = { width: 1600, height: 1000 };
-const CDP_TIMEOUT_MS = 30000;
+const CDP_TIMEOUT_MS = 15000;
+export const EVAL_TIMEOUT_MS = 10000;
+export const CLEANUP_CHECK_MS = 15000;
 export const NAV_TIMEOUT_MS = 30000;
 
 function log(m) { console.log(`[百度采集] ${m}`); }
 function fail(m) { console.error(`[错误] ${m}`); process.exit(1); }
+
+// 运行记录：每一步的时间戳 / URL / readyState、对话框、卡住留证、收尾复查。每步落盘，卡死也留得下。
+const RUN = { t0: Date.now(), outDir: null, query: null, proxyMode: null, targetId: null,
+  results: [], trace: [], dialogs: [], stalls: [], cleanup: null };
+function flushLog() {
+  if (!RUN.outDir) return;
+  try {
+    writeFileSync(path.join(RUN.outDir, '_capture-log.json'), JSON.stringify({
+      generated_at: new Date().toISOString(), query: RUN.query, proxy_mode: RUN.proxyMode,
+      results: RUN.results, trace: RUN.trace, dialogs: RUN.dialogs, stalls: RUN.stalls, cleanup: RUN.cleanup,
+    }, null, 2), 'utf8');
+  } catch {}
+}
+// 取当前页 URL（浏览器层 Target.getTargetInfo，不依赖渲染进程）和 readyState（页面内，2s 超时）。
+async function pageState(browser, sessionId) {
+  const st = { url: null, readyState: null };
+  if (browser && RUN.targetId) {
+    try { const r = await browser.send('Target.getTargetInfo', { targetId: RUN.targetId }, undefined, 3000); st.url = r.targetInfo && r.targetInfo.url; } catch {}
+  }
+  if (browser && sessionId) {
+    try {
+      const r = await browser.send('Runtime.evaluate', { expression: 'document.readyState', returnByValue: true }, sessionId, 2000);
+      st.readyState = r.result && r.result.value;
+    } catch (e) { st.readyState = isCdpTimeout(e) ? '(evaluate 无回应)' : null; }
+  }
+  return st;
+}
+async function step(browser, sessionId, name, extra = {}) {
+  const st = await pageState(browser, sessionId);
+  RUN.trace.push({ at: new Date().toISOString(), ms: Date.now() - RUN.t0, step: name, url: st.url, readyState: st.readyState, ...extra });
+  flushLog();
+}
+function recordStep(name, extra = {}) {
+  RUN.trace.push({ at: new Date().toISOString(), ms: Date.now() - RUN.t0, step: name, url: null, readyState: null, ...extra });
+  flushLog();
+}
+// 卡住留证：只截可见区域，存 _stall-<序号>-<步骤>.png。截不到就记原因。
+async function captureStallEvidence(browser, sessionId, label) {
+  const fn = `_stall-${RUN.stalls.length}-${safeName(label).replace(/\s+/g, '_')}.png`;
+  try {
+    const shot = await browser.send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false }, sessionId, SHOT_TIMEOUT_MS);
+    const buf = Buffer.from(shot.data, 'base64');
+    writeFileSync(path.join(RUN.outDir, fn), buf);
+    return { file: fn, bytes: buf.length, sha256: createHash('sha256').update(buf).digest('hex') };
+  } catch (e) { return { file: null, error: e.message }; }
+}
+// 卡住处理的公共部分：记录 → 留证 → Page.stopLoading。返回 stall 记录（调用方补 outcome）。
+async function handleStall(browser, sessionId, label, detail) {
+  const { skipEvidence, ...rest } = detail;
+  const stall = { at: new Date().toISOString(), ms: Date.now() - RUN.t0, label, ...rest };
+  RUN.stalls.push(stall);
+  log(`[卡住] ${label}：${detail.what}；先截可见区域留证，再 Page.stopLoading`);
+  stall.state = await pageState(browser, sessionId);
+  stall.evidence = skipEvidence ? { file: null, error: '卡住的就是可见区域截图，不重复截' } : await captureStallEvidence(browser, sessionId, label);
+  try { await browser.send('Page.stopLoading', {}, sessionId, 5000); stall.stopLoading = 'ok'; }
+  catch (e) { stall.stopLoading = e.message; }
+  if (stall.evidence.file) log(`  留证截图：${stall.evidence.file}`);
+  flushLog();
+  return stall;
+}
+// 带单独超时的 CDP 命令：超时 → 留证 + stopLoading → 重试一次；还超时才抛。
+async function sendGuarded(browser, sessionId, method, params, timeoutMs, label) {
+  try { return await browser.send(method, params, sessionId, timeoutMs); }
+  catch (e) {
+    if (!isCdpTimeout(e)) throw e;
+    const skipEvidence = method === 'Page.captureScreenshot' && params && params.captureBeyondViewport === false;
+    const stall = await handleStall(browser, sessionId, label, { what: `${method} ${timeoutMs}ms 无回应`, method, timeoutMs, skipEvidence });
+    try {
+      const r = await browser.send(method, params, sessionId, timeoutMs);
+      stall.outcome = 'retry_ok'; flushLog(); log('  重试成功');
+      return r;
+    } catch (e2) {
+      stall.outcome = `retry_failed: ${e2.message}`; flushLog();
+      throw new Error(`${e2.message}（步骤 ${label}：已 stopLoading 重试一次仍失败）`);
+    }
+  }
+}
+// 网页对话框（alert/confirm/prompt/beforeunload）会把页面 JS 和截图卡住：自动处理并记录。
+function installDialogGuard(browser) {
+  browser.listeners.push((msg) => {
+    if (msg.method !== 'Page.javascriptDialogOpening') return;
+    const p = msg.params || {};
+    const resp = dialogResponse(p.type);
+    const rec = { at: new Date().toISOString(), ms: Date.now() - RUN.t0, type: p.type, url: p.url || null,
+      message: String(p.message || '').slice(0, 200), action: resp.accept ? 'accept(离开页面)' : 'dismiss' };
+    RUN.dialogs.push(rec);
+    log(`[对话框] ${p.type}「${rec.message}」→ ${rec.action}`);
+    browser.send('Page.handleJavaScriptDialog', resp, msg.sessionId, 5000)
+      .then(() => { rec.handled = true; flushLog(); })
+      .catch((e) => { rec.handled = false; rec.error = e.message; flushLog(); });
+  });
+}
 
 // 纯函数：解析命令行。缺参数时返回 { error }，由调用方决定退出。
 export function parseArgs(argv) {
@@ -46,26 +149,48 @@ export function parseArgs(argv) {
     else if (a === '--out') args.out = argv[++i];
     else if (a === '--port') args.port = parseInt(argv[++i], 10) || 0;
     else if (a === '--system-proxy') args.systemProxy = true;
+    else if (a === '--proxy') args.proxy = argv[++i];
     else if (a === '-h' || a === '--help') args.help = true;
   }
   if (args.help) return args;
   if (!args.query) args.error = '缺少 --query "<搜索词>"';
   else if (!args.out) args.error = '缺少 --out "<产物目录>"';
+  else if (args.proxy !== undefined && !normalizeProxy(args.proxy)) args.error = `--proxy 地址不对：${args.proxy}（例：127.0.0.1:7897）`;
+  else if (args.proxy !== undefined && args.systemProxy) args.error = '--proxy 与 --system-proxy 只能选一个';
   return args;
+}
+
+// 纯函数：规整代理地址。接受 host:port 或 scheme://host:port（http/https/socks4/socks5）；不合法返回 null。
+export function normalizeProxy(v) {
+  const s = String(v || '').trim();
+  const m = s.match(/^(?:(https?|socks[45]):\/\/)?([A-Za-z0-9.\-]+|\[[0-9a-fA-F:]+\]):(\d{1,5})\/?$/);
+  if (!m) return null;
+  const port = parseInt(m[3], 10);
+  if (port <= 0 || port > 65535) return null;
+  return `${m[1] ? m[1] + '://' : ''}${m[2]}:${port}`;
+}
+
+// 纯函数：代理模式说明（写进日志）。
+export function proxyMode({ proxy, systemProxy } = {}) {
+  if (proxy) return `explicit:${normalizeProxy(proxy)}`;
+  if (systemProxy) return 'system';
+  return 'direct';
 }
 
 // 纯函数：启动参数。port=0 → Chrome 自选空闲端口并写 DevToolsActivePort。
 // 默认 --no-proxy-server 直连：2026-09-28 实测本机系统代理（127.0.0.1:7897）下，Chrome 对
 // www.baidu.com 的文档请求发出后一直拿不到响应（Network.requestWillBeSent 后无 responseReceived），
 // Page.navigate 因此永不回应；直连 114ms 就拿到 200。百度是国内公开站，直连即可。
-// 确需走系统代理时加 --system-proxy。
-export function buildChromeArgs(port, profileDir, { systemProxy = false } = {}) {
+// 确需走系统代理时加 --system-proxy；走显式代理用 --proxy <地址>（优先于前两者）。
+export function buildChromeArgs(port, profileDir, { systemProxy = false, proxy = null } = {}) {
+  const p = proxy ? normalizeProxy(proxy) : null;
+  const proxyArgs = p ? [`--proxy-server=${p}`] : (systemProxy ? [] : ['--no-proxy-server']);
   return [
     `--remote-debugging-port=${port}`, `--remote-debugging-address=${DEBUG_HOST}`,
     `--user-data-dir=${profileDir}`,
     '--no-first-run', '--no-default-browser-check', '--disable-extensions',
     '--disable-background-networking', '--disable-sync', '--no-service-autorun',
-    ...(systemProxy ? [] : ['--no-proxy-server']),
+    ...proxyArgs,
     `--window-size=${WINDOW_SIZE}`, 'about:blank',
   ];
 }
@@ -126,6 +251,39 @@ export function navigateReplyError(reply) {
   return reply.errorText;
 }
 
+// 纯函数：是不是 CDP 命令超时（本脚本 CDP.send 抛的"CDP 超时：xxx"）。
+export function isCdpTimeout(err) {
+  return /^CDP 超时/.test(String((err && err.message) || err || ''));
+}
+
+// 纯函数：网页对话框怎么处理。alert/confirm/prompt 一律 dismiss（accept=false）；
+// beforeunload 若 dismiss 等于"留在本页"，导航会被卡住，所以放行离开（accept=true）。
+export function dialogResponse(type) {
+  return { accept: type === 'beforeunload' };
+}
+
+// 纯函数：卡住后 Page.stopLoading 再看一眼页面，决定怎么走。p = 探测结果（可为 null）。
+// needResults=true（结果页）：有结果标题才放行；否则只要是新文档（不是 about:blank、没有旧标记）就放行。
+export function decideAfterStop(p, { needResults = false } = {}) {
+  if (!p) return 'fail';
+  if (isCaptchaPage(p)) return 'captcha';
+  if (!p.href || p.href === 'about:blank' || p.marker) return 'fail';
+  if (needResults) return p.h3Count > 0 ? 'ready' : 'fail';
+  return 'ready';
+}
+
+// 纯函数：解析"本 profile 的 Chrome 进程 PID"列表（每行一个数字，其他行忽略，去重）。
+export function parseProfilePids(text) {
+  const out = [];
+  for (const line of String(text || '').split(/\r?\n/)) {
+    const t = line.trim();
+    if (!/^\d+$/.test(t)) continue;
+    const n = parseInt(t, 10);
+    if (n > 0 && !out.includes(n)) out.push(n);
+  }
+  return out;
+}
+
 function findChrome() {
   const candidates = [
     process.env['ProgramFiles'] && path.join(process.env['ProgramFiles'], 'Google/Chrome/Application/chrome.exe'),
@@ -175,7 +333,7 @@ async function closeLeftoverOwnChrome() {
   } catch {}
 }
 // 启动自己的 Chrome，返回 { version, child, port }。
-async function launchOwnChrome(requestedPort, { systemProxy = false } = {}) {
+async function launchOwnChrome(requestedPort, { systemProxy = false, proxy = null } = {}) {
   const chrome = findChrome();
   if (!chrome) fail('未找到 chrome.exe');
   log(`定位到 Chrome：${chrome}`);
@@ -186,7 +344,7 @@ async function launchOwnChrome(requestedPort, { systemProxy = false } = {}) {
   }
   try { rmSync(path.join(PROFILE_DIR, 'DevToolsActivePort'), { force: true }); } catch {}
   log(`启动百度专用 Chrome（独立 profile：${PROFILE_DIR}）`);
-  const child = spawn(chrome, buildChromeArgs(requestedPort || 0, PROFILE_DIR, { systemProxy }), { detached: false, stdio: 'ignore' });
+  const child = spawn(chrome, buildChromeArgs(requestedPort || 0, PROFILE_DIR, { systemProxy, proxy }), { detached: false, stdio: 'ignore' });
   let exited = false;
   child.on('exit', () => { exited = true; });
   const deadline = Date.now() + 20000;
@@ -209,13 +367,51 @@ async function launchOwnChrome(requestedPort, { systemProxy = false } = {}) {
 async function closeOwnChrome(browser, chromeInfo) {
   if (!chromeInfo) return;
   const { child, port } = chromeInfo;
+  const cleanup = { pid: child.pid, closedBy: null, recheck: [], killed: [], leftover: [] };
+  RUN.cleanup = cleanup;
   const exitedP = new Promise((r) => { if (child.exitCode !== null) r(true); else child.once('exit', () => r(true)); });
   if (browser) browser.send('Browser.close', {}, undefined, 5000).catch(() => {});
   const ok = await Promise.race([exitedP, sleep(8000).then(() => false)]);
-  if (ok && !(await isDebuggerUp(port))) { log('已关闭本次启动的 Chrome'); return; }
-  log('Browser.close 未在 8s 内生效，按本次启动的 PID 结束进程树');
-  if (process.platform === 'win32') spawnSync('taskkill', ['/PID', String(child.pid), '/T', '/F'], { stdio: 'ignore' });
-  else { try { child.kill('SIGKILL'); } catch {} }
+  if (ok && !(await isDebuggerUp(port))) { log('已关闭本次启动的 Chrome'); cleanup.closedBy = 'Browser.close'; }
+  else {
+    log('Browser.close 未在 8s 内生效，按本次启动的 PID 结束进程树');
+    cleanup.closedBy = 'taskkill';
+    killPidTree(child.pid);
+  }
+  // 复查：本 profile 的 Chrome 进程（含子进程）最多等 15s 全部退出；还在就按 PID 结束并记录。
+  const t0 = Date.now();
+  let pids = listProfileChromePids();
+  while (pids.length && Date.now() - t0 < CLEANUP_CHECK_MS) {
+    cleanup.recheck.push({ ms: Date.now() - t0, pids });
+    await sleep(1000);
+    pids = listProfileChromePids();
+  }
+  cleanup.recheckMs = Date.now() - t0;
+  if (pids.length) {
+    log(`[残留] 本 profile 的 Chrome 进程 15s 后仍在：${pids.join(', ')}，按 PID 结束`);
+    for (const pid of pids) { killPidTree(pid); cleanup.killed.push(pid); }
+    await sleep(1000);
+    cleanup.leftover = listProfileChromePids();
+    if (cleanup.leftover.length) log(`[残留] 结束后仍有：${cleanup.leftover.join(', ')}`);
+  } else log(`  复查：本 profile 的 Chrome 进程已全部退出（${cleanup.recheckMs}ms）`);
+  flushLog();
+}
+function killPidTree(pid) {
+  if (process.platform === 'win32') spawnSync('taskkill', ['/PID', String(pid), '/T', '/F'], { stdio: 'ignore' });
+  else { try { process.kill(pid, 'SIGKILL'); } catch {} }
+}
+// 列出命令行里带本 profile 目录名的 Chrome 进程（只认本脚本的 profile，不碰别的 Chrome）。
+function listProfileChromePids() {
+  const tag = path.basename(PROFILE_DIR);
+  try {
+    if (process.platform === 'win32') {
+      const ps = `Get-CimInstance Win32_Process -Filter "Name='chrome.exe'" | Where-Object { $_.CommandLine -like '*${tag}*' } | ForEach-Object { $_.ProcessId }`;
+      const r = spawnSync('powershell', ['-NoProfile', '-NonInteractive', '-Command', ps], { encoding: 'utf8', timeout: 10000 });
+      return parseProfilePids(r.stdout);
+    }
+    const r = spawnSync('pgrep', ['-f', tag], { encoding: 'utf8', timeout: 5000 });
+    return parseProfilePids(r.stdout).filter((p) => p !== process.pid);
+  } catch { return []; }
 }
 
 class CDP {
@@ -263,8 +459,8 @@ async function newPage(browser) {
     { width: VIEWPORT.width, height: VIEWPORT.height, deviceScaleFactor: 1, mobile: false }, sessionId).catch(() => {});
   return { targetId, sessionId };
 }
-async function evaluate(browser, sessionId, expression) {
-  const r = await browser.send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true }, sessionId);
+async function evaluate(browser, sessionId, expression, label = 'evaluate') {
+  const r = await sendGuarded(browser, sessionId, 'Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true }, EVAL_TIMEOUT_MS, label);
   if (r.exceptionDetails) throw new Error(`页面 JS 异常：${r.exceptionDetails.text || ''}`);
   return r.result && r.result.value;
 }
@@ -272,7 +468,8 @@ async function evaluate(browser, sessionId, expression) {
 // navigate 的回应只用来记诊断、以及它带回的非 ABORTED 错误（如断网）才算失败。
 async function gotoAndSettle(browser, sessionId, url, settleMs = 2500, timeoutMs = NAV_TIMEOUT_MS, { requireComplete = false } = {}) {
   const marker = 'bd_' + randomBytes(6).toString('hex');
-  await evaluate(browser, sessionId, `(window.__bdNavMarker = ${JSON.stringify(marker)}, true)`).catch(() => {});
+  await evaluate(browser, sessionId, `(window.__bdNavMarker = ${JSON.stringify(marker)}, true)`, 'nav-marker').catch(() => {});
+  await step(browser, sessionId, 'navigate:start', { target: url });
   const st = { navigated: false, loadEventFired: false, reply: null, replyMs: null };
   const t0 = Date.now();
   // 只认本次导航主框架提交之后的 loadEventFired，避免上一页迟到的 load 事件被误算。
@@ -297,12 +494,22 @@ async function gotoAndSettle(browser, sessionId, url, settleMs = 2500, timeoutMs
       }
       if (isNavigationDone({ loadEventFired: st.loadEventFired, ...(probe || {}) }, { requireComplete })) {
         log(`  导航完成 ${Date.now() - t0}ms（loadEventFired=${st.loadEventFired}，navigate 回应=${st.replyMs === null ? '未回应' : st.replyMs + 'ms'}）`);
+        await step(browser, sessionId, 'navigate:done', { target: url, navMs: Date.now() - t0, loadEventFired: st.loadEventFired });
         await sleep(settleMs);
         return;
       }
       await sleep(300);
     }
-    throw new Error(`导航超时 ${timeoutMs}ms：${url}（navigate 回应=${st.replyMs === null ? '未回应' : st.replyMs + 'ms'}）`);
+    // 卡住：留证 → stopLoading → 再看一眼；新文档已在就放行，否则失败。
+    const what = `导航 ${timeoutMs}ms 未完成（navigate 回应=${st.replyMs === null ? '未回应' : st.replyMs + 'ms'}）`;
+    const stall = await handleStall(browser, sessionId, 'navigate', { what, target: url });
+    const p = await evaluateWithTimeout(browser, sessionId,
+      `({ readyState: document.readyState, marker: window.__bdNavMarker || null, href: location.href, title: document.title || '', text: ((document.body && document.body.innerText) || '').slice(0, 3000), h3Count: document.querySelectorAll('h3').length })`, 5000).catch(() => null);
+    const d = decideAfterStop(p);
+    stall.outcome = d === 'ready' ? 'stopLoading 后放行' : d; flushLog();
+    if (d === 'captcha') throw new Error(`CAPTCHA_DETECTED@navigate（${p.href}）`);
+    if (d === 'ready') { log('  stopLoading 后新页面已在，放行'); await step(browser, sessionId, 'navigate:done-after-stop', { target: url }); return; }
+    throw new Error(`导航超时 ${timeoutMs}ms：${url}（navigate 回应=${st.replyMs === null ? '未回应' : st.replyMs + 'ms'}；已留证并 stopLoading）`);
   } finally {
     const i = browser.listeners.indexOf(onEvt);
     if (i >= 0) browser.listeners.splice(i, 1);
@@ -333,8 +540,21 @@ async function waitForResults(browser, sessionId) {
     const p = await probePage(browser, sessionId);
     const d = decideResultWait({ captcha: isCaptchaPage(p), h3Count: p ? p.h3Count : 0, readyState: p && p.readyState }, Date.now() - t0, RESULT_WAIT_MS);
     if (d === 'captcha') throw new Error(`CAPTCHA_DETECTED@result（${p.href}）`);
-    if (d === 'ready') { log(`  结果标题已出现（h3 ${p.h3Count} 个，${Date.now() - t0}ms）`); return; }
-    if (d === 'timeout') throw new Error(`结果页 ${RESULT_WAIT_MS}ms 内未出现结果标题（readyState=${p && p.readyState}，${p && p.href}）`);
+    if (d === 'ready') {
+      log(`  结果标题已出现（h3 ${p.h3Count} 个，${Date.now() - t0}ms）`);
+      await step(browser, sessionId, 'results:ready', { h3Count: p.h3Count });
+      return;
+    }
+    if (d === 'timeout') {
+      const stall = await handleStall(browser, sessionId, 'results-wait',
+        { what: `结果页 ${RESULT_WAIT_MS}ms 内未就绪（readyState=${p && p.readyState}，h3=${p ? p.h3Count : '?'}）` });
+      const p2 = await probePage(browser, sessionId);
+      const d2 = decideAfterStop(p2 && { ...p2, marker: null }, { needResults: true });
+      stall.outcome = d2 === 'ready' ? 'stopLoading 后放行' : d2; flushLog();
+      if (d2 === 'captcha') throw new Error(`CAPTCHA_DETECTED@result（${p2.href}）`);
+      if (d2 === 'ready') { log(`  stopLoading 后结果标题已在（h3 ${p2.h3Count} 个），放行`); await step(browser, sessionId, 'results:ready-after-stop', { h3Count: p2.h3Count }); return; }
+      throw new Error(`结果页 ${RESULT_WAIT_MS}ms 内未出现结果标题（readyState=${p && p.readyState}，${p && p.href}；已留证并 stopLoading）`);
+    }
     await sleep(500);
   }
 }
@@ -368,7 +588,7 @@ async function captureFullPage(browser, sessionId, outPath, { runGuard = true, b
   await assertNoCaptcha(browser, sessionId, path.basename(outPath));
   let occluded = false, occlusions = [];
   if (runGuard) {
-    const occ = await evaluate(browser, sessionId, OCCLUSION_PROBE_JS).catch(() => ({ remaining: [] }));
+    const occ = await evaluate(browser, sessionId, OCCLUSION_PROBE_JS, 'occlusion-probe').catch(() => ({ remaining: [] }));
     occlusions = (occ && occ.remaining) || [];
     occluded = occlusions.length > 0;
     if (occluded) log(`[遮挡告警] ${outPath} 检测到遮挡：${occlusions.join(' | ')}`);
@@ -376,13 +596,21 @@ async function captureFullPage(browser, sessionId, outPath, { runGuard = true, b
   let contentSize = null;
   try { const m = await browser.send('Page.getLayoutMetrics', {}, sessionId, 5000); contentSize = m.cssContentSize || m.contentSize; } catch {}
   const plan = planScreenshot({ beyondViewport, contentHeight: contentSize && contentSize.height });
-  const viewportShot = () => browser.send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false }, sessionId, SHOT_TIMEOUT_MS);
+  const label = `shot:${path.basename(outPath)}`;
+  await step(browser, sessionId, `${label}:start`, { plan: plan.first });
+  // 可见区域截图：单独 12s 超时，超时 stopLoading 后重试一次（sendGuarded）。
+  const viewportShot = () => sendGuarded(browser, sessionId, 'Page.captureScreenshot', { format: 'png', captureBeyondViewport: false }, SHOT_TIMEOUT_MS, label);
   let data, meta = {};
   if (plan.first === 'full_page') {
     try {
+      // 整页只试一次：它的"重试"就是退回可见区域截图。
       const shot = await browser.send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: true, fromSurface: true }, sessionId, SHOT_TIMEOUT_MS);
       data = shot.data; meta = { mode: 'full_page', width: contentSize ? Math.round(contentSize.width) : VIEWPORT.width, height: contentSize ? Math.round(contentSize.height) : VIEWPORT.height };
     } catch (e) {
+      if (isCdpTimeout(e)) {
+        const stall = await handleStall(browser, sessionId, label, { what: `整页截图 ${SHOT_TIMEOUT_MS}ms 无回应`, method: 'Page.captureScreenshot(full)', timeoutMs: SHOT_TIMEOUT_MS });
+        stall.outcome = '退回可见区域截图'; flushLog();
+      }
       log(`  整页截图失败（${e.message}），退回只截可见区域`);
       const shot = await viewportShot();
       data = shot.data; meta = { mode: 'viewport_only', ...VIEWPORT, note: `整页截图失败退回：${e.message}` };
@@ -405,7 +633,7 @@ async function triggerSuggest(browser, sessionId, word) {
     const r = inp.getBoundingClientRect();
     return { ok:true, x: Math.round(r.left+r.width/2), y: Math.round(r.top+r.height/2) };
   })()`;
-  const f = await evaluate(browser, sessionId, focusJS);
+  const f = await evaluate(browser, sessionId, focusJS, 'suggest-focus');
   if (!f || !f.ok) throw new Error('未找到百度搜索框');
   await browser.send('Input.dispatchMouseEvent', { type: 'mousePressed', x: f.x, y: f.y, button: 'left', clickCount: 1 }, sessionId).catch(() => {});
   await browser.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: f.x, y: f.y, button: 'left', clickCount: 1 }, sessionId).catch(() => {});
@@ -470,20 +698,27 @@ function renderManifest(query, results) {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (args.help) {
-    console.log('用法：node engine/collect/baidu-demand.mjs --query "<搜索词>" --out "<产物目录>" [--port <端口，默认自动>] [--system-proxy]');
+    console.log('用法：node engine/collect/baidu-demand.mjs --query "<搜索词>" --out "<产物目录>" [--port <端口，默认自动>] [--proxy <地址，如 127.0.0.1:7897> | --system-proxy]');
     process.exit(0);
   }
   if (args.error) fail(args.error);
   const OUT_DIR = path.isAbsolute(args.out) ? args.out : path.resolve(REPO_ROOT, args.out);
   mkdirSync(OUT_DIR, { recursive: true });
-  const chromeInfo = await launchOwnChrome(args.port, { systemProxy: !!args.systemProxy });
+  RUN.outDir = OUT_DIR; RUN.query = args.query; RUN.proxyMode = proxyMode(args);
+  log(`网络：${RUN.proxyMode}`);
+  recordStep('launch:start', { proxy_mode: RUN.proxyMode });
+  const chromeInfo = await launchOwnChrome(args.port, { systemProxy: !!args.systemProxy, proxy: args.proxy || null });
+  recordStep('launch:ready', { port: chromeInfo.port, pid: chromeInfo.child.pid });
   let browser = null;
-  const results = [];
+  const results = RUN.results;
   let hardStop = false;
 
   try {
     browser = new CDP(await connectWs(chromeInfo.version.webSocketDebuggerUrl));
+    installDialogGuard(browser);
     const page = await newPage(browser);
+    RUN.targetId = page.targetId;
+    await step(browser, page.sessionId, 'page:ready');
 
     // 1) 下拉联想词（主词优先；联想少时补试等价长尾词）
     const MAIN_WORD = args.query;
@@ -493,12 +728,14 @@ async function main() {
       await gotoAndSettle(browser, page.sessionId, 'https://www.baidu.com/', 2500);
       await assertNoCaptcha(browser, page.sessionId, 'suggest-home');
       await triggerSuggest(browser, page.sessionId, word);
-      const probe = await evaluate(browser, page.sessionId, SUGGEST_PROBE_JS).catch(() => ({ visible: false, items: [] }));
+      await step(browser, page.sessionId, 'suggest:typed', { word });
+      const probe = await evaluate(browser, page.sessionId, SUGGEST_PROBE_JS, 'suggest-probe').catch(() => ({ visible: false, items: [] }));
       log(`  下拉词 ${probe.count} 条：${(probe.items || []).join(' / ')}`);
       const fn = `baidu-suggest-${safeName(word)}.png`;
       const outPath = path.join(OUT_DIR, fn);
       const cap = await captureFullPage(browser, page.sessionId, outPath, { runGuard: false, beyondViewport: false });
       results.push({ kind: 'suggest', word, file: fn, ...cap, suggestItems: probe.items, suggestCount: probe.count, inputValue: probe.inputValue });
+      await step(browser, page.sessionId, `shot:${fn}:done`, { bytes: cap.bytes, mode: cap.mode });
       log(`  截图落盘：${fn}（${cap.bytes} 字节）`);
       if (word === MAIN_WORD && probe.count >= 4) { log('  主词下拉词充足，跳过备选词'); break; }
     }
@@ -514,26 +751,29 @@ async function main() {
       const related=[]; document.querySelectorAll('[class*="rs"] a, #rs a, [class*="relat"] a').forEach(a=>{const t=(a.innerText||'').trim(); if(t) related.push(t);});
       return { resultCount: m?m[1]:null, topTitles: titles.slice(0,6), related:[...new Set(related)].slice(0,12) };
     })()`;
-    const rinfo = await evaluate(browser, page.sessionId, resultInfoJS).catch(() => ({}));
+    const rinfo = await evaluate(browser, page.sessionId, resultInfoJS, 'result-info').catch(() => ({}));
     log(`  相关结果约 ${rinfo.resultCount || '未取到'} 个；前几条标题 ${(rinfo.topTitles || []).length} 条；相关搜索 ${(rinfo.related || []).length} 词`);
     const rfn = `baidu-result-${safeName(args.query)}.png`;
     const rPath = path.join(OUT_DIR, rfn);
     const rcap = await captureFullPage(browser, page.sessionId, rPath, { runGuard: true, beyondViewport: true });
     results.push({ kind: 'result', word: args.query, file: rfn, ...rcap, ...rinfo });
+    await step(browser, page.sessionId, `shot:${rfn}:done`, { bytes: rcap.bytes, mode: rcap.mode });
     log(`  截图落盘：${rfn}（${rcap.bytes} 字节，${rcap.mode}）`);
 
     // 3) 相关搜索特写
     if ((rinfo.related || []).length > 0) {
-      await evaluate(browser, page.sessionId, `(() => { const rs=document.querySelector('#rs, [class*="rs_"], [class*="relat"]'); if(rs) rs.scrollIntoView({block:'center'}); else window.scrollTo(0, document.body.scrollHeight); return true; })()`).catch(() => {});
+      await evaluate(browser, page.sessionId, `(() => { const rs=document.querySelector('#rs, [class*="rs_"], [class*="relat"]'); if(rs) rs.scrollIntoView({block:'center'}); else window.scrollTo(0, document.body.scrollHeight); return true; })()`, 'scroll-related').catch(() => {});
       await sleep(1000);
       const relfn = `baidu-related-${safeName(args.query)}.png`;
       const relPath = path.join(OUT_DIR, relfn);
       const relcap = await captureFullPage(browser, page.sessionId, relPath, { runGuard: false, beyondViewport: false });
       results.push({ kind: 'related', word: args.query, file: relfn, ...relcap, related: rinfo.related });
+      await step(browser, page.sessionId, `shot:${relfn}:done`, { bytes: relcap.bytes, mode: relcap.mode });
       log(`  相关搜索特写截图：${relfn}（${relcap.bytes} 字节）`);
     }
 
-    await browser.send('Target.closeTarget', { targetId: page.targetId }).catch(() => {});
+    await browser.send('Target.closeTarget', { targetId: page.targetId }, undefined, 5000).catch(() => {});
+    recordStep('page:closed');
   } catch (e) {
     if (String(e.message).startsWith('CAPTCHA_DETECTED')) {
       log(`[硬停] 检测到百度人机验证：${e.message}。未绕过，本次停止采集。`);
@@ -543,9 +783,10 @@ async function main() {
       log('采集异常：' + (e.stack || e.message));
       results.push({ kind: 'error', reason: e.message });
     }
+    recordStep('aborted', { reason: e.message });
   }
 
-  writeFileSync(path.join(OUT_DIR, '_capture-log.json'), JSON.stringify({ generated_at: new Date().toISOString(), query: args.query, results }, null, 2), 'utf8');
+  flushLog();
   const hasResult = results.some((r) => r.kind === 'result');
   if (hasResult) {
     writeFileSync(path.join(OUT_DIR, 'demand-manifest.md'), renderManifest(args.query, results), 'utf8');
@@ -554,6 +795,7 @@ async function main() {
   log('结果日志：' + path.join(OUT_DIR, '_capture-log.json'));
   await closeOwnChrome(browser, chromeInfo);
   if (browser) browser.close();
+  recordStep('exit', { hasResult, hardStop });
   // 有结果页即视为成功产出；验证码硬停或无结果 → 非0（上游按需求层缺口降级，不致命）。
   process.exit(hasResult && !hardStop ? 0 : 2);
 }
