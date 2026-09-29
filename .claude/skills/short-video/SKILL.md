@@ -42,7 +42,7 @@ description: 写 60–90 秒闲鱼短视频口播稿（圣矾本人口吻、钱�
 
 **要去闲鱼实搜（topic-scan）时**，搜索词怎么定、搜完怎么对题核对，按 `.claude/skills/daily-write/SKILL.md` 第 4 节两条规矩来，不再重复。
 
-**要用百度需求佐证 / 货源证据 / 教程演示时**，按 `.claude/skills/daily-write/SKILL.md` 第 4.2 节的规矩来（只搜公开页面截图、对题核对、网址不上屏）。
+**要用百度需求佐证 / 货源证据 / 教程演示时**，按 `.claude/skills/daily-write/SKILL.md` 第 4.2 节的规矩来（只搜公开页面截图、对题核对、网址不上屏）；缺百度/谷歌需求截图时同样按那一节写 `<slug>/_inbox/shot-requests.json` 发请求，不自己硬搜，也读该选题 `topic.json` 的 `shotRequests[]`（`status:"done"` 的图优先用）。
 
 ## 3. 排组合表（写之前）
 

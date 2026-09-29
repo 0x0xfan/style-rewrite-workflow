@@ -111,7 +111,7 @@ node engine/collect/srt-frames.mjs --video "<mp4 路径>" --times <时:分:秒>,
 
 **素材按这个顺序找，前面有就不往后走（用户 2026-09-26 定）：**
 1. **原片截图**（SRT 入口，第 1A 节第三步截的 `素材/原片/`）。画面里看得到的闲鱼数可以用：打开图亲眼核对，说明.md 写清每个数对应哪张图、哪个时间点。
-2. **先查素材库**（用户 2026-09-28 定）：视频项目 `D:\项目仓库\remotion视频制作\public\ips\xianyu-fanshen\assets\<slug>\topic.json` 有这个品（对 `name` / `slug`），或素材清单 `ips\xianyu-fanshen\assets\manifest.json` 里这个 slug 下有 `source=manual` 的用户图，就先用用户的图和关键词：图里的数照样打开图亲眼核对、说明.md 写清对应哪张图（manifest 的 path）；`needsMask: true`、`status` 是 `pending-tag` / `privacy-hold`、路径在 `_inbox` 里的图，数可以核对着用，但在说明.md 的"待人工看的图"里列出来，不直接交视频项目；要实搜时搜索词优先用 `topic.json` 的 `keywords`（用户给的词，算用户确认过）。用户说过"二次整理"的，整理结果也在这里（`.claude/skills/material-organize/SKILL.md`）。视频仓库只读。
+2. **先查素材库**（用户 2026-09-28 定）：视频项目 `D:\项目仓库\remotion视频制作\public\ips\xianyu-fanshen\assets\<slug>\topic.json` 有这个品（对 `name` / `slug`），或素材清单 `ips\xianyu-fanshen\assets\manifest.json` 里这个 slug 下有 `source=manual` 的用户图，就先用用户的图和关键词：图里的数照样打开图亲眼核对、说明.md 写清对应哪张图（manifest 的 path）；`needsMask: true`、`status` 是 `pending-tag` / `privacy-hold`、路径在 `_inbox` 里的图，数可以核对着用，但在说明.md 的"待人工看的图"里列出来，不直接交视频项目；要实搜时搜索词优先用 `topic.json` 的 `keywords`（用户给的词，算用户确认过）。用户说过"二次整理"的，整理结果也在这里（`.claude/skills/material-organize/SKILL.md`）。**同时读一遍 `topic.json` 的 `shotRequests[]`**（搜索引擎需求截图槽位，见 4.2 节）：`status:"done"` 的那几条，`files[]` 里的图是员工/用户已经人工截好的搜索引擎需求证据，当用户素材优先用，跟别的截图一样打开图亲眼核对数、说明.md 写清对应哪个槽位（keyword/view）、哪张图；`status:"todo"` 的记下缺哪几类，4.2 节据此决定要不要再发或不用重发。视频仓库只读。
    - 为什么排在原片截图后、现成截图前：原片是这期视频本身的画面，最权威；素材库是用户为这个品亲手搜的，比以前别的稿子留下的截图新、也更对题；现成截图可能是旧的、别的角度的。选题卡入口没有原片，就从这一条开始。
 3. **现成截图**：这个选题以前做过的话，`research-runs/*<选题>*/delivery/*/` 下通常已有打过码的闲鱼截图和 `assets.md` 清单（视频项目出片也用这批图）。有就直接用，不重搜；稿里每个数只从这些图里取、打开图亲眼核对，说明.md 写清每个数对应 assets.md 哪一行、哪张图。
 4. 前三样都没有、或者没有稿里要用的闲鱼数，才跑下面的 topic-scan 实搜。
@@ -140,6 +140,23 @@ node engine/collect/baidu-demand.mjs --query "<搜索词>" --out "research-runs/
 - 遇人机验证：工具硬停，直接跳过，不绕。
 - 工具自己开一个百度专用 Chrome（独立 profile，跑完自动关，不碰闲鱼采集 Chrome），默认直连不走系统代理（本机代理下百度页面打不开）；确需走代理加 `--system-proxy`。
 - 目前百度页面偶尔会卡住不动导致超时（2026-09-28 未修完）：失败一次就记下跳过，不反复试；说明.md 里写一句"百度未采集，原因"。
+
+**搜索引擎需求截图改由人工截（用户 2026-09-29 定）：** 程序去搜百度/谷歌会被人机验证拦，不绕过。所以上面 `baidu-demand.mjs` 照常先试一次；**不论这次成功还是失败**，只要本期缺某类需求截图证据——百度三屏（`suggest` 下拉联想词 / `results-top` 结果首屏 / `related` 底部相关搜索）里缺的那几屏，或者这个选题本来就该用谷歌（比如讲韩剧、外区账号这类国内百度搜不到需求的题）——就在交付时（第 9 节落 NAS 的同一步）写请求，不是自己硬搜：
+
+1. 视频项目该选题的 `topic.json` 存在（`D:\项目仓库\remotion视频制作\public\ips\xianyu-fanshen\assets\<slug>\topic.json`，slug 对不上就按 `.claude/skills/material-organize/SKILL.md` 第 0 节的办法找/确认）。**slug 还不存在**（新品还没进素材池）：这一步先不发请求，在说明.md 里写清"这个品还没进素材池，先请控制台那边建选题或走 `_inbox` 首次入池，之后再补发待补截图请求"，回报里提一句，不自己去建 `topic.json`（那是视频项目单写者的地盘）。
+2. slug 存在时，**先读一遍该选题现有的 `shotRequests[]`**（只读，见下条和第 4 节）：`engine+keyword+view` 已经有一条且 `status:"done"` 的，不重复发；`status:"todo"` 的不用再发一遍（避免重复登记，`import-inbox.mjs` 本来也会按这三个字段去重，但省一次无意义的写文件）。
+3. 要发的，把新槽位追加进（不覆盖，没有就新建）`D:\项目仓库\remotion视频制作\public\ips\xianyu-fanshen\assets\<slug>\_inbox\shot-requests.json`（数组），每条：
+   ```json
+   { "engine": "baidu", "keyword": "<用户确认过的搜索词>", "view": "suggest", "viewNote": "", "note": "证明有人在找", "usage": "demand" }
+   ```
+   - `engine`：`baidu` / `google` / `bing` / `other`。
+   - `keyword`：只用第 4.1 节里用户确认过的搜索词，不自己想新词。
+   - `view`：`suggest`（下拉联想词）/ `results-top`（结果首屏）/ `related`（底部相关搜索）/ `other`；**`view` 填 `other` 时 `viewNote` 必填**，写清具体截哪块。
+   - `note`：写清为什么要这张（比如"证明有人在找"、"证明是韩剧类目，国内搜索引擎搜不到，要用谷歌"）。
+   - `usage`：这次要的是需求佐证就填 `demand`；也可能是 `supply`/`tutorial`/`misc`，按实际要证明什么填。
+   - 整批只要有一条字段不合法（缺字段、枚举值不对）就全不登记——`import-inbox.mjs` 校验失败退出码 1、预演和 `--apply` 都不写，所以自己先对着上面枚举核一遍，不要交给对方去发现。
+4. 我们**不跑** `import-inbox.mjs`——登记是视频项目那边的事。交付时在说明.md 里列一节"已发的待补截图"（选题｜engine｜keyword｜view｜为什么），并在回报里提一句"已写 `<slug>/_inbox/shot-requests.json`，通知控制台会话或请用户转告去跑 import-inbox"。
+5. 遇到百度人机验证，第 4.1 节自动采集那条命令照旧硬停、不绕过；这条"发请求"是补救办法，不是替代——能自动采到的还是优先自动采。
 
 **货源证据（supply）：** 这个品的货从哪来——按品判断去哪找，不是每期都一样：
   - 开源项目类（比如 AI 代部署）→ 找它的 GitHub 仓库页。
