@@ -33,8 +33,9 @@ description: 写聊天记录式竖屏短视频文案（画面是手机聊天记�
 ## 2. 取材
 
 沿用 `.claude/skills/short-video/SKILL.md` 第 2 节，不另立规矩：
+- **产品题先看有没有选题核心**：照 short-video 第 2 节开头那条——讲产品的选题先查 `docs/每日/选题核心/<选题>.md`，存在就读它取"钱从哪来""不能说的"这些，不用重新定调子；不存在就直接按 SRT 走，不为聊天记录单独开确认门（这一条和产品题是一份共用核心，短视频/聊天记录都不单独出）。
 - **SRT 类**：照 short-video 第 2 节「SRT 类」（SRT 路径、`research-runs/<期>/事实卡-终版.md`、视频项目素材池 `ips/xianyu-fanshen/assets/manifest.json` 优先选有截图能对上的数）。找 SRT 用 `npm run srt:find`（copy-pipeline 里那条）。
-- **知识类**：照 short-video 第 2 节「知识类」（`docs/真人语料包/总表.md` 只用"可用"堆、写前读原文；经验库只从 `node engine/brief/pick-experience.mjs --subtype <资料类|代办服务类|软件账号类> --out <文件>` 的候选里挑）。
+- **知识类（不设门）**：照 short-video 第 2 节「知识类」（`docs/真人语料包/总表.md` 只用"可用"堆、写前读原文；经验库只从 `node engine/brief/pick-experience.mjs --subtype <资料类|代办服务类|软件账号类> --out <文件>` 的候选里挑）。知识类选题的"核心"就是用到的经验库条目本身，不设用户确认门。
 - **闲鱼数据**：想要人数、浏览数、标价只能来自实际截图（SRT 原片截图、素材池现成截图、`research-runs` 实采）。都没有就停下报告，不写这条；要实搜走 daily-write 4.1 的 `npm run scan:topic`，先问用户。截图要解码、查尺寸和 SHA-256 才算有效（AGENTS.md）。实搜时搜索词怎么定、搜完怎么对题核对，同样按 daily-write 第 4 节两条规矩来，不重复。
 - **先查素材库**：这个品在视频项目素材库有 `topic.json` 或用户上传的图（`source=manual`），先用用户的图和关键词，规矩照 daily-write 第 4 节素材顺序第 2 条（`needsMask`、待打码、`_inbox` 里的图不直接进素材清单）；二次整理补来的图见 `.claude/skills/material-organize/SKILL.md`。
 - **要用百度需求佐证 / 货源证据 / 教程演示时**，按 daily-write 第 4.2 节的规矩来（讲产品的稿如果要证明"货从哪来"可以用一张 supply 截图，讲经验的稿一般用不上）；缺百度/谷歌需求截图时同样按那一节写 `<slug>/_inbox/shot-requests.json` 发请求，不自己硬搜，也读该选题 `topic.json` 的 `shotRequests[]`（`status:"done"` 的图优先用）。
