@@ -19,7 +19,7 @@
 | **新会话先看：整条文案流程（两个入口：SRT 优先 / 选题卡）** | `.claude/skills/copy-pipeline/SKILL.md` |
 | **每天排今日选题（9 账号 + 3 真人出镜）、分批派写稿、汇总登记** | `.claude/skills/daily-plan/SKILL.md` |
 | 写稿（长稿 / 短稿） | `.claude/skills/daily-write/SKILL.md` |
-| 写 60–90 秒口播短视频 | `.claude/skills/short-video/SKILL.md` |
+| 写 1–2 分钟竖版口播短视频（含真人出镜） | `.claude/skills/short-video/SKILL.md` |
 | 写聊天记录式短视频（手机聊天画面、无配音） | `.claude/skills/chat-record/SKILL.md` |
 | 审稿：开头 / 流畅度 / 共鸣 / 传播 / 发布风险 | `.claude/skills/` 下 `dbs-hook`、`dbs-script-flow`、`dbs-resonate`、`dbs-spread`、`dbs-content-risk-check` 的 `SKILL.md` |
 | 素材库二次整理（用户放了截图/链接/关键词，说"二次整理 XX"） | `.claude/skills/material-organize/SKILL.md` |
