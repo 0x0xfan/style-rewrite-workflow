@@ -252,7 +252,7 @@ node engine/brief/pick-experience.mjs --subtype <选题核心上的虚拟子类>
 3. 框架句：按本篇讲法写，一句话告诉观众这期怎么走（见下表，机器不再查框架句的写法）。
 4. `这期视频干货非常多，建议先点赞收藏。`
 5. 正文：按该篇写法定的讲法走，把该篇写法那三四条经验讲透（写法见 6.1）。
-6. 结尾五行：一句交底（`前面这些数是我推算的流水，没扣成本。`，全篇只说这一次）→ `算不算违规，上架之前自己去搜一下平台规则。` → 资料钩子两行 → 固定收尾句。
+6. 结尾五行：一句交底（**只在稿里确实有推算的流水时才说，且要点明是哪个数**，如 `前面说的一天几十块，是我推算的流水，没扣成本。`；稿里的数是用户账本实际利润、或只是同行页面标价时，不说"推算"，改说与实际相符的口径句（如 `前面这个数是我账本上的实际利润。` / `前面这些价是同行页面上的标价，不是成交。`）或干脆不说；要说就全篇只说这一次）→ `算不算违规，上架之前自己去搜一下平台规则。` → 资料钩子两行 → 固定收尾句。
    - 资料钩子固定两行，只有〔〕里的内容每期换：
      `最后圣矾给大家准备了〔彩蛋〕，这些资料圣矾分享给大家。`
      `有需要的同学在评论区扣个〔关键词〕，圣矾看到就发给你。`
@@ -454,7 +454,7 @@ npm run check:draft -- <稿> --topic <选题> --topic-type 虚拟 --against "//Z
   ```json
   {"skin":"black-yellow-v2","orientation":"h","lengthTarget":"5min","date":"2026-09-29","topicSlug":"jiakao-ziliao","title":"驾考资料"}
   ```
-  `skin` 只能是 `black-yellow-v2` / `lime-capsule` / `signature-wall` / `ledger-desk`（照派单抄，拼错了中控台「今日任务」配不上账号也不报错）；横版 `lengthTarget` 固定 `5min`；`topicSlug` 是素材库 slug，素材库没有这个品就不写这个字段；`title` 写选题名。用 node 写（`JSON.stringify` + `fs.writeFileSync(…, 'utf8')`），写完 `JSON.parse` 读一遍确认能解析。
+  `skin` 只能是 `black-yellow-v2` / `lime-capsule` / `signature-wall` / `ledger-desk` / `blueprint` / `pixel-arcade`（照派单抄，拼错了中控台「今日任务」配不上账号也不报错）；横版 `lengthTarget` 固定 `5min`；`topicSlug` 是素材库 slug，素材库没有这个品就不写这个字段；`title` 写选题名。用 node 写（`JSON.stringify` + `fs.writeFileSync(…, 'utf8')`），写完 `JSON.parse` 读一遍确认能解析。
 - 素材对照照旧叫 `<YYYYMMDD>-<选题>-<skin>-<h|v>.素材.md`。
 - 同名文件已存在就在末尾加 `-2`，不覆盖。完整规矩见 `.claude/skills/daily-plan/SKILL.md` 第 5 节。
 

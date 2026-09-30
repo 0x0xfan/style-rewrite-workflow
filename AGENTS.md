@@ -7,7 +7,7 @@
 给用户圣矾（做闲鱼虚拟项目的 B 站 UP 主，非技术人员）写口播文案，并连同素材交给视频项目出片。
 
 每天的节奏（2026-09-29 定，取代 09-25 版）：
-1. **9 个账号每天各写一篇存稿 + 3 篇真人出镜**：横版 4 个账号（黑黄 black-yellow-v2 / 荧光绿 lime-capsule / 署名墙 signature-wall / 对账台 ledger-desk，5 分钟、1300–1600 字，daily-write 写法）；竖版 5 个账号（同四套皮肤竖版 + 聊天记录 chat，1–2 分钟、300–600 字，short-video / chat-record 写法）；真人出镜 3 篇（竖版 1–2 分钟，用户自己录，不出片）。横版和竖版是不同账号。
+1. **13 个账号每天各写一篇存稿 + 3 篇真人出镜（共 16 篇）**：横版 6 个账号（黑黄 black-yellow-v2 / 荧光绿 lime-capsule / 署名墙 signature-wall / 对账台 ledger-desk / 蓝图拆解 blueprint / 像素街机 pixel-arcade，5 分钟、1300–1600 字，daily-write 写法）；竖版 7 个账号（同六套皮肤竖版 + 聊天记录 chat，1–2 分钟、300–600 字，short-video / chat-record 写法）；真人出镜 3 篇（竖版 1–2 分钟，用户自己录，不出片）。横版和竖版是不同账号。
 2. **先排「今日选题表」给用户过目**（`daily-plan` 技能，读 `docs/每日/账号选题台账.md`）：选题只两条硬规矩——同一账号不重复；同一天各篇选题不同。横版以产品题为主，竖版和真人出镜可以讲知识题。用户点头再分批派写稿。
 3. 正稿放 NAS「待审文案\<选题>\」，按账号命名，旁边放同名 `.meta.json`（skin / orientation / lengthTarget / date / topicSlug；真人出镜 kind:selfie）；资料放「资料\<选题>\」。用户在中控台「今日任务」逐套审，当晚 AI 出片（真人出镜不出片）。
 4. 员工改稿放 NAS「已用」，改动要逐步减到零（`engine/return/edit-stats.mjs` 看趋势）；已用稿走 `script-return` 技能进视频项目。

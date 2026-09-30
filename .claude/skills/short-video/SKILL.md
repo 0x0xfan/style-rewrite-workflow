@@ -17,7 +17,7 @@ description: 写 1–2 分钟（300–600 字）闲鱼竖版短视频口播稿�
 风格固定：圣矾本人口吻、钱十七线，不用再问"用谁的风格"。
 
 **走每日排选题（`.claude/skills/daily-plan/SKILL.md`）派来的活**：派单里已经给了选题、账号、来源，上面三问不用再问，也不用第 3 节"5 条以上先给用户看组合表"那道门（选题表用户已经确认过）。账号有两种：
-- **竖版皮肤账号**：skin 是 `black-yellow-v2` / `lime-capsule` / `signature-wall` / `ledger-desk` 之一，orientation `v`。照本技能写，出 `.素材.md`。
+- **竖版皮肤账号**：skin 是 `black-yellow-v2` / `lime-capsule` / `signature-wall` / `ledger-desk` / `blueprint` / `pixel-arcade` 之一，orientation `v`。照本技能写，出 `.素材.md`。
 - **真人出镜**（kind selfie，当天第 NN 篇）：用户自己对着镜头录，不出片。口吻、内容规矩和本技能一样；**不出 `.素材.md`**（没有画面要配），第 5c 节跳过；稿里不写"你看这张图""通过图片可以看到"这类指图的话（没有图上屏），闲鱼数据直接说出来（数照样只能来自截图或 SRT）。
 交付命名和 `.meta.json` 见第 6 节。
 
