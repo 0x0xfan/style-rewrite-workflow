@@ -140,9 +140,10 @@ description: 每日排选题 + 分派写稿（2026-09-29 新节奏：13 个账�
   - `skin` 只能是 `black-yellow-v2` / `lime-capsule` / `signature-wall` / `ledger-desk` / `blueprint` / `pixel-arcade` / `chat`，拼错了中控台配不上账号、也不报错（见上）。
   - `orientation`：横版 `h`，竖版和聊天记录 `v`。`lengthTarget`：横版 `5min`，竖版 `1-2min`（系统不读，纯供人看）。`date`：写稿当天。
   - `topicSlug`：素材库 slug；素材库还没有这个品就**不写这个字段**（不编 slug）。`title` 可选，写选题名。
+  - `style`（2026-10-03 加，中控台「今日任务」字数·时长那列的小气泡读它）：风格号横版写风格名——对账台 `钱十七`、像素街机 `半佛`、蓝图拆解 `老王`；其他所有稿（别的横版、全部竖版、聊天记录、真人出镜）写 `常规`（用户 2026-10-03 定）。以后加新风格号，照第 0 节账号表里的风格名写。
 - 真人出镜的 `.meta.json`：
   ```json
-  {"kind":"selfie","orientation":"v","lengthTarget":"1-2min","date":"2026-09-29","title":"新手标题怎么写才搜得到"}
+  {"kind":"selfie","orientation":"v","lengthTarget":"1-2min","date":"2026-09-29","title":"新手标题怎么写才搜得到","style":"常规"}
   ```
   不写 `skin`，不写 `topicSlug`。
 - 同名 `.素材.md`（`<同一个文件名去掉 .txt>.素材.md`）照旧可以放在正稿旁边（真人出镜不用放）；说明.md、截图、字幕等其他资料放 `资料\<选题>\`。
