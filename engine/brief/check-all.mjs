@@ -178,10 +178,11 @@ const STRUCTURE = {
     const b = bodyLines(lines);
     const idx = (words) => { let k = -1; b.forEach((x, i) => { if (words.some((w) => x.text.includes(w))) k = i; }); return k; };
     const firstIdx = (words) => b.findIndex((x) => words.some((w) => x.text.includes(w)));
-    const comp = idx(p.合规词);
+    const needComp = (p.合规词 || []).length > 0;
+    const comp = needComp ? idx(p.合规词) : -1;
     const hook = firstIdx(p.钩子词);
     const out = [];
-    if (comp < 0) out.push(hit(b[b.length - 1]?.line || 1, '没看到合规提醒句（平台规则 / 违规）'));
+    if (needComp && comp < 0) out.push(hit(b[b.length - 1]?.line || 1, '没看到合规提醒句（平台规则 / 违规）'));
     if (hook < 0) out.push(hit(b[b.length - 1]?.line || 1, '没看到资料钩子（评论区）'));
     if (comp >= 0 && hook >= 0 && comp > hook) out.push(hit(b[comp].line, `合规提醒（第 ${b[comp].line} 行）在钩子（第 ${b[hook].line} 行）之后`));
     if (hook >= 0 && hook >= b.length - 1) out.push(hit(b[hook].line, '钩子在收尾句之后'));
