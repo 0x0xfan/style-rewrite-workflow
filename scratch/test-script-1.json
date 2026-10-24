@@ -1,0 +1,55 @@
+{
+  "slug": "topic-mvarxw8j",
+  "selectedAngle": {
+    "id": "ANGLE_1_PASSIVE_DELIVERY",
+    "title": "轻资产网盘秒发流 (大众低门槛躺赚)",
+    "rationale": "针对零基础新手，以六万多单店铺销量切入，结合原创防盗水印刚需与现成模板自动发货加轻量定制，完播与转化最高。"
+  },
+  "scenes": [
+    {
+      "sceneId": "S01",
+      "role": "HOOK_BREAK_BIAS",
+      "voiceover": "别再以为小众虚拟资料赚不到钱了。\n你看这种原创防盗水印，在闲鱼标价一块到三块钱，全店卖出六万多单，近千人想要。",
+      "visualAsset": "ips/xianyu-fanshen/assets/topic-mvarxw8j/market/02-top1-detail.clean.png",
+      "highlightTarget": null,
+      "estimatedDurationSec": 8.0,
+      "emotionTone": "颠覆、紧迫、打破偏见"
+    },
+    {
+      "sceneId": "S02",
+      "role": "MARKET_VALIDATION",
+      "voiceover": "很多摄影师和小红书博主怕作品被盗，在全网日搜超四百三十万次。\n这种专属透明印章模板，精准击中了原创作者的防盗图痛点。",
+      "visualAsset": "ips/xianyu-fanshen/assets/topic-mvarxw8j/demand/02-douyin-index.clean.png",
+      "highlightTarget": "facts.douyinTrend",
+      "estimatedDurationSec": 10.0,
+      "emotionTone": "权威、大盘刚需、痛点确权"
+    },
+    {
+      "sceneId": "S03",
+      "role": "COMMERCIAL_PROOF_AND_NICHES",
+      "voiceover": "闲鱼搜索下拉词里，像古风稿风、少女微商水印全是精准长尾。\n现成模板卖一到三块钱，代做名字定制一单五到十块钱。",
+      "visualAsset": "ips/xianyu-fanshen/assets/topic-mvarxw8j/demand/04-xianyu-search-dropdown.clean.png",
+      "highlightTarget": "facts.subNiches",
+      "estimatedDurationSec": 12.0,
+      "emotionTone": "揭秘、细分长尾、商业空间"
+    },
+    {
+      "sceneId": "S04",
+      "role": "SOURCING_AND_AUTO_DELIVERY",
+      "voiceover": "模板拍下自动秒发网盘，定制就用美图秀秀帮客户改个名字发图。\n主图放实机防盗图效果对比，突出简单一键添加，转化率极高。",
+      "visualAsset": "ips/xianyu-fanshen/assets/topic-mvarxw8j/supply/02-seller-deliverable-thumb-1.png",
+      "highlightTarget": "facts.autoDelivery",
+      "estimatedDurationSec": 14.0,
+      "emotionTone": "解密、极速履约、实操交付"
+    },
+    {
+      "sceneId": "S05",
+      "role": "CALL_TO_ACTION",
+      "voiceover": "记住我们正面宣传原创防盗，严禁碰破解去水印的违规黑产。\n新手第一步，先整理一套常用透明底图，练熟名字排版。\n把简单的事情做扎实，零库存也能持续产生收益。\n我是圣矾，一个在闲鱼摸爬滚打多年的老卖家。\n学闲鱼，找圣矾。",
+      "visualAsset": "ips/xianyu-fanshen/assets/topic-mvarxw8j/market/08-expand-search-dingzhi.png",
+      "highlightTarget": null,
+      "estimatedDurationSec": 14.0,
+      "emotionTone": "笃定、升华、号召行动"
+    }
+  ]
+}

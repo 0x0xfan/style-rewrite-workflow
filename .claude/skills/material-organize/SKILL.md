@@ -97,8 +97,9 @@ manifest 图片条目：`path`、`description`、`usage`、`tags`、`source`（m
 - 已发的待补截图（engine｜keyword｜view｜为什么），没发就不用这条。
 - 品理解里"待问用户"的几条（一次只问最要紧的一件）。
 - 建议下一步，给选项带推荐：
-  1. 让视频项目那边跑 `node scripts/assets/import-inbox.mjs --topic <slug>`（先预演，再 `--apply`）把收件箱登记进素材库；
-  2. 素材够了就直接写稿（长稿 daily-write、口播短视频 short-video、聊天记录 chat-record），写稿时按 daily-write 第 4 节"先查素材库"那条用这批图。
+  1. 让视频项目那边跑 `node scripts/assets/process-topic-pipeline.mjs --slug <slug>`（执行 S0 全流程资产管线：商业解构 deconstruct.json、生成纯净切片与归一化 ROI、facts.json 体感转译、以买代采指南 sourcing.json、同步 manifest）；
+  2. S0 资产就绪后，直接进入短视频 v2.0 事实驱动分镜写稿（`short-video` 技能读取 `deconstruct.json` 和 `facts.json`，跑 `npm run check:script-v2` 校验）；
+  3. 若需出长稿，则按 `daily-write` 规范使用素材。
 - 工作目录路径（`读入清单.md`、`品理解.md`、搜索产物）和收件箱路径。
 
 ## 禁止

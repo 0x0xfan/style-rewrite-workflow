@@ -1,0 +1,154 @@
+=== D:/项目仓库/风格仿写/.claude/worktrees/agent-a06faa8f4bb074da5 [worktree-agent-a06faa8f4bb074da5]
+-- HEAD: b541191 2026-09-25 新增 topic-scan：按选题词一键查闲鱼数据+截图，给每日写稿流程用
+-- status:
+?? scratch/
+-- status count: 1
+-- log tuning-copy-style..worktree-agent-a06faa8f4bb074da5:
+b541191 2026-09-25 新增 topic-scan：按选题词一键查闲鱼数据+截图，给每日写稿流程用
+-- cherry:
++ b5411915e3052f337f055a41d6ee2184fa10d57e
+-- merge-base is ancestor-of-tcs: no
+=== D:/项目仓库/风格仿写/.claude/worktrees/agent-a0941134af47bac69 [worktree-agent-a0941134af47bac69]
+-- HEAD: 625ae34 2026-09-27 开头改按 dbs-hook 三法：新建开头样板，daily-write 开头部分重写，R002/R003/R005 同步
+-- status:
+-- status count: 0
+-- log tuning-copy-style..worktree-agent-a0941134af47bac69:
+625ae34 2026-09-27 开头改按 dbs-hook 三法：新建开头样板，daily-write 开头部分重写，R002/R003/R005 同步
+-- cherry:
+- 625ae34fce527f87ba61348a27ee2f80399174ee
+-- merge-base is ancestor-of-tcs: no
+=== D:/项目仓库/风格仿写/.claude/worktrees/agent-a1115dd4251be5e78 [worktree-agent-a1115dd4251be5e78]
+-- HEAD: e7ede19 2026-09-25 闲鱼采集截图前等商品图懒加载完成，修复卡片图区空白
+-- status:
+?? scratch/
+-- status count: 1
+-- log tuning-copy-style..worktree-agent-a1115dd4251be5e78:
+e7ede19 2026-09-25 闲鱼采集截图前等商品图懒加载完成，修复卡片图区空白
+-- cherry:
+- e7ede19ccbfe7f0164e24df694f5478ac7e88e38
+-- merge-base is ancestor-of-tcs: no
+=== D:/项目仓库/风格仿写/.claude/worktrees/agent-a2c06876676300c32 [worktree-agent-a2c06876676300c32]
+-- HEAD: 499eb54 2026-09-26 daily-write 加 SRT 入口（优先）：srt-find 按期号找 SRT/原片并转字幕.txt；技能加 1A 节（填选题卡附原话时间戳、原片截图、同期旧稿换讲法）、素材优先级改为原片/现成截图→实搜
+-- status:
+-- status count: 0
+-- log tuning-copy-style..worktree-agent-a2c06876676300c32:
+499eb54 2026-09-26 daily-write 加 SRT 入口（优先）：srt-find 按期号找 SRT/原片并转字幕.txt；技能加 1A 节（填选题卡附原话时间戳、原片截图、同期旧稿换讲法）、素材优先级改为原片/现成截图→实搜
+-- cherry:
+- 499eb54549013337046e0136f73e6c8855581f49
+-- merge-base is ancestor-of-tcs: no
+=== D:/项目仓库/风格仿写/.claude/worktrees/agent-a335bf5cb3deed384 [worktree-agent-a335bf5cb3deed384]
+-- HEAD: e495d03 2026-09-26 修资料钩子语病：量词不写死在模板里，随彩蛋自带
+-- status:
+-- status count: 0
+-- log tuning-copy-style..worktree-agent-a335bf5cb3deed384:
+e495d03 2026-09-26 修资料钩子语病：量词不写死在模板里，随彩蛋自带
+-- cherry:
+- e495d034cd6fdfe5b9e9fd5e8295cc28bf85285f
+-- merge-base is ancestor-of-tcs: no
+=== D:/项目仓库/风格仿写/.claude/worktrees/agent-a3b96400f7e289e66 [worktree-agent-a3b96400f7e289e66]
+-- HEAD: 360e060 2026-09-25 daily-write skill：Gemini 每日写稿流程（选题卡 → 闲鱼实搜 → 长稿/短稿 → 自检 → NAS 交付 → 登记）
+-- status:
+-- status count: 0
+-- log tuning-copy-style..worktree-agent-a3b96400f7e289e66:
+360e060 2026-09-25 daily-write skill：Gemini 每日写稿流程（选题卡 → 闲鱼实搜 → 长稿/短稿 → 自检 → NAS 交付 → 登记）
+-- cherry:
+- 360e060949e558ede517191065528ed2874b5933
+-- merge-base is ancestor-of-tcs: no
+=== D:/项目仓库/风格仿写/.claude/worktrees/agent-a6ccdeda3c7661fc5 [worktree-agent-a6ccdeda3c7661fc5]
+-- HEAD: 41c7525 2026-09-26 闲鱼经验库逐条贴适用标签：483 条（通用 337 / 实物专用 82 / 虚拟专用 64），另出 22 条拿不准的给用户确认
+-- status:
+-- status count: 0
+-- log tuning-copy-style..worktree-agent-a6ccdeda3c7661fc5:
+41c7525 2026-09-26 闲鱼经验库逐条贴适用标签：483 条（通用 337 / 实物专用 82 / 虚拟专用 64），另出 22 条拿不准的给用户确认
+-- cherry:
+- 41c7525777be93014b946c00e43ed629344dddf5
+-- merge-base is ancestor-of-tcs: no
+=== D:/项目仓库/风格仿写/.claude/worktrees/agent-a6d507fa974c3b003 [worktree-agent-a6d507fa974c3b003]
+-- HEAD: 5888804 2026-09-27 daily-write：接 09-27 写稿新规矩（稿件类型分角度、信任素材、来之不易故事、小白场景、故事登记）
+-- status:
+-- status count: 0
+-- log tuning-copy-style..worktree-agent-a6d507fa974c3b003:
+5888804 2026-09-27 daily-write：接 09-27 写稿新规矩（稿件类型分角度、信任素材、来之不易故事、小白场景、故事登记）
+-- cherry:
+- 5888804a55963655f93e96e97b7c7356d3b679ac
+-- merge-base is ancestor-of-tcs: no
+=== D:/项目仓库/风格仿写/.claude/worktrees/agent-a8ac388581b0720a2 [worktree-agent-a8ac388581b0720a2]
+-- HEAD: ca75f4e 2026-09-25 新增员工改稿计数命令 edit-stats.mjs
+-- status:
+-- status count: 0
+-- log tuning-copy-style..worktree-agent-a8ac388581b0720a2:
+ca75f4e 2026-09-25 新增员工改稿计数命令 edit-stats.mjs
+-- cherry:
+- ca75f4e42a54236a587f4c46da4f91adad618751
+-- merge-base is ancestor-of-tcs: no
+=== D:/项目仓库/风格仿写/.claude/worktrees/agent-ab37fc661f35ad670 [worktree-agent-ab37fc661f35ad670]
+-- HEAD: f707d3c 2026-09-26 把"观众是不懂闲鱼、想赚钱的小白"写进写稿流程：daily-write 加观众定位、核心卡观众行、小白开头（正反例）、术语随讲随解释、经验从"刚开始做"角度讲、自检加小白检查；核心卡模板补观众行；audience-lock.md 状态改为已确认；审稿清单加小白检查；short-video 补观众定位
+-- status:
+-- status count: 0
+-- log tuning-copy-style..worktree-agent-ab37fc661f35ad670:
+f707d3c 2026-09-26 把"观众是不懂闲鱼、想赚钱的小白"写进写稿流程：daily-write 加观众定位、核心卡观众行、小白开头（正反例）、术语随讲随解释、经验从"刚开始做"角度讲、自检加小白检查；核心卡模板补观众行；audience-lock.md 状态改为已确认；审稿清单加小白检查；short-video 补观众定位
+-- cherry:
+- f707d3c57b26fbbfe8358bdcb049e241325d3c82
+-- merge-base is ancestor-of-tcs: no
+=== D:/项目仓库/风格仿写/.claude/worktrees/agent-abb54fc52595012e0 [worktree-agent-abb54fc52595012e0]
+-- HEAD: c988524 2026-09-26 新增 srt-frames.mjs：按时间点从用户原视频截图，给每日写稿流程用
+-- status:
+?? scratch/
+-- status count: 1
+-- log tuning-copy-style..worktree-agent-abb54fc52595012e0:
+c988524 2026-09-26 新增 srt-frames.mjs：按时间点从用户原视频截图，给每日写稿流程用
+-- cherry:
++ c9885246ac68c4123340873e304aeb8488a0670f
+-- merge-base is ancestor-of-tcs: no
+=== D:/项目仓库/风格仿写/.claude/worktrees/agent-ae0c1882051a8353b [worktree-agent-ae0c1882051a8353b]
+-- HEAD: 2bcfc09 2026-09-26 写稿流程加核心卡确认门、干货单、六种讲法和讲偏检查；新增 pick-experience 按适用标签挑经验；kb-intake 加经验库入库一步
+-- status:
+-- status count: 0
+-- log tuning-copy-style..worktree-agent-ae0c1882051a8353b:
+2bcfc09 2026-09-26 写稿流程加核心卡确认门、干货单、六种讲法和讲偏检查；新增 pick-experience 按适用标签挑经验；kb-intake 加经验库入库一步
+-- cherry:
+- 2bcfc09c4c90c5e3ea35d333359678ab75248659
+-- merge-base is ancestor-of-tcs: no
+=== D:/项目仓库/风格仿写/.claude/worktrees/sharp-williams-fc4769 [claude/sharp-williams-fc4769]
+-- HEAD: 79a4516 2026-09-27 产品库：待定标记改为已放开（用户 2026-09-27：所有产品都能写）；P03 工作室与 P47 微信的说法注明
+-- status:
+?? scratch/
+-- status count: 1
+-- log tuning-copy-style..claude/sharp-williams-fc4769:
+79a4516 2026-09-27 产品库：待定标记改为已放开（用户 2026-09-27：所有产品都能写）；P03 工作室与 P47 微信的说法注明
+ee6f4fc 2026-09-27 短视频新版：三类写法（经验/讲一个/盘点）进技能，产品库与盘点清单入 docs/短视频素材
+-- cherry:
++ ee6f4fcb8fe15955fa0fbff99323407f318c0265
++ 79a4516581464aae6fb309635208332111c2fa25
+-- merge-base is ancestor-of-tcs: no
+=== D:/项目仓库/风格仿写-pro-repair [agent/imitation-pro-repair]
+-- HEAD: ab10111 2026-07-29 Record GPT Pro dispatch blocker
+-- status:
+-- status count: 0
+-- log tuning-copy-style..agent/imitation-pro-repair:
+-- cherry:
+-- merge-base is ancestor-of-tcs: yes
+=== D:/项目仓库/风格仿写-qian17-reprofile [agent/qian17-reprofile]
+-- HEAD: ab10111 2026-07-29 Record GPT Pro dispatch blocker
+-- status:
+ M AGENTS.md
+ M CURRENT.md
+ M DECISIONS.md
+ M HANDOFF.md
+ M docs/requirements.md
+ M docs/source-inventory.md
+ M docs/verification.md
+ M profiles/钱十七-闲鱼风格拆解.md
+ M style-engine/evaluation/spoken-style-profiler-qian17/annotations.draft.json
+ M style-engine/evaluation/spoken-style-profiler-qian17/corpus-manifest.json
+ M style-engine/evaluation/spoken-style-profiler-qian17/sample-decisions.draft.json
+ M style-engine/evaluation/spoken-style-profiler-qian17/sample-health.json
+ M style-engine/evaluation/spoken-style-profiler-qian17/style-dna.draft.json
+ M style-engine/evaluation/spoken-style-profiler-qian17/钱十七-DNA-重构版.md
+?? style-engine/evaluation/spoken-style-profiler-qian17/baseline-enhanced-audit-20260729.md
+?? style-engine/evaluation/spoken-style-profiler-qian17/source-audit-20260729.md
+?? style-engine/tests/qian17-reprofile.test.mjs
+-- status count: 17
+-- log tuning-copy-style..agent/qian17-reprofile:
+-- cherry:
+-- merge-base is ancestor-of-tcs: yes

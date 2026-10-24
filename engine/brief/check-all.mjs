@@ -279,6 +279,57 @@ const STRUCTURE = {
     }
     return out;
   },
+
+  candidateTitles(lines, p) {
+    const out = [];
+    const rawTxt = fs.readFileSync(fileAbs, 'utf8');
+    if (rawTxt.includes('=====备选标题=====')) {
+      out.push(hit(1, '【R056 违规】文案正文（.txt）中严禁包含备选标题！用户 2026-10-10 铁律：标题一律不得放在文案里，必须且只能写入同名 .meta.json 的 titles 字段。'));
+    }
+
+    const metaPath = fileAbs.replace(/\.txt$/, '.meta.json');
+    let metaTitles = [];
+    let meta = null;
+    if (fs.existsSync(metaPath)) {
+      try {
+        meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
+        if (Array.isArray(meta.titles)) metaTitles = meta.titles;
+      } catch {}
+    }
+
+    if (!metaTitles.length) {
+      out.push(hit(1, '同名 .meta.json 中未找到 titles 字段（每篇文案必须在 .meta.json 中提供 10 个不同风格备选标题）'));
+      return out;
+    }
+    const reqCount = p['数量'] || 10;
+    if (metaTitles.length < reqCount) {
+      out.push(hit(1, '备选标题数量不足 10 条（当前 ' + metaTitles.length + ' 条）'));
+    }
+    metaTitles.forEach((t, i) => {
+      const text = typeof t === 'string' ? t : (t.text || '');
+      if (/[:：]/u.test(text)) {
+        out.push(hit(1, '备选标题 #' + (i + 1) + ' 含有冒号（禁止冒号，必须用空格自然断句）：' + text));
+      }
+    });
+
+    // 用户 2026-10-10 / 2026-10-11 铁律：横版长视频（orientation: 'h' 且非 selfie/chat）必须包含 10 套备选封面文案 coverOptions 与 coverConfirmed
+    if (meta && meta.orientation === 'h' && meta.kind !== 'selfie' && meta.skin !== 'chat') {
+      if (!Array.isArray(meta.coverOptions) || meta.coverOptions.length < 10) {
+        out.push(hit(1, `【封面文案违规】横版长视频 .meta.json 必须包含 10 套备选封面文案 coverOptions（当前 ${Array.isArray(meta.coverOptions) ? meta.coverOptions.length : 0} 套）`));
+      } else {
+        meta.coverOptions.forEach((c, i) => {
+          if (!c.title || !c.highlight || !c.sub) {
+            out.push(hit(1, `备选封面方案 #${i + 1} 字段不完整（必须包含 title, highlight, sub）`));
+          }
+        });
+      }
+      if (!meta.coverConfirmed || !meta.coverConfirmed.title) {
+        out.push(hit(1, '【封面文案违规】横版长视频 .meta.json 必须初始化 coverConfirmed（待确认封面文案）'));
+      }
+    }
+
+    return out;
+  },
 };
 
 // ───────────────────────── manual 行的辅助信息 ─────────────────────────

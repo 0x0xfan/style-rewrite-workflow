@@ -56,7 +56,7 @@ description: 文案总流程（新会话先看这个）：两个入口（用户�
 | 用户在视频项目素材库放了一个品（截图、链接、关键词、备注），说"二次整理 XX"：读他的东西 → 按他的词和链接补搜 → 查隐私 → 放回素材库收件箱 | `.claude/skills/material-organize/SKILL.md` | 整理哪个品拿不准先问；登记由视频项目跑 import-inbox |
 | 员工改好的稿 → 学习 → 进视频项目 → 出片 | `.claude/skills/script-return/SKILL.md` | 学习里和旧规矩冲突的先问用户 |
 | 知识库有新同行文章 | `.claude/skills/kb-intake/SKILL.md` | — |
-| 1–2 分钟竖版短视频（300–600 字）和真人出镜口播稿 | `.claude/skills/short-video/SKILL.md` | 走 daily-plan 时选题表已确认 |
+| 30–60 秒短视频全案分镜（v2.0 事实驱动版，对接 S0 deconstruct/facts，严守 D-040/D-041，输出 JSON 分镜 + 导出正文与素材对照）与真人出镜口播稿 | `.claude/skills/short-video/SKILL.md`（规格 `docs/短视频规格-v2.md`） | 走 daily-plan 时选题表已确认 |
 | 聊天记录式短视频（手机聊天画面、无配音，左边学员/粉丝问、右边圣矾答） | `.claude/skills/chat-record/SKILL.md` | 首次交付位置问用户 |
 
 ## 硬规矩（细节见 AGENTS.md）

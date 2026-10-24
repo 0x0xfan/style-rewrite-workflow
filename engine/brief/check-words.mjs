@@ -76,10 +76,35 @@ export function sourceLabel(e) {
   return `主线程 ${e.日期} 预防性`;
 }
 
-/** 读稿件为行数组（去 BOM，统一换行）。 */
+/** 读稿件为行数组（去 BOM，统一换行；自动剥离文末备选标题块，避免标题干扰正文字数与规则检查）。 */
 export function readLines(fileAbs) {
-  const raw = fs.readFileSync(fileAbs, 'utf8').replace(/^﻿/, '');
+  let raw = fs.readFileSync(fileAbs, 'utf8').replace(/^\uFEFF/u, '');
+  const cut = raw.search(/(?:\r?\n|^)={3,}\s*备选标题\s*={3,}/u);
+  if (cut >= 0) {
+    raw = raw.slice(0, cut);
+  }
   return raw.replace(/\r\n/g, '\n').split('\n');
+}
+
+/** 提取文末的备选标题数组：[{ style, text }] */
+export function readCandidateTitles(fileAbs) {
+  const raw = fs.readFileSync(fileAbs, 'utf8').replace(/^\uFEFF/u, '');
+  const cut = raw.search(/(?:\r?\n|^)={3,}\s*备选标题\s*={3,}/u);
+  if (cut < 0) return [];
+  const block = raw.slice(cut).replace(/^[^\n]*\r?\n/u, '');
+  const lines = block.split(/\r?\n/u).map((l) => l.trim()).filter(Boolean);
+  const titles = [];
+  for (const line of lines) {
+    // 匹配如: 1. [手把手实操] 标题文本
+    const m = /^(?:\d+[\.、]\s*)?(?:\[([^\]]+)\]\s*)?(.*)$/u.exec(line);
+    if (m && m[2]) {
+      titles.push({
+        style: (m[1] || '').trim(),
+        text: m[2].trim()
+      });
+    }
+  }
+  return titles;
 }
 
 /** 按选题类型 / 选题名筛出本次启用的词表条目（不给 --topic-type 就剔掉实物专用）。 */

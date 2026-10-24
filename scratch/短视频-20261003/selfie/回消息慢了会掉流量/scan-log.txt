@@ -1,0 +1,29 @@
+[topic-scan] 选题词：「简历模板」，Top3
+[topic-scan] 调用采集器：D:\项目仓库\风格仿写\engine\collect\goofish-collect.mjs
+[采集] 选题词：「简历模板」
+[采集] 产物目录：D:\项目仓库\风格仿写\scratch\短视频-20261003\selfie\回消息慢了会掉流量\素材\_raw
+[采集] 定位到 Chrome：C:\Program Files\Google\Chrome\Application\chrome.exe
+[采集] 启动采集专用 Chrome（独立 profile：D:\项目仓库\风格仿写\.collect-chrome-profile，档案：Default）
+[采集] 采集 Chrome 调试端口已就绪
+[采集] 打开搜索结果页…
+[采集] 登录态正常（可见用户昵称/头像=true，卡片 30，无结果页=false）
+[采集] 「简历模板」：采到 30 条、其中想要卡 20 条
+[采集] 搜索页采集到 30 条（用词「简历模板」）
+[采集] 截图已落盘：01-搜索结果页.png（2176041 字节，full_page）
+[采集] 第一页按想要数降序取 Top3 进详情
+[采集] Top1 详情：item=952235686380（想要 3327）
+[采集] 截图前已关闭可关闭浮层：closeIcon--XlKKbKOd
+[采集] 截图已落盘：02-Top1详情.png（379712 字节，detail_cropped）
+[采集] 截图前已关闭可关闭浮层：closeIcon--XlKKbKOd
+[采集] 截图已落盘：05-Top1店铺.png（2698133 字节，full_page）— 卖家店铺主页
+[采集] Top2 详情：item=934041348964（想要 2259）
+[采集] 截图前已关闭可关闭浮层：closeIcon--XlKKbKOd
+[采集] 截图已落盘：03-Top2详情.png（611620 字节，detail_cropped）
+[采集] 截图前已关闭可关闭浮层：closeIcon--XlKKbKOd
+[采集] 「Top2 店铺截图」首次失败（CDP 连接已关闭），重试一次
+[采集] 采集中止：CDP 超时：Page.captureScreenshot
+[采集] 产物写出：D:\项目仓库\风格仿写\scratch\短视频-20261003\selfie\回消息慢了会掉流量\素材\_raw\capture.json
+[采集] 截图目录：D:\项目仓库\风格仿写\scratch\短视频-20261003\selfie\回消息慢了会掉流量\素材\_raw\screenshots（4 张 PNG）
+[采集] 用时 224s，status=error
+[采集] [告警] 优雅关闭超时，回退到定向 kill（仅限采集 profile 进程）
+[topic-scan][错误] 采集器报错：CDP 超时：Page.captureScreenshot
